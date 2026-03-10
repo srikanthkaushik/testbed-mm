@@ -38,23 +38,40 @@ Start with `auth-service` and `crash-service` — everything else depends on the
 See [AUTH.md](AUTH.md) for full implementation details, API reference, token design, and setup instructions.
 
 ### 4. crash-service
-This is the core service. Structure it around the MMUCC hierarchy:
+The core MMUCC data service running on port **8082**. Covers crash records (C1–C27), vehicles (V1–V24), roadway (R1–R16), and all associated multi-value child tables.
+
+**API surface:**
 
 ```
-POST   /crashes                  → create crash shell
-PUT    /crashes/{id}             → update crash-level fields
-POST   /crashes/{id}/vehicles    → add vehicle
-POST   /crashes/{id}/persons     → add person
-...etc for each child entity
-GET    /crashes/{id}             → full crash with all children
+GET    /crashes                          → paged list (filters: dateFrom, dateTo, severity, county)
+POST   /crashes                          → create crash (ADMIN, DATA_ENTRY)
+GET    /crashes/{id}                     → full detail — crash + all children
+PUT    /crashes/{id}                     → replace crash (ADMIN, DATA_ENTRY)
+DELETE /crashes/{id}                     → delete + cascade (ADMIN)
+
+GET    /crashes/{id}/vehicles            → list vehicles for a crash
+POST   /crashes/{id}/vehicles            → add vehicle (ADMIN, DATA_ENTRY)
+GET    /crashes/{id}/vehicles/{vid}      → single vehicle detail
+PUT    /crashes/{id}/vehicles/{vid}      → replace vehicle (ADMIN, DATA_ENTRY)
+DELETE /crashes/{id}/vehicles/{vid}      → delete vehicle (ADMIN)
+
+GET    /crashes/{id}/roadway             → roadway detail (1:1 with crash)
+PUT    /crashes/{id}/roadway             → create or replace roadway (ADMIN, DATA_ENTRY)
+DELETE /crashes/{id}/roadway             → delete roadway (ADMIN)
 ```
 
-Key implementation details:
-- **One JPA entity per table**, with the audit columns mapped to a reusable `@Embeddable` base class
-- **Service layer populates audit fields** — never let the controller touch `CREATED_BY`, `MODIFIED_BY`, etc.
-- **DTOs separate from entities** — use MapStruct to avoid exposing internal structure
-- Wrap every write operation in a transaction that also inserts a row into `CRASH_AUDIT_LOG_TBL` (before/after JSON snapshot)
-- Use **Spring Data JPA projections** for list/summary views to avoid fetching full object graphs
+**Key implementation details:**
+- **One JPA entity per table** with audit columns mapped via `@Embeddable AuditFields` and table-specific `@AttributeOverrides`
+- **Service layer populates audit fields** — never the controller; explicit actor identity on every write
+- **DTOs separate from entities** — MapStruct mappers for Crash, Vehicle, Roadway; `@MappingTarget` for PUT (in-place update)
+- **Multi-value child tables** (weather conditions, surface conditions, contributing roadway, traffic controls, damage areas, sequence events) managed with delete-then-insert within the same transaction
+- **Roadway upsert** — `PUT /crashes/{id}/roadway` creates on first call, replaces on subsequent calls (no separate POST)
+- **`AuditLogService` with `Propagation.REQUIRES_NEW`** — audit entries committed even if the outer transaction rolls back
+- **No N+1 queries** — `buildDetailResponse` fetches all children via explicit repository calls, not JPA `@OneToMany`
+- **Flyway migration** (`V1__crash_schema.sql`) creates 9 tables with `CREATE TABLE IF NOT EXISTS`
+- **JWT filter** shares the same secret as auth-service; no DB hit per request — identity reconstructed from JWT claims
+
+See [CRASH.md](CRASH.md) for full implementation reference, module structure, API details, and local run instructions.
 
 ### 5. reference-service
 - Simple read-only service over the `REF_*` tables (MySQL) or `LOOKUP_CODE_VALUES_TBL` (Oracle)
