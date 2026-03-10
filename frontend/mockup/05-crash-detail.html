@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MMUCC — Crash Detail</title>
+<link rel="stylesheet" href="wireframe.css">
+<style>
+  .field-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; }
+  .field-item {
+    padding:8px 12px; border:1px solid #e0e0e0;
+    border-right:none; border-bottom:none;
+  }
+  .field-item:nth-child(3n) { border-right:1px solid #e0e0e0; }
+  .field-grid .field-item:last-child,
+  .field-grid .field-item:nth-last-child(2),
+  .field-grid .field-item:nth-last-child(3) { border-bottom:1px solid #e0e0e0; }
+  .field-label { font-size:10px; font-weight:700; color:#888; text-transform:uppercase; margin-bottom:2px; }
+  .field-value { font-size:13px; color:#333; }
+  .field-value.empty { color:#ccc; font-style:italic; }
+
+  .vehicle-row {
+    border:2px solid #ccc; border-radius:4px; margin-bottom:10px; overflow:hidden;
+  }
+  .vehicle-header {
+    background:#f0f0f0; padding:10px 14px;
+    display:flex; align-items:center; gap:12px; cursor:pointer;
+  }
+  .vehicle-header .unit { font-weight:700; font-size:14px; }
+  .vehicle-body { padding:12px 14px; border-top:1px solid #ddd; background:#fff; }
+
+  .audit-row { border-bottom:1px solid #eee; padding:8px 0; font-size:12px; display:grid; grid-template-columns:90px 120px 80px 120px auto; gap:8px; align-items:start; }
+  .audit-header { font-weight:700; color:#777; font-size:11px; text-transform:uppercase; }
+  .json-preview { font-family:monospace; font-size:10px; background:#f8f8f8; border:1px solid #ddd; padding:4px 6px; border-radius:2px; max-height:60px; overflow:hidden; color:#555; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <nav class="navbar">
+    <div class="brand">MMUCC</div>
+    <div class="screen-links">
+      <a href="index.html">Index</a>
+      <a href="01-login.html">Login</a>
+      <a href="02-dashboard.html">Dashboard</a>
+      <a href="03-crash-list.html">Crash List</a>
+      <a href="04-crash-new.html">New Crash</a>
+      <a href="05-crash-detail.html" class="active">Crash Detail</a>
+      <a href="06-vehicle-form.html">Vehicle Form</a>
+      <a href="07-user-management.html">Users</a>
+    </div>
+    <div class="user-area">
+      <div class="avatar">JD</div>
+      <span>J. Doe &nbsp;<span class="badge badge-entry">DATA_ENTRY</span></span>
+      <a href="01-login.html" class="wf-btn sm">Sign Out</a>
+    </div>
+  </nav>
+
+  <div class="content-area">
+    <nav class="sidebar">
+      <div class="nav-section-title">Main</div>
+      <a class="nav-item" href="02-dashboard.html"><span class="icon">📊</span> Dashboard</a>
+      <a class="nav-item active" href="03-crash-list.html"><span class="icon">📋</span> Crash Records</a>
+      <a class="nav-item" href="04-crash-new.html"><span class="icon">➕</span> New Crash</a>
+      <div class="nav-section-title">Reports</div>
+      <a class="nav-item" href="#"><span class="icon">📈</span> Analytics</a>
+      <div class="nav-section-title">Admin</div>
+      <a class="nav-item" href="07-user-management.html"><span class="icon">👥</span> Users</a>
+    </nav>
+
+    <main class="main-content">
+
+      <!-- Title & Actions -->
+      <div class="page-title-bar">
+        <div>
+          <div class="breadcrumb">
+            <a href="02-dashboard.html">Dashboard</a> &rsaquo;
+            <a href="03-crash-list.html">Crash Records</a> &rsaquo; CR-2024-1248
+          </div>
+          <h1>CR-2024-1248 &nbsp;<span class="badge badge-injury" style="font-size:14px;">Injury</span></h1>
+        </div>
+        <div style="margin-left:auto; display:flex; gap:8px;">
+          <button class="wf-btn">🖨 Print</button>
+          <a href="04-crash-new.html" class="wf-btn primary">✏️ Edit</a>
+          <button class="wf-btn danger">🗑 Delete</button>
+        </div>
+      </div>
+
+      <!-- Meta row -->
+      <div class="wf-card" style="padding:10px 16px; margin-bottom:16px;">
+        <div style="display:flex; gap:24px; font-size:13px; flex-wrap:wrap;">
+          <span><strong>Date:</strong> 2024-03-10 &nbsp; 08:32</span>
+          <span><strong>County:</strong> Fairfax (FIPS 51059)</span>
+          <span><strong>City:</strong> McLean</span>
+          <span><strong>Route:</strong> I-495</span>
+          <span><strong>Vehicles:</strong> 2</span>
+          <span><strong>Fatalities:</strong> 0</span>
+          <span><strong>Entered by:</strong> J. Doe &nbsp; <span class="text-muted">2024-03-10 09:14</span></span>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="wf-tabs">
+        <div class="wf-tab active">Overview</div>
+        <div class="wf-tab"><a href="#vehicles" style="color:inherit;text-decoration:none;">Vehicles (2)</a></div>
+        <div class="wf-tab">Roadway</div>
+        <div class="wf-tab">Audit Log</div>
+      </div>
+
+      <!-- ── TAB: Overview ── -->
+      <div class="wf-card">
+        <h3>📌 Identification &amp; Location</h3>
+        <div class="field-grid">
+          <div class="field-item"><div class="field-label">Crash ID</div><div class="field-value">CR-2024-1248</div></div>
+          <div class="field-item"><div class="field-label">Crash Date (C1)</div><div class="field-value">2024-03-10</div></div>
+          <div class="field-item"><div class="field-label">Crash Time (C1)</div><div class="field-value">08:32</div></div>
+          <div class="field-item"><div class="field-label">County (C2)</div><div class="field-value">Fairfax (51059)</div></div>
+          <div class="field-item"><div class="field-label">City / Place (C3)</div><div class="field-value">McLean</div></div>
+          <div class="field-item"><div class="field-label">Route (C4)</div><div class="field-value">I-495 (Interstate)</div></div>
+          <div class="field-item"><div class="field-label">Latitude (C6)</div><div class="field-value">38.9256100</div></div>
+          <div class="field-item"><div class="field-label">Longitude (C6)</div><div class="field-value">-77.2410300</div></div>
+          <div class="field-item"><div class="field-label">Distance from Ref (C5)</div><div class="field-value">1.240 mi</div></div>
+        </div>
+      </div>
+
+      <div class="wf-card">
+        <h3>🚗 Crash Classification</h3>
+        <div class="field-grid">
+          <div class="field-item"><div class="field-label">First Harmful Event (C7)</div><div class="field-value">54 — Motor Vehicle In Transport</div></div>
+          <div class="field-item"><div class="field-label">Location of FHE (C8)</div><div class="field-value">1 — On Roadway</div></div>
+          <div class="field-item"><div class="field-label">Manner of Collision (C9)</div><div class="field-value">2 — Front-to-Rear</div></div>
+          <div class="field-item"><div class="field-label">Light Condition (C10)</div><div class="field-value">1 — Daylight</div></div>
+          <div class="field-item"><div class="field-label">Weather Conditions (C11)</div><div class="field-value">1 — Clear</div></div>
+          <div class="field-item"><div class="field-label">Surface Conditions (C12)</div><div class="field-value">1 — Dry</div></div>
+          <div class="field-item"><div class="field-label">Crash Severity (C20)</div><div class="field-value"><span class="badge badge-injury">2 — Suspected Serious Injury</span></div></div>
+          <div class="field-item"><div class="field-label">School Bus Related (C14)</div><div class="field-value">0 — No</div></div>
+          <div class="field-item"><div class="field-label">Work Zone Related (C15)</div><div class="field-value">0 — No</div></div>
+        </div>
+      </div>
+
+      <div class="wf-card">
+        <h3>📊 Crash Outcomes</h3>
+        <div class="field-grid">
+          <div class="field-item"><div class="field-label">Motor Vehicles (C21)</div><div class="field-value">2</div></div>
+          <div class="field-item"><div class="field-label">Motorists (C22)</div><div class="field-value">2</div></div>
+          <div class="field-item"><div class="field-label">Non-Motorists (C23)</div><div class="field-value">0</div></div>
+          <div class="field-item"><div class="field-label">Non-Fatally Injured (C25)</div><div class="field-value">1</div></div>
+          <div class="field-item"><div class="field-label">Fatalities (C26)</div><div class="field-value">0</div></div>
+          <div class="field-item"><div class="field-label">Alcohol Involvement (C27)</div><div class="field-value">0 — No</div></div>
+        </div>
+      </div>
+
+      <!-- ── TAB: Vehicles ── -->
+      <div id="vehicles" class="wf-card">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+          <h3>🚙 Vehicles (2)</h3>
+          <a href="06-vehicle-form.html" class="wf-btn sm primary">➕ Add Vehicle</a>
+        </div>
+
+        <!-- Vehicle 1 -->
+        <div class="vehicle-row">
+          <div class="vehicle-header">
+            <span class="unit">Unit 1</span>
+            <span class="text-muted">2020 Honda Accord · VIN: 1HGCV1F35LA123456</span>
+            <span class="badge badge-injury" style="margin-left:auto;">Injury</span>
+            <a href="06-vehicle-form.html" class="wf-btn sm" style="margin-left:8px;">Edit</a>
+          </div>
+          <div class="vehicle-body">
+            <div class="field-grid">
+              <div class="field-item"><div class="field-label">Unit Type (V1)</div><div class="field-value">1 — Motor Vehicle In Transport</div></div>
+              <div class="field-item"><div class="field-label">Make / Model (V7)</div><div class="field-value">Honda Accord</div></div>
+              <div class="field-item"><div class="field-label">Model Year (V8)</div><div class="field-value">2020</div></div>
+              <div class="field-item"><div class="field-label">Body Type (V9)</div><div class="field-value">2 — Passenger Car</div></div>
+              <div class="field-item"><div class="field-label">Speed Limit (V13)</div><div class="field-value">65 mph</div></div>
+              <div class="field-item"><div class="field-label">Dir of Travel (V14)</div><div class="field-value">3 — Northbound</div></div>
+              <div class="field-item"><div class="field-label">Damage Extent (V19)</div><div class="field-value">3 — Moderate</div></div>
+              <div class="field-item"><div class="field-label">Most Harmful Event (V20)</div><div class="field-value">54 — MV in Transport</div></div>
+              <div class="field-item"><div class="field-label">Hit &amp; Run (V22)</div><div class="field-value">0 — No</div></div>
+            </div>
+            <div style="margin-top:8px; font-size:12px; color:#777;">
+              <strong>Traffic Controls:</strong> None &nbsp;|&nbsp;
+              <strong>Damage Areas:</strong> 12 — Front &nbsp;|&nbsp;
+              <strong>Sequence of Events:</strong> 54 — MV in Transport
+            </div>
+          </div>
+        </div>
+
+        <!-- Vehicle 2 -->
+        <div class="vehicle-row">
+          <div class="vehicle-header">
+            <span class="unit">Unit 2</span>
+            <span class="text-muted">2018 Toyota Camry · VIN: 4T1BF1FK5JU123789</span>
+            <span class="badge badge-pdo" style="margin-left:auto;">PDO</span>
+            <a href="06-vehicle-form.html" class="wf-btn sm" style="margin-left:8px;">Edit</a>
+          </div>
+          <div class="vehicle-body">
+            <div class="field-grid">
+              <div class="field-item"><div class="field-label">Unit Type (V1)</div><div class="field-value">1 — Motor Vehicle In Transport</div></div>
+              <div class="field-item"><div class="field-label">Make / Model (V7)</div><div class="field-value">Toyota Camry</div></div>
+              <div class="field-item"><div class="field-label">Model Year (V8)</div><div class="field-value">2018</div></div>
+              <div class="field-item"><div class="field-label">Body Type (V9)</div><div class="field-value">2 — Passenger Car</div></div>
+              <div class="field-item"><div class="field-label">Speed Limit (V13)</div><div class="field-value">65 mph</div></div>
+              <div class="field-item"><div class="field-label">Dir of Travel (V14)</div><div class="field-value">3 — Northbound</div></div>
+              <div class="field-item"><div class="field-label">Damage Extent (V19)</div><div class="field-value">2 — Minor</div></div>
+              <div class="field-item"><div class="field-label">Most Harmful Event (V20)</div><div class="field-value">54 — MV in Transport</div></div>
+              <div class="field-item"><div class="field-label">Hit &amp; Run (V22)</div><div class="field-value">0 — No</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Audit Log Preview -->
+      <div class="wf-card">
+        <h3>📜 Audit Log (recent)</h3>
+        <div class="audit-row audit-header">
+          <div>Timestamp</div><div>User</div><div>Action</div><div>Table</div><div>Change</div>
+        </div>
+        <div class="audit-row">
+          <div>2024-03-10 09:14</div>
+          <div>jdoe</div>
+          <div><span class="badge badge-entry" style="font-size:10px;">CREATE</span></div>
+          <div>CRASH_TBL</div>
+          <div class="json-preview">{"crashIdentifier":"CR-2024-1248","crashDate":"2024-03-10",...}</div>
+        </div>
+        <div class="audit-row">
+          <div>2024-03-10 09:18</div>
+          <div>jdoe</div>
+          <div><span class="badge badge-entry" style="font-size:10px;">CREATE</span></div>
+          <div>VEHICLE_TBL</div>
+          <div class="json-preview">{"vin":"1HGCV1F35LA123456","make":"Honda","model":"Accord",...}</div>
+        </div>
+        <div class="audit-row">
+          <div>2024-03-10 09:22</div>
+          <div>jdoe</div>
+          <div><span class="badge badge-entry" style="font-size:10px;">CREATE</span></div>
+          <div>VEHICLE_TBL</div>
+          <div class="json-preview">{"vin":"4T1BF1FK5JU123789","make":"Toyota","model":"Camry",...}</div>
+        </div>
+        <div class="mt-8">
+          <button class="wf-btn sm">View Full Audit Log →</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+</body>
+</html>

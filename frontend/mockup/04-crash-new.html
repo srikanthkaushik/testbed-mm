@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MMUCC — New Crash Entry</title>
+<link rel="stylesheet" href="wireframe.css">
+<style>
+  .step-bar { display:flex; margin-bottom:24px; gap:0; }
+  .step-item {
+    flex:1; padding:10px 16px; background:#eee; border:2px solid #aaa;
+    border-right:none; font-size:13px; display:flex; align-items:center; gap:8px;
+  }
+  .step-item:last-child { border-right:2px solid #aaa; }
+  .step-item.active  { background:#c8d8f0; border-color:#446; font-weight:700; }
+  .step-item.done    { background:#d8f0d8; border-color:#464; }
+  .step-num {
+    width:22px; height:22px; border-radius:50%;
+    border:2px solid currentColor;
+    display:flex; align-items:center; justify-content:center;
+    font-size:11px; font-weight:700; flex-shrink:0;
+  }
+  .form-actions {
+    display:flex; justify-content:space-between; align-items:center;
+    padding-top:16px; border-top:2px dashed #ccc; margin-top:20px;
+  }
+  .multi-select-list {
+    border:2px solid #888; border-radius:3px; background:#fafafa;
+    padding:8px; display:flex; flex-wrap:wrap; gap:6px; min-height:42px;
+  }
+  .ms-tag {
+    background:#dde; border:1px solid #99a; border-radius:3px;
+    padding:3px 10px; font-size:12px; display:inline-flex; align-items:center; gap:4px;
+  }
+  .ms-tag .x { color:#c44; cursor:pointer; font-weight:700; margin-left:4px; }
+  .ms-add-btn {
+    border:1px dashed #888; border-radius:3px; background:#f8f8f8;
+    padding:3px 10px; font-size:12px; cursor:pointer; font-family:inherit;
+    color:#558;
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <nav class="navbar">
+    <div class="brand">MMUCC</div>
+    <div class="screen-links">
+      <a href="index.html">Index</a>
+      <a href="01-login.html">Login</a>
+      <a href="02-dashboard.html">Dashboard</a>
+      <a href="03-crash-list.html">Crash List</a>
+      <a href="04-crash-new.html" class="active">New Crash</a>
+      <a href="05-crash-detail.html">Crash Detail</a>
+      <a href="06-vehicle-form.html">Vehicle Form</a>
+      <a href="07-user-management.html">Users</a>
+    </div>
+    <div class="user-area">
+      <div class="avatar">JD</div>
+      <span>J. Doe &nbsp;<span class="badge badge-entry">DATA_ENTRY</span></span>
+      <a href="01-login.html" class="wf-btn sm">Sign Out</a>
+    </div>
+  </nav>
+
+  <div class="content-area">
+    <nav class="sidebar">
+      <div class="nav-section-title">Main</div>
+      <a class="nav-item" href="02-dashboard.html"><span class="icon">📊</span> Dashboard</a>
+      <a class="nav-item" href="03-crash-list.html"><span class="icon">📋</span> Crash Records</a>
+      <a class="nav-item active" href="04-crash-new.html"><span class="icon">➕</span> New Crash</a>
+      <div class="nav-section-title">Reports</div>
+      <a class="nav-item" href="#"><span class="icon">📈</span> Analytics</a>
+      <div class="nav-section-title">Admin</div>
+      <a class="nav-item" href="07-user-management.html"><span class="icon">👥</span> Users</a>
+    </nav>
+
+    <main class="main-content">
+
+      <div class="page-title-bar">
+        <div>
+          <div class="breadcrumb">
+            <a href="02-dashboard.html">Dashboard</a> &rsaquo;
+            <a href="03-crash-list.html">Crash Records</a> &rsaquo; New Crash
+          </div>
+          <h1>New Crash Report</h1>
+        </div>
+        <div style="margin-left:auto;">
+          <button class="wf-btn">💾 Save Draft</button>
+        </div>
+      </div>
+
+      <!-- Step Bar -->
+      <div class="step-bar">
+        <div class="step-item active">
+          <div class="step-num">1</div> Crash Info
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div> Vehicles
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div> Roadway
+        </div>
+        <div class="step-item">
+          <div class="step-num">4</div> Review &amp; Submit
+        </div>
+      </div>
+
+      <!-- ── STEP 1: Crash Info ── -->
+      <div class="wf-card">
+
+        <!-- Identification -->
+        <div class="section-divider">📌 Identification (C1)</div>
+        <div class="col-3">
+          <div class="form-group">
+            <label>Crash Identifier <span class="required">*</span></label>
+            <input class="wf-input" placeholder="e.g. CR-2024-1249">
+          </div>
+          <div class="form-group">
+            <label>Crash Date <span class="required">*</span> <small class="text-muted">(C1)</small></label>
+            <input class="wf-input" placeholder="YYYY-MM-DD">
+          </div>
+          <div class="form-group">
+            <label>Crash Time <span class="required">*</span> <small class="text-muted">(C1)</small></label>
+            <input class="wf-input" placeholder="HH:MM (24h)">
+          </div>
+        </div>
+
+        <!-- Location -->
+        <div class="section-divider">📍 Location (C2–C6)</div>
+        <div class="col-2">
+          <div class="form-group">
+            <label>County FIPS Code <small class="text-muted">(C2)</small></label>
+            <select class="wf-select">
+              <option value="">— Select County —</option>
+              <option>51059 — Fairfax County</option>
+              <option>51013 — Arlington County</option>
+              <option>51107 — Loudoun County</option>
+              <option>51153 — Prince William County</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>City / Place <small class="text-muted">(C3)</small></label>
+            <input class="wf-input" placeholder="City or place name">
+          </div>
+        </div>
+        <div class="col-2">
+          <div class="form-group">
+            <label>Route ID <small class="text-muted">(C4)</small></label>
+            <input class="wf-input" placeholder="e.g. I-66, US-50, VA-123">
+          </div>
+          <div class="form-group">
+            <label>Route Type <small class="text-muted">(C4)</small></label>
+            <select class="wf-select">
+              <option>— Select —</option>
+              <option>1 — Interstate</option>
+              <option>2 — US Route</option>
+              <option>3 — State Route</option>
+              <option>4 — County Road</option>
+              <option>5 — Local Street</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-3">
+          <div class="form-group">
+            <label>Distance from Reference (mi) <small class="text-muted">(C5)</small></label>
+            <input class="wf-input" placeholder="0.000">
+          </div>
+          <div class="form-group">
+            <label>Latitude <small class="text-muted">(C6)</small></label>
+            <input class="wf-input" placeholder="38.0000000">
+          </div>
+          <div class="form-group">
+            <label>Longitude <small class="text-muted">(C6)</small></label>
+            <input class="wf-input" placeholder="-77.0000000">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>📍 Map (click to pick coordinates)</label>
+          <div class="img-placeholder" style="height:120px;">[Interactive Map — Click to drop location pin]</div>
+        </div>
+
+        <!-- Crash Classification -->
+        <div class="section-divider">🚗 Crash Classification (C7–C11)</div>
+        <div class="col-2">
+          <div class="form-group">
+            <label>First Harmful Event <small class="text-muted">(C7)</small></label>
+            <select class="wf-select">
+              <option>— Select —</option>
+              <option>1 — Rollover/Overturn</option>
+              <option>2 — Fire/Explosion</option>
+              <option>3 — Immersion</option>
+              <option>4 — Jackknife</option>
+              <option>14 — Pedestrian</option>
+              <option>54 — Motor Vehicle In Transport</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Location of First Harmful Event <small class="text-muted">(C8)</small></label>
+            <select class="wf-select">
+              <option>— Select —</option>
+              <option>1 — On Roadway</option>
+              <option>2 — Shoulder</option>
+              <option>3 — Median</option>
+              <option>4 — Roadside</option>
+              <option>5 — Outside Right-of-Way</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-2">
+          <div class="form-group">
+            <label>Manner of Collision <small class="text-muted">(C9)</small></label>
+            <select class="wf-select">
+              <option>— Select —</option>
+              <option>1 — Not Collision with Motor Vehicle</option>
+              <option>2 — Front-to-Rear</option>
+              <option>3 — Front-to-Front</option>
+              <option>4 — Angle</option>
+              <option>5 — Sideswipe (Same Direction)</option>
+              <option>6 — Sideswipe (Opposite Direction)</option>
+              <option>7 — Rear-to-Side</option>
+              <option>8 — Rear-to-Rear</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Light Condition <small class="text-muted">(C10)</small></label>
+            <select class="wf-select">
+              <option>— Select —</option>
+              <option>1 — Daylight</option>
+              <option>2 — Dark — Not Lighted</option>
+              <option>3 — Dark — Lighted</option>
+              <option>4 — Dark — Unknown Lighting</option>
+              <option>5 — Dawn</option>
+              <option>6 — Dusk</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Multi-value: Weather -->
+        <div class="form-group">
+          <label>Weather Conditions <small class="text-muted">(C11 — select 1 or more)</small></label>
+          <div class="multi-select-list">
+            <span class="ms-tag">1 — Clear <span class="x">✕</span></span>
+            <span class="ms-tag">10 — Rain <span class="x">✕</span></span>
+            <button class="ms-add-btn">+ Add condition</button>
+          </div>
+        </div>
+
+        <!-- Multi-value: Surface -->
+        <div class="form-group">
+          <label>Road Surface Condition <small class="text-muted">(C12 — select 1 or more)</small></label>
+          <div class="multi-select-list">
+            <span class="ms-tag">1 — Dry <span class="x">✕</span></span>
+            <button class="ms-add-btn">+ Add condition</button>
+          </div>
+        </div>
+
+        <!-- Multi-value: Contributing Roadway Circumstances -->
+        <div class="form-group">
+          <label>Contributing Roadway Circumstances <small class="text-muted">(C13 — select 0 or more)</small></label>
+          <div class="multi-select-list">
+            <button class="ms-add-btn">+ Add circumstance</button>
+          </div>
+        </div>
+
+        <!-- Crash Outcomes -->
+        <div class="section-divider">📊 Crash Outcomes (C20–C27)</div>
+        <div class="col-4">
+          <div class="form-group">
+            <label>Crash Severity <small class="text-muted">(C20)</small></label>
+            <select class="wf-select">
+              <option>— Select —</option>
+              <option>1 — Fatal</option>
+              <option>2 — Suspected Serious Injury</option>
+              <option>3 — Suspected Minor Injury</option>
+              <option>4 — Possible Injury</option>
+              <option>5 — PDO</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label># Motor Vehicles <small class="text-muted">(C21)</small></label>
+            <input class="wf-input" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label># Non-Fatally Injured <small class="text-muted">(C25)</small></label>
+            <input class="wf-input" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label># Fatalities <small class="text-muted">(C26)</small></label>
+            <input class="wf-input" placeholder="0">
+          </div>
+        </div>
+
+        <!-- Special Flags -->
+        <div class="section-divider">🏫 Special Circumstances (C14–C19)</div>
+        <div class="col-2">
+          <div class="form-group">
+            <label>School Bus Related <small class="text-muted">(C14)</small></label>
+            <select class="wf-select"><option>— Select —</option><option>0 — No</option><option>1 — Yes</option></select>
+          </div>
+          <div class="form-group">
+            <label>Work Zone Related <small class="text-muted">(C15)</small></label>
+            <select class="wf-select"><option>— Select —</option><option>0 — No</option><option>1 — Yes</option></select>
+          </div>
+          <div class="form-group">
+            <label>Alcohol Involvement <small class="text-muted">(C27)</small></label>
+            <select class="wf-select"><option>— Select —</option><option>0 — No</option><option>1 — Yes</option><option>8 — Unknown</option></select>
+          </div>
+          <div class="form-group">
+            <label>Drug Involvement <small class="text-muted">(C27)</small></label>
+            <select class="wf-select"><option>— Select —</option><option>0 — No</option><option>1 — Yes</option><option>8 — Unknown</option></select>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="form-actions">
+          <a href="03-crash-list.html" class="wf-btn">✕ Cancel</a>
+          <div class="flex-row">
+            <button class="wf-btn">💾 Save Draft</button>
+            <a href="06-vehicle-form.html" class="wf-btn primary">Next: Vehicles →</a>
+          </div>
+        </div>
+
+      </div><!-- end card -->
+
+    </main>
+  </div>
+</div>
+</body>
+</html>

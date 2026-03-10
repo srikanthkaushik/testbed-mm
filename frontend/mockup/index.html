@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MMUCC Crash Reporting — Mockup Index</title>
+<link rel="stylesheet" href="wireframe.css">
+<style>
+  body { padding: 30px; }
+  .index-header { text-align: center; margin-bottom: 32px; }
+  .index-header h1 { font-size: 26px; }
+  .index-header p  { color: #777; margin-top: 6px; }
+  .screen-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .screen-card {
+    background: #fff;
+    border: 2px solid #888;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform 0.1s;
+  }
+  .screen-card:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 rgba(0,0,0,0.12); }
+  .screen-thumb {
+    height: 150px;
+    background: repeating-linear-gradient(-45deg, #ddd 0, #ddd 1px, #eee 1px, #eee 9px);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 36px;
+    border-bottom: 2px solid #ccc;
+  }
+  .screen-thumb .screen-num {
+    font-size: 13px;
+    color: #aaa;
+    font-family: 'Balsamiq Sans', cursive;
+    margin-top: 6px;
+  }
+  .screen-info { padding: 14px; }
+  .screen-info h3 { font-size: 16px; margin-bottom: 4px; }
+  .screen-info p  { font-size: 12px; color: #777; }
+  .screen-info .tags { margin-top: 8px; display: flex; gap: 4px; flex-wrap: wrap; }
+  .screen-info .tag-sm {
+    font-size: 10px; border: 1px solid #bbb; border-radius: 3px;
+    padding: 1px 6px; background: #f0f0f0; color: #666;
+  }
+  .wf-note {
+    max-width: 1100px; margin: 0 auto 20px;
+    background: #fffde7; border: 1px dashed #f90; border-radius: 4px;
+    padding: 10px 16px; font-size: 13px; color: #a60;
+  }
+</style>
+</head>
+<body>
+
+<div class="index-header">
+  <h1>🚗 MMUCC Crash Reporting System</h1>
+  <p>Balsamiq-Style UI Mockups &mdash; Click any screen to open</p>
+</div>
+
+<div class="wf-note">
+  📋 <strong>Wireframe Prototype</strong> &mdash; These mockups illustrate layout and interaction design.
+  All data shown is fictional. Screens are linked for click-through flow simulation.
+</div>
+
+<div class="screen-grid">
+
+  <a class="screen-card" href="01-login.html">
+    <div class="screen-thumb">🔐<span class="screen-num">Screen 01</span></div>
+    <div class="screen-info">
+      <h3>Login</h3>
+      <p>Firebase Authentication sign-in page with Google SSO and role-based access notice.</p>
+      <div class="tags">
+        <span class="tag-sm">Public</span>
+        <span class="tag-sm">Firebase</span>
+        <span class="tag-sm">SSO</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="screen-card" href="02-dashboard.html">
+    <div class="screen-thumb">📊<span class="screen-num">Screen 02</span></div>
+    <div class="screen-info">
+      <h3>Dashboard</h3>
+      <p>Summary statistics, recent crash activity, and quick-action buttons for common tasks.</p>
+      <div class="tags">
+        <span class="tag-sm">All Roles</span>
+        <span class="tag-sm">Stats</span>
+        <span class="tag-sm">Recent</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="screen-card" href="03-crash-list.html">
+    <div class="screen-thumb">📋<span class="screen-num">Screen 03</span></div>
+    <div class="screen-info">
+      <h3>Crash List</h3>
+      <p>Searchable, filterable crash record list with date range, county, severity, and export.</p>
+      <div class="tags">
+        <span class="tag-sm">All Roles</span>
+        <span class="tag-sm">Filter</span>
+        <span class="tag-sm">Paginated</span>
+        <span class="tag-sm">CSV Export</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="screen-card" href="04-crash-new.html">
+    <div class="screen-thumb">➕<span class="screen-num">Screen 04</span></div>
+    <div class="screen-info">
+      <h3>New Crash Entry</h3>
+      <p>Multi-step crash data entry form covering all MMUCC C1–C27 fields with child table support.</p>
+      <div class="tags">
+        <span class="tag-sm">ADMIN</span>
+        <span class="tag-sm">DATA_ENTRY</span>
+        <span class="tag-sm">Multi-step</span>
+        <span class="tag-sm">MMUCC C1–C27</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="screen-card" href="05-crash-detail.html">
+    <div class="screen-thumb">🔍<span class="screen-num">Screen 05</span></div>
+    <div class="screen-info">
+      <h3>Crash Detail</h3>
+      <p>Full crash record view with tabbed sections: Overview, Vehicles, Roadway, and Audit Log.</p>
+      <div class="tags">
+        <span class="tag-sm">All Roles</span>
+        <span class="tag-sm">Read-only</span>
+        <span class="tag-sm">Tabbed</span>
+        <span class="tag-sm">Audit Trail</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="screen-card" href="06-vehicle-form.html">
+    <div class="screen-thumb">🚙<span class="screen-num">Screen 06</span></div>
+    <div class="screen-info">
+      <h3>Vehicle Entry</h3>
+      <p>Vehicle data entry modal covering MMUCC V1–V24 fields including traffic controls and sequence of events.</p>
+      <div class="tags">
+        <span class="tag-sm">ADMIN</span>
+        <span class="tag-sm">DATA_ENTRY</span>
+        <span class="tag-sm">MMUCC V1–V24</span>
+        <span class="tag-sm">Modal</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="screen-card" href="07-user-management.html">
+    <div class="screen-thumb">👥<span class="screen-num">Screen 07</span></div>
+    <div class="screen-info">
+      <h3>User Management</h3>
+      <p>Admin-only user list with role assignment, status toggle, and new user provisioning.</p>
+      <div class="tags">
+        <span class="tag-sm">ADMIN only</span>
+        <span class="tag-sm">Roles</span>
+        <span class="tag-sm">Firebase UIDs</span>
+      </div>
+    </div>
+  </a>
+
+</div>
+
+</body>
+</html>

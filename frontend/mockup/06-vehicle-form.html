@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MMUCC — Vehicle Form</title>
+<link rel="stylesheet" href="wireframe.css">
+<style>
+  /* Simulate modal on top of dimmed crash form page */
+  .page-behind {
+    filter: blur(1px) brightness(0.7);
+    position: fixed; inset: 0;
+    background: #DADADA;
+    overflow: hidden;
+    padding: 20px;
+    font-family: 'Balsamiq Sans', cursive;
+  }
+  .page-behind .ghost-text { color:#999; font-size:13px; }
+  .modal-wrap {
+    position: fixed; inset: 0;
+    background: rgba(60,60,60,0.65);
+    display: flex; align-items: flex-start;
+    justify-content: center;
+    padding: 30px 20px;
+    overflow-y: auto;
+    z-index: 100;
+  }
+  .modal-box {
+    background: #fff;
+    border: 3px solid #555;
+    border-radius: 8px;
+    width: 740px;
+    max-width: 98%;
+    box-shadow: 8px 8px 0 rgba(0,0,0,0.2);
+  }
+  .modal-header {
+    background: #f0f0f0;
+    border-bottom: 2px solid #888;
+    padding: 14px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-header h2 { font-size: 17px; }
+  .modal-body { padding: 20px; }
+  .modal-footer {
+    background: #f8f8f8;
+    border-top: 2px solid #ccc;
+    padding: 12px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .seq-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 40px;
+    gap: 8px; align-items: center;
+    padding: 6px 0; border-bottom: 1px dashed #eee;
+  }
+  .seq-row .rm { color:#c44; cursor:pointer; font-size:18px; font-weight:700; text-align:center; }
+  .multi-select-list {
+    border:2px solid #888; border-radius:3px; background:#fafafa;
+    padding:8px; display:flex; flex-wrap:wrap; gap:6px; min-height:42px;
+  }
+  .ms-tag {
+    background:#dde; border:1px solid #99a; border-radius:3px;
+    padding:3px 10px; font-size:12px; display:inline-flex; align-items:center; gap:4px;
+  }
+  .ms-tag .x { color:#c44; cursor:pointer; font-weight:700; margin-left:4px; }
+  .ms-add-btn {
+    border:1px dashed #888; border-radius:3px; background:#f8f8f8;
+    padding:3px 10px; font-size:12px; cursor:pointer; font-family:inherit;
+    color:#558;
+  }
+  .vin-decode-row { display:flex; gap:8px; align-items:flex-end; }
+  .vin-decode-row .wf-input { flex:1; }
+  .vin-hint { font-size:11px; color:#888; margin-top:3px; font-style:italic; }
+</style>
+</head>
+<body>
+
+<!-- Ghost background to simulate "page behind modal" -->
+<div class="page-behind">
+  <div class="ghost-text">[ Crash entry form — CR-2024-1249 — Step 2: Vehicles ]</div>
+</div>
+
+<!-- Navbar (visible in background) -->
+
+<!-- Modal -->
+<div class="modal-wrap">
+  <div class="modal-box">
+
+    <div class="modal-header">
+      <h2>🚙 Add Vehicle — Unit 1 &nbsp; <span class="text-muted" style="font-size:12px;font-style:italic;">Crash CR-2024-1249</span></h2>
+      <button class="wf-btn sm">✕ Close</button>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- VIN + NHTSA Decode -->
+      <div class="section-divider">🔍 Vehicle Identification (V2–V8)</div>
+      <div class="form-group">
+        <label>VIN <small class="text-muted">(V2)</small></label>
+        <div class="vin-decode-row">
+          <input class="wf-input" placeholder="17-character VIN" value="1HGCV1F35LA123456">
+          <button class="wf-btn">🔍 NHTSA Decode</button>
+        </div>
+        <div class="vin-hint">Enter VIN and click Decode to auto-fill make, model, and year from NHTSA vPIC API.</div>
+      </div>
+      <div class="col-3">
+        <div class="form-group">
+          <label>Make <small class="text-muted">(V7)</small></label>
+          <input class="wf-input" value="Honda">
+        </div>
+        <div class="form-group">
+          <label>Model <small class="text-muted">(V7)</small></label>
+          <input class="wf-input" value="Accord">
+        </div>
+        <div class="form-group">
+          <label>Model Year <small class="text-muted">(V8)</small></label>
+          <input class="wf-input" value="2020">
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="form-group">
+          <label>Registration State <small class="text-muted">(V3)</small></label>
+          <select class="wf-select"><option>VA — Virginia</option><option>MD — Maryland</option><option>DC — District of Columbia</option></select>
+        </div>
+        <div class="form-group">
+          <label>Registration Year <small class="text-muted">(V4)</small></label>
+          <input class="wf-input" placeholder="YYYY">
+        </div>
+        <div class="form-group">
+          <label>License Plate <small class="text-muted">(V5)</small></label>
+          <input class="wf-input" placeholder="ABC-1234">
+        </div>
+      </div>
+
+      <!-- Unit Classification -->
+      <div class="section-divider">🏷 Unit Classification (V1, V9–V12)</div>
+      <div class="col-2">
+        <div class="form-group">
+          <label>Unit Type <span class="required">*</span> <small class="text-muted">(V1)</small></label>
+          <select class="wf-select">
+            <option>1 — Motor Vehicle In Transport</option>
+            <option>2 — Parked Motor Vehicle</option>
+            <option>3 — Working Non-Motorist</option>
+            <option>4 — Pedestrian</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Unit Number <span class="required">*</span></label>
+          <input class="wf-input" value="1">
+        </div>
+        <div class="form-group">
+          <label>Body Type <small class="text-muted">(V9)</small></label>
+          <select class="wf-select">
+            <option>— Select —</option>
+            <option selected>2 — Passenger Car</option>
+            <option>3 — Light Truck/Van</option>
+            <option>4 — Single Unit Truck (2-axle)</option>
+            <option>5 — Bus</option>
+            <option>6 — Motorcycle</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Vehicle Size <small class="text-muted">(V10)</small></label>
+          <select class="wf-select">
+            <option>— Select —</option>
+            <option>1 — Light Vehicle (&lt;10,001 lbs)</option>
+            <option>2 — Medium/Heavy</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-2">
+        <div class="form-group">
+          <label>Special Function <small class="text-muted">(V11)</small></label>
+          <select class="wf-select"><option>0 — Not Applicable</option><option>1 — Taxi</option><option>2 — School Bus</option><option>5 — Emergency</option></select>
+        </div>
+        <div class="form-group">
+          <label>Hazmat Placard <small class="text-muted">(V12)</small></label>
+          <select class="wf-select"><option>0 — No</option><option>1 — Yes</option></select>
+        </div>
+      </div>
+
+      <!-- Roadway/Travel -->
+      <div class="section-divider">🛣 Speed &amp; Travel (V13–V18)</div>
+      <div class="col-3">
+        <div class="form-group">
+          <label>Speed Limit (mph) <small class="text-muted">(V13)</small></label>
+          <input class="wf-input" placeholder="e.g. 65">
+        </div>
+        <div class="form-group">
+          <label>Direction of Travel <small class="text-muted">(V14)</small></label>
+          <select class="wf-select">
+            <option>— Select —</option>
+            <option>1 — North</option><option>2 — South</option>
+            <option>3 — East</option><option>4 — West</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Maneuver <small class="text-muted">(V17)</small></label>
+          <select class="wf-select">
+            <option>— Select —</option>
+            <option>1 — Straight Ahead</option>
+            <option>2 — Negotiating Curve</option>
+            <option>5 — Turning Right</option>
+            <option>6 — Turning Left</option>
+            <option>7 — Making U-Turn</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Damage -->
+      <div class="section-divider">💥 Damage (V18–V20)</div>
+      <div class="col-3">
+        <div class="form-group">
+          <label>Initial Contact Point <small class="text-muted">(V18)</small></label>
+          <select class="wf-select">
+            <option>— Select —</option>
+            <option>12 — Front</option><option>1 — Front Right</option>
+            <option>3 — Right</option><option>11 — Rear</option>
+            <option>9 — Left</option><option>6 — Top</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Damage Extent <small class="text-muted">(V19)</small></label>
+          <select class="wf-select">
+            <option>— Select —</option>
+            <option>1 — No Damage</option>
+            <option>2 — Minor</option>
+            <option>3 — Moderate</option>
+            <option>4 — Severe</option>
+            <option>5 — Destroyed/Towed</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Most Harmful Event <small class="text-muted">(V20)</small></label>
+          <select class="wf-select">
+            <option>— Select —</option>
+            <option>54 — MV in Transport</option>
+            <option>1 — Rollover</option>
+            <option>14 — Pedestrian</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Damage Areas (multi-value) -->
+      <div class="form-group">
+        <label>Damage Areas <small class="text-muted">(select 1 or more)</small></label>
+        <div class="multi-select-list">
+          <span class="ms-tag">12 — Front <span class="x">✕</span></span>
+          <button class="ms-add-btn">+ Add area</button>
+        </div>
+      </div>
+
+      <!-- Traffic Control Devices (multi-value) -->
+      <div class="section-divider">🚦 Traffic Control Devices (V21 — multi-value)</div>
+      <div id="vtc-list">
+        <div class="seq-row" style="font-size:11px; font-weight:700; color:#888; border-bottom:2px solid #ddd; padding-bottom:4px;">
+          <div>#</div><div>TCD Type</div><div></div>
+        </div>
+        <div class="seq-row">
+          <div><input class="wf-input" value="1" style="width:50px; padding:3px 6px;"></div>
+          <div><select class="wf-select"><option>1 — No Controls</option><option>2 — Traffic Signal</option><option>3 — Stop Sign</option></select></div>
+          <div class="rm">✕</div>
+        </div>
+      </div>
+      <button class="ms-add-btn" style="margin-top:8px;">+ Add TCD Row</button>
+
+      <!-- Sequence of Events (multi-value) -->
+      <div class="section-divider">⏩ Sequence of Events (multi-value)</div>
+      <div id="vse-list">
+        <div class="seq-row" style="font-size:11px; font-weight:700; color:#888; border-bottom:2px solid #ddd; padding-bottom:4px;">
+          <div>Seq #</div><div>Event</div><div></div>
+        </div>
+        <div class="seq-row">
+          <div><input class="wf-input" value="1" style="width:50px; padding:3px 6px;"></div>
+          <div>
+            <select class="wf-select">
+              <option>54 — Motor Vehicle in Transport</option>
+              <option>1 — Rollover</option>
+              <option>2 — Fire/Explosion</option>
+              <option>14 — Pedestrian</option>
+            </select>
+          </div>
+          <div class="rm">✕</div>
+        </div>
+      </div>
+      <button class="ms-add-btn" style="margin-top:8px;">+ Add Event Row</button>
+
+      <!-- Misc -->
+      <div class="section-divider">⚠️ Other (V22–V24)</div>
+      <div class="col-3">
+        <div class="form-group">
+          <label>Hit &amp; Run <small class="text-muted">(V22)</small></label>
+          <select class="wf-select"><option>0 — No</option><option>1 — Yes</option></select>
+        </div>
+        <div class="form-group">
+          <label>Towed <small class="text-muted">(V23)</small></label>
+          <select class="wf-select"><option>0 — Not Towed</option><option>1 — Towed (not disabled)</option><option>2 — Disabled, Towed</option></select>
+        </div>
+        <div class="form-group">
+          <label>Total Occupants <small class="text-muted">(V24)</small></label>
+          <input class="wf-input" placeholder="1">
+        </div>
+      </div>
+
+    </div><!-- end modal-body -->
+
+    <div class="modal-footer">
+      <div class="flex-row">
+        <label class="wf-check"><input type="checkbox"> Save &amp; add another vehicle</label>
+      </div>
+      <div class="flex-row">
+        <button class="wf-btn">Cancel</button>
+        <button class="wf-btn primary">💾 Save Vehicle</button>
+      </div>
+    </div>
+
+  </div><!-- end modal-box -->
+</div><!-- end modal-wrap -->
+
+</body>
+</html>

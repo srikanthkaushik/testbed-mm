@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MMUCC — User Management</title>
+<link rel="stylesheet" href="wireframe.css">
+<style>
+  .role-select {
+    font-family: inherit; font-size: 12px;
+    border: 1px solid #888; border-radius: 3px;
+    padding: 2px 6px; background: #fafafa; cursor: pointer;
+  }
+  .toggle-pill {
+    display: inline-flex; align-items: center;
+    gap: 6px; font-size: 12px; cursor: pointer;
+  }
+  .pill {
+    width: 36px; height: 18px;
+    border: 2px solid #888; border-radius: 9px;
+    background: #ccc; position: relative;
+  }
+  .pill.on  { background: #c8f0d0; border-color: #464; }
+  .pill::after {
+    content:''; width:12px; height:12px;
+    background:#fff; border:1px solid #888;
+    border-radius:50%; position:absolute; top:1px; left:1px;
+    transition: left 0.1s;
+  }
+  .pill.on::after { left:19px; }
+  .user-card {
+    background:#fff; border:2px solid #ccc; border-radius:4px;
+    margin-bottom:8px; overflow:hidden;
+  }
+  .user-card-header {
+    display:grid; align-items:center;
+    grid-template-columns: 36px 180px 200px 130px 110px 100px 130px auto;
+    gap:10px; padding:8px 12px;
+  }
+  .avatar-sm {
+    width:32px; height:32px; border:2px solid #888;
+    border-radius:50%; background:#e8e8e8;
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px; font-weight:700;
+  }
+  .user-name  { font-weight:700; font-size:13px; }
+  .user-email { font-size:11px; color:#888; }
+  th.sort::after { content:' ↕'; color:#bbb; }
+
+  /* Add User Modal */
+  .add-modal {
+    display:none;
+    position:fixed; inset:0;
+    background: rgba(60,60,60,0.6);
+    align-items:center; justify-content:center;
+    z-index:100;
+  }
+  .admin-notice {
+    background:#fff8dc; border:1px dashed #c90;
+    border-radius:4px; padding:8px 14px;
+    font-size:12px; color:#860; margin-bottom:14px;
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <nav class="navbar">
+    <div class="brand">MMUCC</div>
+    <div class="screen-links">
+      <a href="index.html">Index</a>
+      <a href="01-login.html">Login</a>
+      <a href="02-dashboard.html">Dashboard</a>
+      <a href="03-crash-list.html">Crash List</a>
+      <a href="04-crash-new.html">New Crash</a>
+      <a href="05-crash-detail.html">Crash Detail</a>
+      <a href="06-vehicle-form.html">Vehicle Form</a>
+      <a href="07-user-management.html" class="active">Users</a>
+    </div>
+    <div class="user-area">
+      <div class="avatar">SA</div>
+      <span>S. Admin &nbsp;<span class="badge badge-admin">ADMIN</span></span>
+      <a href="01-login.html" class="wf-btn sm">Sign Out</a>
+    </div>
+  </nav>
+
+  <div class="content-area">
+    <nav class="sidebar">
+      <div class="nav-section-title">Main</div>
+      <a class="nav-item" href="02-dashboard.html"><span class="icon">📊</span> Dashboard</a>
+      <a class="nav-item" href="03-crash-list.html"><span class="icon">📋</span> Crash Records</a>
+      <a class="nav-item" href="04-crash-new.html"><span class="icon">➕</span> New Crash</a>
+      <div class="nav-section-title">Reports</div>
+      <a class="nav-item" href="#"><span class="icon">📈</span> Analytics</a>
+      <div class="nav-section-title">Admin</div>
+      <a class="nav-item active" href="07-user-management.html"><span class="icon">👥</span> Users</a>
+      <a class="nav-item" href="#"><span class="icon">⚙️</span> Settings</a>
+    </nav>
+
+    <main class="main-content">
+
+      <div class="page-title-bar">
+        <div>
+          <div class="breadcrumb"><a href="02-dashboard.html">Dashboard</a> &rsaquo; Admin &rsaquo; Users</div>
+          <h1>User Management</h1>
+        </div>
+        <div style="margin-left:auto;">
+          <button class="wf-btn primary">➕ Add User</button>
+        </div>
+      </div>
+
+      <div class="admin-notice">
+        🔒 <strong>Admin-only screen.</strong> Changes to user roles and status take effect immediately.
+        Firebase account provisioning and deprovisioning must also be managed in the Firebase Console.
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="filter-panel">
+        <div class="filter-row">
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Search</label>
+            <input class="wf-input" placeholder="Name, email, or username…">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Role</label>
+            <select class="wf-select">
+              <option>All Roles</option>
+              <option>ADMIN</option>
+              <option>DATA_ENTRY</option>
+              <option>ANALYST</option>
+              <option>VIEWER</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Agency</label>
+            <input class="wf-input" placeholder="Agency name or code">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Status</label>
+            <select class="wf-select">
+              <option>All</option>
+              <option>Active</option>
+              <option>Inactive</option>
+              <option>Locked</option>
+            </select>
+          </div>
+          <div style="display:flex; align-items:flex-end; gap:6px; flex:0;">
+            <button class="wf-btn primary">Apply</button>
+            <button class="wf-btn">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary row -->
+      <div class="flex-row flex-between mb-8">
+        <span class="text-muted">12 users &nbsp;·&nbsp; 1 ADMIN &nbsp;·&nbsp; 6 DATA_ENTRY &nbsp;·&nbsp; 3 ANALYST &nbsp;·&nbsp; 2 VIEWER</span>
+        <button class="wf-btn sm">📥 Export List</button>
+      </div>
+
+      <!-- User Table -->
+      <div class="wf-card" style="padding:0; overflow:hidden;">
+        <table class="wf-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th class="sort">Name / Username</th>
+              <th class="sort">Email</th>
+              <th>Agency</th>
+              <th class="sort">Role</th>
+              <th class="sort">Status</th>
+              <th class="sort">Last Login</th>
+              <th style="text-align:center;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="avatar-sm" style="margin:auto;">SA</div></td>
+              <td><strong>S. Admin</strong><br><span class="text-muted">sadmin</span></td>
+              <td>sadmin@agency.gov</td>
+              <td>NHTSA HQ</td>
+              <td><span class="badge badge-admin">ADMIN</span></td>
+              <td><span class="badge badge-active">Active</span></td>
+              <td>2024-03-10 09:01</td>
+              <td style="text-align:center; white-space:nowrap;">
+                <button class="wf-btn sm">Edit</button>
+                <button class="wf-btn sm danger" disabled title="Cannot deactivate self">Deactivate</button>
+              </td>
+            </tr>
+            <tr>
+              <td><div class="avatar-sm" style="margin:auto;">JD</div></td>
+              <td><strong>J. Doe</strong><br><span class="text-muted">jdoe</span></td>
+              <td>jdoe@agency.gov</td>
+              <td>Virginia DOT</td>
+              <td>
+                <select class="role-select">
+                  <option>DATA_ENTRY</option>
+                  <option>ADMIN</option>
+                  <option>ANALYST</option>
+                  <option>VIEWER</option>
+                </select>
+              </td>
+              <td>
+                <label class="toggle-pill">
+                  <div class="pill on"></div>
+                  <span class="badge badge-active">Active</span>
+                </label>
+              </td>
+              <td>2024-03-10 08:55</td>
+              <td style="text-align:center; white-space:nowrap;">
+                <button class="wf-btn sm">Edit</button>
+                <button class="wf-btn sm danger">Deactivate</button>
+              </td>
+            </tr>
+            <tr>
+              <td><div class="avatar-sm" style="margin:auto;">SK</div></td>
+              <td><strong>S. Kim</strong><br><span class="text-muted">skim</span></td>
+              <td>skim@agency.gov</td>
+              <td>Virginia DOT</td>
+              <td>
+                <select class="role-select">
+                  <option>DATA_ENTRY</option>
+                  <option>ADMIN</option>
+                  <option>ANALYST</option>
+                  <option>VIEWER</option>
+                </select>
+              </td>
+              <td>
+                <label class="toggle-pill">
+                  <div class="pill on"></div>
+                  <span class="badge badge-active">Active</span>
+                </label>
+              </td>
+              <td>2024-03-09 14:22</td>
+              <td style="text-align:center; white-space:nowrap;">
+                <button class="wf-btn sm">Edit</button>
+                <button class="wf-btn sm danger">Deactivate</button>
+              </td>
+            </tr>
+            <tr>
+              <td><div class="avatar-sm" style="margin:auto;">RP</div></td>
+              <td><strong>R. Patel</strong><br><span class="text-muted">rpatel</span></td>
+              <td>rpatel@agency.gov</td>
+              <td>Loudoun Co. Sheriff</td>
+              <td>
+                <select class="role-select">
+                  <option>DATA_ENTRY</option>
+                  <option>ADMIN</option>
+                  <option>ANALYST</option>
+                  <option>VIEWER</option>
+                </select>
+              </td>
+              <td>
+                <label class="toggle-pill">
+                  <div class="pill on"></div>
+                  <span class="badge badge-active">Active</span>
+                </label>
+              </td>
+              <td>2024-03-09 22:51</td>
+              <td style="text-align:center; white-space:nowrap;">
+                <button class="wf-btn sm">Edit</button>
+                <button class="wf-btn sm danger">Deactivate</button>
+              </td>
+            </tr>
+            <tr>
+              <td><div class="avatar-sm" style="margin:auto;">AT</div></td>
+              <td><strong>A. Torres</strong><br><span class="text-muted">atorres</span></td>
+              <td>atorres@agency.gov</td>
+              <td>NHTSA HQ</td>
+              <td>
+                <select class="role-select">
+                  <option>ANALYST</option>
+                  <option>ADMIN</option>
+                  <option>DATA_ENTRY</option>
+                  <option>VIEWER</option>
+                </select>
+              </td>
+              <td>
+                <label class="toggle-pill">
+                  <div class="pill on"></div>
+                  <span class="badge badge-active">Active</span>
+                </label>
+              </td>
+              <td>2024-03-08 11:30</td>
+              <td style="text-align:center; white-space:nowrap;">
+                <button class="wf-btn sm">Edit</button>
+                <button class="wf-btn sm danger">Deactivate</button>
+              </td>
+            </tr>
+            <tr style="opacity:0.6;">
+              <td><div class="avatar-sm" style="margin:auto;">BW</div></td>
+              <td><strong>B. Walker</strong><br><span class="text-muted">bwalker</span></td>
+              <td>bwalker@agency.gov</td>
+              <td>Prince William PD</td>
+              <td><span class="badge badge-viewer">VIEWER</span></td>
+              <td>
+                <label class="toggle-pill">
+                  <div class="pill"></div>
+                  <span class="badge badge-inactive">Inactive</span>
+                </label>
+              </td>
+              <td>2024-01-14 09:02</td>
+              <td style="text-align:center; white-space:nowrap;">
+                <button class="wf-btn sm">Edit</button>
+                <button class="wf-btn sm success">Reactivate</button>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="8" style="text-align:center; color:#aaa; font-style:italic; padding:12px;">
+                … 6 more users …
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Add User Inline Form (shown as collapsed callout) -->
+      <div class="wf-card mt-16">
+        <h3>➕ Add New User</h3>
+        <p class="text-muted mb-8">User must first sign in via Firebase SSO — this form creates their application profile.</p>
+        <div class="col-2">
+          <div class="form-group">
+            <label>Firebase UID <span class="required">*</span></label>
+            <input class="wf-input" placeholder="UID from Firebase Console">
+          </div>
+          <div class="form-group">
+            <label>Email <span class="required">*</span></label>
+            <input class="wf-input" placeholder="user@agency.gov">
+          </div>
+          <div class="form-group">
+            <label>First Name</label>
+            <input class="wf-input" placeholder="First">
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input class="wf-input" placeholder="Last">
+          </div>
+          <div class="form-group">
+            <label>Username <span class="required">*</span></label>
+            <input class="wf-input" placeholder="lowercase, no spaces">
+          </div>
+          <div class="form-group">
+            <label>Role <span class="required">*</span></label>
+            <select class="wf-select">
+              <option>VIEWER</option>
+              <option>DATA_ENTRY</option>
+              <option>ANALYST</option>
+              <option>ADMIN</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Agency Name</label>
+            <input class="wf-input" placeholder="State/local agency name">
+          </div>
+          <div class="form-group">
+            <label>Agency Code</label>
+            <input class="wf-input" placeholder="e.g. VADOT, ARLINGTON">
+          </div>
+        </div>
+        <div class="flex-row flex-end mt-8">
+          <button class="wf-btn">Cancel</button>
+          <button class="wf-btn primary">Create User</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+</body>
+</html>

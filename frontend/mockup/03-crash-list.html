@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MMUCC — Crash List</title>
+<link rel="stylesheet" href="wireframe.css">
+</head>
+<body>
+<div class="shell">
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="brand">MMUCC</div>
+    <div class="screen-links">
+      <a href="index.html">Index</a>
+      <a href="01-login.html">Login</a>
+      <a href="02-dashboard.html">Dashboard</a>
+      <a href="03-crash-list.html" class="active">Crash List</a>
+      <a href="04-crash-new.html">New Crash</a>
+      <a href="05-crash-detail.html">Crash Detail</a>
+      <a href="06-vehicle-form.html">Vehicle Form</a>
+      <a href="07-user-management.html">Users</a>
+    </div>
+    <div class="user-area">
+      <div class="avatar">JD</div>
+      <span>J. Doe &nbsp;<span class="badge badge-entry">DATA_ENTRY</span></span>
+      <a href="01-login.html" class="wf-btn sm">Sign Out</a>
+    </div>
+  </nav>
+
+  <div class="content-area">
+    <nav class="sidebar">
+      <div class="nav-section-title">Main</div>
+      <a class="nav-item" href="02-dashboard.html"><span class="icon">📊</span> Dashboard</a>
+      <a class="nav-item active" href="03-crash-list.html"><span class="icon">📋</span> Crash Records</a>
+      <a class="nav-item" href="04-crash-new.html"><span class="icon">➕</span> New Crash</a>
+      <div class="nav-section-title">Reports</div>
+      <a class="nav-item" href="#"><span class="icon">📈</span> Analytics</a>
+      <a class="nav-item" href="#"><span class="icon">📥</span> Export Data</a>
+      <div class="nav-section-title">Admin</div>
+      <a class="nav-item" href="07-user-management.html"><span class="icon">👥</span> Users</a>
+    </nav>
+
+    <main class="main-content">
+
+      <div class="page-title-bar">
+        <div>
+          <div class="breadcrumb"><a href="02-dashboard.html">Dashboard</a> &rsaquo; Crash Records</div>
+          <h1>Crash Records</h1>
+        </div>
+        <div style="margin-left:auto; display:flex; gap:8px;">
+          <button class="wf-btn">📥 Export CSV</button>
+          <a href="04-crash-new.html" class="wf-btn primary">➕ New Crash</a>
+        </div>
+      </div>
+
+      <!-- Filter Panel -->
+      <div class="filter-panel">
+        <h4>🔍 Filter Records</h4>
+        <div class="filter-row">
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Crash Identifier</label>
+            <input class="wf-input" placeholder="e.g. CR-2024-1200">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Date From</label>
+            <input class="wf-input" placeholder="YYYY-MM-DD">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Date To</label>
+            <input class="wf-input" placeholder="YYYY-MM-DD">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>County</label>
+            <select class="wf-select">
+              <option value="">All Counties</option>
+              <option>Fairfax</option>
+              <option>Arlington</option>
+              <option>Loudoun</option>
+              <option>Prince William</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Severity</label>
+            <select class="wf-select">
+              <option value="">All</option>
+              <option>1 — Fatal</option>
+              <option>2 — Suspected Serious Injury</option>
+              <option>3 — Suspected Minor Injury</option>
+              <option>4 — PDO</option>
+            </select>
+          </div>
+          <div style="display:flex; align-items:flex-end; gap:6px; min-width:auto; flex:0;">
+            <button class="wf-btn primary">Apply</button>
+            <button class="wf-btn">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Summary -->
+      <div class="flex-row flex-between mb-8">
+        <span class="text-muted">Showing 1–20 of 1,248 records</span>
+        <div class="flex-row">
+          <label class="text-muted" style="margin-right:4px;">Sort by:</label>
+          <select class="wf-select" style="width:auto; font-size:12px; padding:3px 6px;">
+            <option>Date (newest first)</option>
+            <option>Date (oldest first)</option>
+            <option>Severity</option>
+            <option>County</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="wf-card" style="padding:0; overflow:hidden;">
+        <table class="wf-table">
+          <thead>
+            <tr>
+              <th>Crash ID ↕</th>
+              <th>Date ↕</th>
+              <th>Time</th>
+              <th>County ↕</th>
+              <th>City</th>
+              <th>Manner of Collision</th>
+              <th>Severity ↕</th>
+              <th>Vehicles</th>
+              <th>Fatalities</th>
+              <th>Entered By</th>
+              <th style="text-align:center;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="05-crash-detail.html" style="color:#558;font-weight:700;">CR-2024-1248</a></td>
+              <td>2024-03-10</td><td>08:32</td><td>Fairfax</td><td>McLean</td>
+              <td>Rear-end</td>
+              <td><span class="badge badge-injury">Injury</span></td>
+              <td>2</td><td>0</td><td>J. Doe</td>
+              <td style="text-align:center; white-space:nowrap;">
+                <a href="05-crash-detail.html" class="wf-btn sm">View</a>
+                <a href="04-crash-new.html" class="wf-btn sm">Edit</a>
+              </td>
+            </tr>
+            <tr>
+              <td><a href="05-crash-detail.html" style="color:#558;font-weight:700;">CR-2024-1247</a></td>
+              <td>2024-03-10</td><td>07:15</td><td>Arlington</td><td>Arlington</td>
+              <td>Single vehicle</td>
+              <td><span class="badge badge-pdo">PDO</span></td>
+              <td>1</td><td>0</td><td>S. Kim</td>
+              <td style="text-align:center; white-space:nowrap;">
+                <a href="05-crash-detail.html" class="wf-btn sm">View</a>
+                <a href="04-crash-new.html" class="wf-btn sm">Edit</a>
+              </td>
+            </tr>
+            <tr>
+              <td><a href="05-crash-detail.html" style="color:#558;font-weight:700;">CR-2024-1246</a></td>
+              <td>2024-03-09</td><td>22:48</td><td>Loudoun</td><td>Leesburg</td>
+              <td>Head-on</td>
+              <td><span class="badge badge-fatal">Fatal</span></td>
+              <td>3</td><td>1</td><td>R. Patel</td>
+              <td style="text-align:center; white-space:nowrap;">
+                <a href="05-crash-detail.html" class="wf-btn sm">View</a>
+                <a href="04-crash-new.html" class="wf-btn sm">Edit</a>
+              </td>
+            </tr>
+            <tr>
+              <td><a href="05-crash-detail.html" style="color:#558;font-weight:700;">CR-2024-1245</a></td>
+              <td>2024-03-09</td><td>17:03</td><td>Prince William</td><td>Manassas</td>
+              <td>Angle</td>
+              <td><span class="badge badge-injury">Injury</span></td>
+              <td>2</td><td>0</td><td>J. Doe</td>
+              <td style="text-align:center; white-space:nowrap;">
+                <a href="05-crash-detail.html" class="wf-btn sm">View</a>
+                <a href="04-crash-new.html" class="wf-btn sm">Edit</a>
+              </td>
+            </tr>
+            <tr>
+              <td><a href="05-crash-detail.html" style="color:#558;font-weight:700;">CR-2024-1244</a></td>
+              <td>2024-03-08</td><td>15:22</td><td>Fairfax</td><td>Vienna</td>
+              <td>Sideswipe (same dir)</td>
+              <td><span class="badge badge-pdo">PDO</span></td>
+              <td>2</td><td>0</td><td>A. Torres</td>
+              <td style="text-align:center; white-space:nowrap;">
+                <a href="05-crash-detail.html" class="wf-btn sm">View</a>
+                <a href="04-crash-new.html" class="wf-btn sm">Edit</a>
+              </td>
+            </tr>
+            <tr>
+              <td><a href="05-crash-detail.html" style="color:#558;font-weight:700;">CR-2024-1243</a></td>
+              <td>2024-03-08</td><td>12:07</td><td>Fairfax</td><td>Reston</td>
+              <td>Rear-end</td>
+              <td><span class="badge badge-injury">Injury</span></td>
+              <td>2</td><td>0</td><td>J. Doe</td>
+              <td style="text-align:center; white-space:nowrap;">
+                <a href="05-crash-detail.html" class="wf-btn sm">View</a>
+                <a href="04-crash-new.html" class="wf-btn sm">Edit</a>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="11" style="text-align:center; color:#aaa; font-style:italic; padding:12px;">
+                ... 1,242 more records ...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="flex-row flex-between mt-8">
+        <span class="text-muted">Page 1 of 63</span>
+        <div class="pagination">
+          <button class="page-btn">«</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <span style="padding:0 4px; color:#aaa; font-size:12px;">…</span>
+          <button class="page-btn">63</button>
+          <button class="page-btn">»</button>
+        </div>
+        <div class="flex-row" style="font-size:12px; gap:6px;">
+          <span class="text-muted">Rows per page:</span>
+          <select class="wf-select" style="width:auto; font-size:12px; padding:3px 6px;">
+            <option>20</option><option>50</option><option>100</option>
+          </select>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+</body>
+</html>

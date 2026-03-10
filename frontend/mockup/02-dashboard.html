@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MMUCC — Dashboard</title>
+<link rel="stylesheet" href="wireframe.css">
+<style>
+  .chart-placeholder {
+    height: 160px;
+    background: repeating-linear-gradient(-45deg, #ddd 0, #ddd 1px, #f0f0f0 1px, #f0f0f0 9px);
+    border: 2px dashed #bbb;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    color: #aaa; font-size: 13px; font-style: italic;
+  }
+  .quick-actions { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+  .qa-btn {
+    border: 2px solid #888;
+    border-radius: 6px;
+    padding: 14px 10px;
+    text-align: center;
+    background: #f8f8f8;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+    text-decoration: none;
+    color: #333;
+    display: block;
+  }
+  .qa-btn:hover { background: #eef0ff; }
+  .qa-btn .icon { font-size: 24px; margin-bottom: 6px; }
+  .qa-btn span  { font-size: 12px; display: block; }
+  .recent-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .recent-header h3 { font-size: 15px; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="brand">MMUCC</div>
+    <div class="screen-links">
+      <a href="index.html">Index</a>
+      <a href="01-login.html">Login</a>
+      <a href="02-dashboard.html" class="active">Dashboard</a>
+      <a href="03-crash-list.html">Crash List</a>
+      <a href="04-crash-new.html">New Crash</a>
+      <a href="05-crash-detail.html">Crash Detail</a>
+      <a href="06-vehicle-form.html">Vehicle Form</a>
+      <a href="07-user-management.html">Users</a>
+    </div>
+    <div class="user-area">
+      <div class="avatar">JD</div>
+      <span>J. Doe &nbsp;<span class="badge badge-entry">DATA_ENTRY</span></span>
+      <a href="01-login.html" class="wf-btn sm">Sign Out</a>
+    </div>
+  </nav>
+
+  <div class="content-area">
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="nav-section-title">Main</div>
+      <a class="nav-item active" href="02-dashboard.html"><span class="icon">📊</span> Dashboard</a>
+      <a class="nav-item" href="03-crash-list.html"><span class="icon">📋</span> Crash Records</a>
+      <a class="nav-item" href="04-crash-new.html"><span class="icon">➕</span> New Crash</a>
+      <div class="nav-section-title">Reports</div>
+      <a class="nav-item" href="#"><span class="icon">📈</span> Analytics</a>
+      <a class="nav-item" href="#"><span class="icon">📥</span> Export Data</a>
+      <div class="nav-section-title">Admin</div>
+      <a class="nav-item" href="07-user-management.html"><span class="icon">👥</span> Users</a>
+      <a class="nav-item" href="#"><span class="icon">⚙️</span> Settings</a>
+    </nav>
+
+    <!-- Main -->
+    <main class="main-content">
+
+      <div class="page-title-bar">
+        <h1>Dashboard</h1>
+        <span class="text-muted">Welcome back, J. Doe &mdash; Virginia DOT</span>
+        <div style="margin-left:auto;">
+          <select class="wf-select" style="width:auto; font-size:12px; padding:4px 8px;">
+            <option>Year to Date (2024)</option>
+            <option>Last 30 Days</option>
+            <option>Last Quarter</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Stat Cards -->
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-num">1,248</div>
+          <div class="stat-label">Total Crashes (YTD)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" style="color:#c44;">14</div>
+          <div class="stat-label">Fatalities (YTD)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" style="color:#b80;">387</div>
+          <div class="stat-label">Injury Crashes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" style="color:#484;">847</div>
+          <div class="stat-label">PDO Crashes</div>
+        </div>
+      </div>
+
+      <!-- Row: Charts -->
+      <div class="col-2">
+        <div class="wf-card">
+          <h3>📈 Crashes by Month</h3>
+          <div class="chart-placeholder">[Bar Chart — Monthly crash counts for current year]</div>
+        </div>
+        <div class="wf-card">
+          <h3>🥧 Crashes by Severity</h3>
+          <div class="chart-placeholder">[Donut Chart — Fatal / Injury / PDO breakdown]</div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="wf-card">
+        <h3>⚡ Quick Actions</h3>
+        <div class="quick-actions">
+          <a class="qa-btn" href="04-crash-new.html">
+            <div class="icon">➕</div>
+            <span>New Crash Report</span>
+          </a>
+          <a class="qa-btn" href="03-crash-list.html">
+            <div class="icon">🔍</div>
+            <span>Search Records</span>
+          </a>
+          <a class="qa-btn" href="#">
+            <div class="icon">📥</div>
+            <span>Export CSV</span>
+          </a>
+          <a class="qa-btn" href="07-user-management.html">
+            <div class="icon">👥</div>
+            <span>Manage Users</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Recent Crashes -->
+      <div class="wf-card">
+        <div class="recent-header">
+          <h3>🕒 Recent Crashes</h3>
+          <a href="03-crash-list.html" class="wf-btn sm">View All →</a>
+        </div>
+        <table class="wf-table">
+          <thead>
+            <tr>
+              <th>Crash ID</th>
+              <th>Date</th>
+              <th>County</th>
+              <th>City</th>
+              <th>Severity</th>
+              <th>Vehicles</th>
+              <th>Fatalities</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="05-crash-detail.html" style="color:#558;">CR-2024-1248</a></td>
+              <td>2024-03-10</td>
+              <td>Fairfax</td>
+              <td>McLean</td>
+              <td><span class="badge badge-injury">Injury</span></td>
+              <td>2</td>
+              <td>0</td>
+              <td><a href="05-crash-detail.html" class="wf-btn sm">View</a></td>
+            </tr>
+            <tr>
+              <td><a href="05-crash-detail.html" style="color:#558;">CR-2024-1247</a></td>
+              <td>2024-03-10</td>
+              <td>Arlington</td>
+              <td>Arlington</td>
+              <td><span class="badge badge-pdo">PDO</span></td>
+              <td>1</td>
+              <td>0</td>
+              <td><a href="05-crash-detail.html" class="wf-btn sm">View</a></td>
+            </tr>
+            <tr>
+              <td><a href="05-crash-detail.html" style="color:#558;">CR-2024-1246</a></td>
+              <td>2024-03-09</td>
+              <td>Loudoun</td>
+              <td>Leesburg</td>
+              <td><span class="badge badge-fatal">Fatal</span></td>
+              <td>3</td>
+              <td>1</td>
+              <td><a href="05-crash-detail.html" class="wf-btn sm">View</a></td>
+            </tr>
+            <tr>
+              <td><a href="05-crash-detail.html" style="color:#558;">CR-2024-1245</a></td>
+              <td>2024-03-09</td>
+              <td>Prince William</td>
+              <td>Manassas</td>
+              <td><span class="badge badge-injury">Injury</span></td>
+              <td>2</td>
+              <td>0</td>
+              <td><a href="05-crash-detail.html" class="wf-btn sm">View</a></td>
+            </tr>
+            <tr>
+              <td><a href="05-crash-detail.html" style="color:#558;">CR-2024-1244</a></td>
+              <td>2024-03-08</td>
+              <td>Fairfax</td>
+              <td>Vienna</td>
+              <td><span class="badge badge-pdo">PDO</span></td>
+              <td>2</td>
+              <td>0</td>
+              <td><a href="05-crash-detail.html" class="wf-btn sm">View</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+</div>
+</body>
+</html>
