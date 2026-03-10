@@ -1,0 +1,21 @@
+# Local development overrides — do NOT commit real secrets
+spring:
+  datasource:
+    username: mmucc_app
+    password: changeme_local
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+mmucc:
+  jwt:
+    secret: bG9jYWxkZXZzZWNyZXRsb2NhbGRldnNlY3JldGxvY2FsZGV2c2VjcmV0bG9jYQ==
+
+logging:
+  level:
+    gov.nhtsa.mmucc: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql: TRACE

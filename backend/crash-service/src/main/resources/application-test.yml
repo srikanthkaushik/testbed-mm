@@ -1,0 +1,20 @@
+# Test profile — Testcontainers provides the real datasource URL via @DynamicPropertySource
+spring:
+  flyway:
+    enabled: true
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+
+mmucc:
+  jwt:
+    secret: dGVzdHNlY3JldHRlc3RzZWNyZXR0ZXN0c2VjcmV0dGVzdHNlY3JldHRlc3Q=
+    access-token-expiration-ms: 900000
+    issuer: mmucc-auth-service
+
+logging:
+  level:
+    gov.nhtsa.mmucc: DEBUG
+    org.flywaydb: DEBUG
