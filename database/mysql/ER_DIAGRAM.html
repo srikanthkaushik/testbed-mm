@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MMUCC v5 — MySQL Schema ER Diagram</title>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: #f5f7fa; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+  #header { background: #1a2332; color: white; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  #header h1 { font-size: 16px; font-weight: 600; }
+  #header .badge { background: #4A90D9; color: white; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-left: 10px; }
+  #toolbar { background: #253447; padding: 8px 16px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; flex-wrap: wrap; }
+  #toolbar button { background: #3a4f6a; color: #ccd; border: 1px solid #4a6080; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+  #toolbar button:hover { background: #4a90d9; color: white; border-color: #4a90d9; }
+  #search { background: #1a2332; border: 1px solid #4a6080; color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; width: 200px; }
+  #search::placeholder { color: #778; }
+  #main { display: flex; flex: 1; overflow: hidden; }
+  #network { flex: 1; background: #f5f7fa; background-image: radial-gradient(#d0d7e3 1px, transparent 1px); background-size: 24px 24px; }
+  #sidebar { width: 320px; background: white; border-left: 1px solid #dde3ec; display: flex; flex-direction: column; overflow: hidden; transition: width 0.2s; }
+  #sidebar.collapsed { width: 0; }
+  #sidebar-header { background: #253447; color: white; padding: 12px 14px; font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+  #sidebar-content { flex: 1; overflow-y: auto; padding: 14px; font-size: 12px; }
+  #sidebar-content .table-name { font-size: 15px; font-weight: 700; color: #1a2332; margin-bottom: 4px; word-break: break-all; }
+  #sidebar-content .meta { color: #667; margin-bottom: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .meta-badge { padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; background: #e8edf4; color: #445; }
+  #sidebar-content h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #889; margin: 12px 0 6px; }
+  .col-row { display: flex; align-items: flex-start; gap: 4px; padding: 3px 0; border-bottom: 1px solid #f0f2f6; }
+  .col-name { font-family: monospace; font-size: 11px; color: #223; flex: 1; word-break: break-all; }
+  .col-type { font-size: 10px; color: #889; white-space: nowrap; }
+  .tag { padding: 1px 5px; border-radius: 3px; font-size: 9px; font-weight: 700; white-space: nowrap; }
+  .tag-pk { background: #fff3cd; color: #856404; }
+  .tag-fk { background: #d1ecf1; color: #0c5460; }
+  .tag-uq { background: #d4edda; color: #155724; }
+  .tag-nn { background: #f8d7da; color: #721c24; }
+  .rel-item { padding: 3px 0; color: #445; font-size: 11px; border-bottom: 1px solid #f0f2f6; }
+  .rel-item span { font-family: monospace; color: #4a90d9; }
+  #legend { background: #253447; padding: 8px 16px; display: flex; gap: 14px; flex-wrap: wrap; flex-shrink: 0; align-items: center; }
+  #legend .legend-title { color: #aab; font-size: 11px; font-weight: 600; }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+  .legend-label { color: #ccd; font-size: 10px; }
+  #placeholder { color: #999; text-align: center; padding: 30px 20px; }
+  #placeholder p { margin-top: 8px; font-size: 11px; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div style="display:flex;align-items:center">
+    <h1>MMUCC v5 — MySQL Schema ER Diagram</h1>
+    <span class="badge">MySQL 8.0 · 31 Tables</span>
+  </div>
+  <div style="color:#889;font-size:11px">Click a table to inspect · Drag to reposition · Scroll to zoom</div>
+</div>
+
+<div id="toolbar">
+  <button onclick="network.fit()">⊞ Fit to Screen</button>
+  <button onclick="resetLayout()">↺ Reset Layout</button>
+  <button onclick="toggleSidebar()">⊟ Toggle Panel</button>
+  <button onclick="toggleDenorm()">⇢ Toggle Denorm. Edges</button>
+  <input id="search" type="text" placeholder="Search table..." oninput="searchTable(this.value)">
+  <span style="color:#667;font-size:11px;margin-left:4px">— Solid = primary FK &nbsp; ⋯ Dashed = denormalized crash_id FK</span>
+</div>
+
+<div id="main">
+  <div id="network"></div>
+  <div id="sidebar">
+    <div id="sidebar-header">
+      Table Details
+      <button onclick="toggleSidebar()" style="background:none;border:none;color:#aab;cursor:pointer;font-size:16px;padding:0">×</button>
+    </div>
+    <div id="sidebar-content">
+      <div id="placeholder">
+        <div style="font-size:28px">🗂</div>
+        <p>Click any table node<br>to view its columns<br>and relationships.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="legend">
+  <span class="legend-title">Categories:</span>
+  <div class="legend-item"><div class="legend-dot" style="background:#4A90D9"></div><span class="legend-label">Reference</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#E8A838"></div><span class="legend-label">Core (CRASH)</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#5BAD6F"></div><span class="legend-label">Entity</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#52BFA0"></div><span class="legend-label">Crash Child</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#9B8DBD"></div><span class="legend-label">Vehicle Child</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#C47DB5"></div><span class="legend-label">Person Child</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#E07B7B"></div><span class="legend-label">Conditional</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#7BAFD4"></div><span class="legend-label">Grandchild</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#C9956B"></div><span class="legend-label">Application</span></div>
+</div>
+
+<script>
+const COLORS = {
+  reference:    { bg:'#4A90D9', border:'#2d6fa8', hover:'#5ba0e8' },
+  core:         { bg:'#E8A838', border:'#b37d20', hover:'#f0b84a' },
+  entity:       { bg:'#5BAD6F', border:'#3d8a50', hover:'#6dc282' },
+  'crash-child':{ bg:'#52BFA0', border:'#349e81', hover:'#64cfb0' },
+  'vehicle-child':{ bg:'#9B8DBD', border:'#7060a0', hover:'#b0a0d0' },
+  'person-child': { bg:'#C47DB5', border:'#a05a94', hover:'#d494c8' },
+  conditional:  { bg:'#E07B7B', border:'#b85050', hover:'#ee9090' },
+  grandchild:   { bg:'#7BAFD4', border:'#5090b8', hover:'#90c4e0' },
+  application:  { bg:'#C9956B', border:'#a07040', hover:'#daa880' }
+};
+
+const tableData = {
+  REF_CRASH_TYPE_TBL: {
+    acronym:'RCT', category:'reference', mmucc:'C2 SF1',
+    columns:[
+      {n:'RCT_ID',tags:['PK'],t:'TINYINT UNSIGNED'},
+      {n:'RCT_CODE',tags:['UQ','NN'],t:'TINYINT UNSIGNED'},
+      {n:'RCT_DESCRIPTION',tags:['NN'],t:'VARCHAR(100)'},
+      {n:'RCT_CREATED_BY',tags:['NN'],t:'VARCHAR(100)'},
+      {n:'RCT_CREATED_DT',tags:['NN'],t:'DATETIME'},
+      {n:'RCT_MODIFIED_BY',tags:[],t:'VARCHAR(100)'},
+      {n:'RCT_MODIFIED_DT',tags:[],t:'DATETIME'},
+      {n:'RCT_LAST_UPDATED_ACTIVITY_CODE',tags:['NN'],t:'VARCHAR(20)'}
+    ],
+    refs:[], refdBy:[]
+  },
+  REF_HARMFUL_EVENT_TBL: {
+    acronym:'RHE', category:'reference', mmucc:'C7/V20/V21',
+    columns:[
+      {n:'RHE_ID',tags:['PK'],t:'TINYINT UNSIGNED'},
+      {n:'RHE_CODE',tags:['UQ','NN'],t:'TINYINT UNSIGNED'},
+      {n:'RHE_DESCRIPTION',tags:['NN'],t:'VARCHAR(120)'},
+      {n:'RHE_CATEGORY',tags:['NN'],t:'VARCHAR(50)'},
+      {n:'RHE_CREATED_BY',tags:['NN'],t:'VARCHAR(100)'},
+      {n:'RHE_CREATED_DT',tags:['NN'],t:'DATETIME'},
+      {n:'RHE_MODIFIED_BY',tags:[],t:'VARCHAR(100)'},
+      {n:'RHE_MODIFIED_DT',tags:[],t:'DATETIME'},
+      {n:'RHE_LAST_UPDATED_ACTIVITY_CODE',tags:['NN'],t:'VARCHAR(20)'}
+    ],
+    refs:[], refdBy:[]
+  },
+  REF_WEATHER_CONDITION_TBL: {
+    acronym:'RWC', category:'reference', mmucc:'C11',
+    columns:[
+      {n:'RWC_ID',tags:['PK'],t:'TINYINT UNSIGNED'},
+      {n:'RWC_CODE',tags:['UQ','NN'],t:'TINYINT UNSIGNED'},
+      {n:'RWC_DESCRIPTION',tags:['NN'],t:'VARCHAR(80)'},
+      {n:'RWC_CREATED_BY',tags:['NN'],t:'VARCHAR(100)'},
+      {n:'RWC_CREATED_DT',tags:['NN'],t:'DATETIME'},
+      {n:'RWC_MODIFIED_BY',tags:[],t:'VARCHAR(100)'},
+      {n:'RWC_MODIFIED_DT',tags:[],t:'DATETIME'},
+      {n:'RWC_LAST_UPDATED_ACTIVITY_CODE',tags:['NN'],t:'VARCHAR(20)'}
+    ],
+    refs:[], refdBy:[]
+  },
+  REF_SURFACE_CONDITION_TBL: {
+    acronym:'RSC', category:'reference', mmucc:'C13',
+    columns:[
+      {n:'RSC_ID',tags:['PK'],t:'TINYINT UNSIGNED'},
+      {n:'RSC_CODE',tags:['UQ','NN'],t:'TINYINT UNSIGNED'},
+      {n:'RSC_DESCRIPTION',tags:['NN'],t:'VARCHAR(80)'},
+      {n:'RSC_CREATED_BY',tags:['NN'],t:'VARCHAR(100)'},
+      {n:'RSC_CREATED_DT',tags:['NN'],t:'DATETIME'},
+      {n:'RSC_MODIFIED_BY',tags:[],t:'VARCHAR(100)'},
+      {n:'RSC_MODIFIED_DT',tags:[],t:'DATETIME'},
+      {n:'RSC_LAST_UPDATED_ACTIVITY_CODE',tags:['NN'],t:'VARCHAR(20)'}
+    ],
+    refs:[], refdBy:[]
+  },
+  REF_PERSON_TYPE_TBL: {
+    acronym:'RPT', category:'reference', mmucc:'P4 SF1',
+    columns:[
+      {n:'RPT_ID',tags:['PK'],t:'TINYINT UNSIGNED'},
+      {n:'RPT_CODE',tags:['UQ','NN'],t:'TINYINT UNSIGNED'},
+      {n:'RPT_DESCRIPTION',tags:['NN'],t:'VARCHAR(100)'},
+      {n:'RPT_IS_NON_MOTORIST',tags:['NN'],t:'TINYINT(1)'},
+      {n:'RPT_CREATED_BY',tags:['NN'],t:'VARCHAR(100)'},
+      {n:'RPT_CREATED_DT',tags:['NN'],t:'DATETIME'},
+      {n:'RPT_MODIFIED_BY',tags:[],t:'VARCHAR(100)'},
+      {n:'RPT_MODIFIED_DT',tags:[],t:'DATETIME'},
+      {n:'RPT_LAST_UPDATED_ACTIVITY_CODE',tags:['NN'],t:'VARCHAR(20)'}
+    ],
+    refs:[], refdBy:[]
+  },
+  REF_INJURY_STATUS_TBL: {
+    acronym:'RIS', category:'reference', mmucc:'P5',
+    columns:[
+      {n:'RIS_ID',tags:['PK'],t:'TINYINT UNSIGNED'},
+      {n:'RIS_CODE',tags:['UQ','NN'],t:'TINYINT UNSIGNED'},
+      {n:'RIS_KABCO_LETTER',tags:[],t:'CHAR(1)'},
+      {n:'RIS_DESCRIPTION',tags:['NN'],t:'VARCHAR(100)'},
+      {n:'RIS_REQUIRES_FATAL_SECTION',tags:['NN'],t:'TINYINT(1)'},
+      {n:'RIS_CREATED_BY',tags:['NN'],t:'VARCHAR(100)'},
+      {n:'RIS_CREATED_DT',tags:['NN'],t:'DATETIME'},
+      {n:'RIS_MODIFIED_BY',tags:[],t:'VARCHAR(100)'},
+      {n:'RIS_MODIFIED_DT',tags:[],t:'DATETIME'},
+      {n:'RIS_LAST_UPDATED_ACTIVITY_CODE',tags:['NN'],t:'VARCHAR(20)'}
+    ],
+    refs:[], refdBy:[]
+  },
+  REF_BODY_TYPE_TBL: {
+    acronym:'RBT', category:'reference', mmucc:'V8 SF1',
+    columns:[
+      {n:'RBT_ID',tags:['PK'],t:'TINYINT UNSIGNED'},
+      {n:'RBT_CODE',tags:['UQ','NN'],t:'TINYINT UNSIGNED'},
+      {n:'RBT_DESCRIPTION',tags:['NN'],t:'VARCHAR(100)'},
+      {n:'RBT_REQUIRES_LV_SECTION',tags:['NN'],t:'TINYINT(1)'},
+      {n:'RBT_CREATED_BY',tags:['NN'],t:'VARCHAR(100)'},
+      {n:'RBT_CREATED_DT',tags:['NN'],t:'DATETIME'},
+      {n:'RBT_MODIFIED_BY',tags:[],t:'VARCHAR(100)'},
+      {n:'RBT_MODIFIED_DT',tags:[],t:'DATETIME'},
+      {n:'RBT_LAST_UPDATED_ACTIVITY_CODE',tags:['NN'],t:'VARCHAR(20)'}
+    ],
+    refs:[], refdBy:[]
+  },
+  CRASH_TBL: {
+    acronym:'CRS', category:'core', mmucc:'C1–C27',
+    columns:[
+      {n:'CRS_CRASH_ID',tags:['PK'],t:'INT UNSIGNED AUTO_INCREMENT'},
+      {n:'CRS_CRASH_IDENTIFIER',tags:[],t:'VARCHAR(50) — C1'},
+      {n:'CRS_CRASH_TYPE_CODE',tags:[],t:'TINYINT UNSIGNED — C2 SF1'},
+      {n:'CRS_FIRST_HARMFUL_EVENT_CODE',tags:[],t:'TINYINT UNSIGNED — C2 SF2/C7'},
+      {n:'CRS_CRASH_DATE',tags:[],t:'DATE — C3 SF1'},
+      {n:'CRS_CRASH_TIME',tags:[],t:'TIME — C3 SF2'},
+      {n:'CRS_COUNTY_FIPS_CODE',tags:[],t:'VARCHAR(10) — C4 SF1'},
+      {n:'CRS_COUNTY_NAME',tags:[],t:'VARCHAR(100) — C4 SF2'},
+      {n:'CRS_CITY_PLACE_CODE',tags:[],t:'VARCHAR(10) — C5 SF1'},
+      {n:'CRS_CITY_PLACE_NAME',tags:[],t:'VARCHAR(100) — C5 SF2'},
+      {n:'CRS_ROUTE_ID',tags:[],t:'VARCHAR(50) — C6 SF1'},
+      {n:'CRS_LATITUDE',tags:[],t:'DECIMAL(10,7) — C6 GPS'},
+      {n:'CRS_LONGITUDE',tags:[],t:'DECIMAL(10,7) — C6 GPS'},
+      {n:'CRS_LOC_FIRST_HARMFUL_EVENT',tags:[],t:'TINYINT UNSIGNED — C8'},
+      {n:'CRS_MANNER_COLLISION_CODE',tags:[],t:'TINYINT UNSIGNED — C9'},
+      {n:'CRS_SOURCE_OF_INFO_CODE',tags:[],t:'TINYINT UNSIGNED — C10'},
+      {n:'CRS_LIGHT_CONDITION_CODE',tags:[],t:'TINYINT UNSIGNED — C12'},
+      {n:'CRS_JUNCTION_INTERCHANGE_FLG',tags:[],t:'TINYINT UNSIGNED — C15 SF1'},
+      {n:'CRS_JUNCTION_LOCATION_CODE',tags:[],t:'TINYINT UNSIGNED — C15 SF2'},
+      {n:'CRS_INTERSECTION_APPROACHES',tags:[],t:'TINYINT UNSIGNED — C16 SF1'},
+      {n:'CRS_SCHOOL_BUS_RELATED_CODE',tags:[],t:'TINYINT UNSIGNED — C17'},
+      {n:'CRS_WORK_ZONE_RELATED_CODE',tags:[],t:'TINYINT UNSIGNED — C18 SF1'},
+      {n:'CRS_WORK_ZONE_TYPE_CODE',tags:[],t:'TINYINT UNSIGNED — C18 SF3'},
+      {n:'CRS_CRASH_SEVERITY_CODE',tags:[],t:'TINYINT UNSIGNED — C19'},
+      {n:'CRS_NUM_MOTOR_VEHICLES',tags:[],t:'SMALLINT UNSIGNED — C20'},
+      {n:'CRS_NUM_MOTORISTS',tags:[],t:'SMALLINT UNSIGNED — C21'},
+      {n:'CRS_NUM_NON_MOTORISTS',tags:[],t:'SMALLINT UNSIGNED — C22'},
+      {n:'CRS_NUM_FATALITIES',tags:[],t:'SMALLINT UNSIGNED — C24'},
+      {n:'CRS_ALCOHOL_INVOLVEMENT_CODE',tags:[],t:'TINYINT UNSIGNED — C25'},
+      {n:'CRS_DRUG_INVOLVEMENT_CODE',tags:[],t:'TINYINT UNSIGNED — C26'},
+      {n:'CRS_DAY_OF_WEEK_CODE',tags:[],t:'TINYINT UNSIGNED — C27'},
+      {n:'CRS_CREATED_BY',tags:['NN'],t:'VARCHAR(100)'},
+      {n:'CRS_CREATED_DT',tags:['NN'],t:'DATETIME'},
+      {n:'CRS_MODIFIED_BY',tags:[],t:'VARCHAR(100)'},
+      {n:'CRS_MODIFIED_DT',tags:[],t:'DATETIME'},
+      {n:'CRS_LAST_UPDATED_ACTIVITY_CODE',tags:['NN'],t:'VARCHAR(20)'}
+    ],
+    refs:[], refdBy:['VEHICLE_TBL','PERSON_TBL','ROADWAY_TBL','CRASH_WEATHER_CONDITION_TBL','CRASH_SURFACE_CONDITION_TBL','CRASH_CONTRIBUTING_ROADWAY_TBL','VEHICLE_TRAFFIC_CONTROL_TBL','VEHICLE_DAMAGE_AREA_TBL','VEHICLE_SEQUENCE_EVENT_TBL','PERSON_AIRBAG_TBL','PERSON_DRIVER_ACTION_TBL','PERSON_DL_RESTRICTION_TBL','PERSON_DRUG_TEST_RESULT_TBL','FATAL_SECTION_TBL','LARGE_VEHICLE_TBL','LV_SPECIAL_SIZING_TBL','NON_MOTORIST_TBL','NON_MOTORIST_SAFETY_EQUIPMENT_TBL','VEHICLE_AUTOMATION_TBL','VEHICLE_AUTOMATION_LEVEL_IN_VEHICLE_TBL','VEHICLE_AUTOMATION_LEVEL_ENGAGED_TBL']
+  },
+  VEHICLE_TBL: {
+    acronym:'VEH', category:'entity', mmucc:'V1–V24',
+    columns:[
+      {n:'VEH_VEHICLE_ID',tags:['PK'],t:'INT UNSIGNED AUTO_INCREMENT'},
+      {n:'VEH_CRASH_ID',tags:['FK','NN'],t:'INT UNSIGNED → CRASH_TBL'},
+      {n:'VEH_VIN',tags:[],t:'VARCHAR(17) — V1'},
+      {n:'VEH_UNIT_TYPE_CODE',tags:[],t:'TINYINT UNSIGNED — V2 SF1'},
+      {n:'VEH_UNIT_NUMBER',tags:[],t:'TINYINT UNSIGNED — V2 SF2'},
+      {n:'VEH_REGISTRATION_STATE',tags:[],t:'VARCHAR(10) — V3 SF1'},
+      {n:'VEH_LICENSE_PLATE',tags:[],t:'VARCHAR(20) — V4'},
+      {n:'VEH_MAKE',tags:[],t:'VARCHAR(50) — V5'},
+      {n:'VEH_MODEL_YEAR',tags:[],t:'YEAR — V6'},
+      {n:'VEH_MODEL',tags:[],t:'VARCHAR(50) — V7'},
+      {n:'VEH_BODY_TYPE_CODE',tags:[],t:'TINYINT UNSIGNED — V8 SF1'},
+      {n:'VEH_VEHICLE_SIZE_CODE',tags:[],t:'TINYINT UNSIGNED — V8 SF3'},
+      {n:'VEH_HM_PLACARD_FLG',tags:[],t:'TINYINT UNSIGNED — V8 SF4'},
+      {n:'VEH_TOTAL_OCCUPANTS',tags:[],t:'TINYINT UNSIGNED — V9'},
+      {n:'VEH_SPECIAL_FUNCTION_CODE',tags:[],t:'TINYINT UNSIGNED — V10'},
+      {n:'VEH_SPEED_LIMIT_MPH',tags:[],t:'TINYINT UNSIGNED — V12'},
+      {n:'VEH_DIRECTION_OF_TRAVEL_CODE',tags:[],t:'TINYINT UNSIGNED — V13'},
+      {n:'VEH_MANEUVER_CODE',tags:[],t:'TINYINT UNSIGNED — V18'},
+      {n:'VEH_DAMAGE_INITIAL_CONTACT',tags:[],t:'TINYINT UNSIGNED — V19 SF1'},
+      {n:'VEH_DAMAGE_EXTENT_CODE',tags:[],t:'TINYINT UNSIGNED — V19 SF3'},
+      {n:'VEH_MOST_HARMFUL_EVENT_CODE',tags:[],t:'TINYINT UNSIGNED — V21'},
+      {n:'VEH_HIT_AND_RUN_CODE',tags:[],t:'TINYINT UNSIGNED — V22'},
+      {n:'VEH_TOWED_CODE',tags:[],t:'TINYINT UNSIGNED — V23'},
+      {n:'VEH_CONTRIBUTING_CIRC_CODE',tags:[],t:'TINYINT UNSIGNED — V24'},
+      {n:'VEH_CREATED_BY',tags:['NN'],t:'VARCHAR(100)'},
+      {n:'VEH_CREATED_DT',tags:['NN'],t:'DATETIME'},
+      {n:'VEH_MODIFIED_BY',tags:[],t:'VARCHAR(100)'},
+      {n:'VEH_MODIFIED_DT',tags:[],t:'DATETIME'},
+      {n:'VEH_LAST_UPDATED_ACTIVITY_CODE',tags:['NN'],t:'VARCHAR(20)'}
+    ],
+    refs:['CRASH_TBL'], refdBy:['PERSON_TBL','VEHICLE_TRAFFIC_CONTROL_TBL','VEHICLE_DAMAGE_AREA_TBL','VEHICLE_SEQUENCE_EVENT_TBL','LARGE_VEHICLE_TBL','VEHICLE_AUTOMATION_TBL']
+  },
+  PERSON_TBL: {
+    acronym:'PRS', category:'entity', mmucc:'P1–P27',
+    columns:[
+      {n:'PRS_PERSON_ID',tags:['PK'],t:'INT UNSIGNED AUTO_INCREMENT'},
+      {n:'PRS_CRASH_ID',tags:['FK','NN'],t:'INT UNSIGNED → CRASH_TBL'},
+      {n:'PRS_VEHICLE_ID',tags:['FK'],t:'INT UNSIGNED → VEHICLE_TBL (nullable)'},
+      {n:'PRS_PERSON_NAME',tags:[],t:'VARCHAR(150) — P1'},
+      {n:'PRS_DOB_YEAR',tags:[],t:'SMALLINT UNSIGNED — P2'},
+      {n:'PRS_DOB_MONTH',tags:[],t:'TINYINT UNSIGNED — P2'},
+      {n:'PRS_AGE_YEARS',tags:[],t:'TINYINT UNSIGNED — P2 SF2'},
+      {n:'PRS_SEX_CODE',tags:[],t:'TINYINT UNSIGNED — P3'},
+      {n:'PRS_PERSON_TYPE_CODE',tags:[],t:'TINYINT UNSIGNED — P4 SF1'},
+      {n:'PRS_INJURY_STATUS_CODE',tags:[],t:'TINYINT UNSIGNED — P5'},
+      {n:'PRS_SEATING_ROW_CODE',tags:[],t:'TINYINT UNSIGNED — P7 SF1'},
+      {n:'PRS_RESTRAINT_CODE',tags:[],t:'TINYINT UNSIGNED — P8 SF1'},
+      {n:'PRS_EJECTION_CODE',tags:[],t:'TINYINT UNSIGNED — P10'},
+      {n:'PRS_DL_NUMBER',tags:[],t:'VARCHAR(30) — P12 SF1'},
+      {n:'PRS_DL_CLASS_CODE',tags:[],t:'TINYINT UNSIGNED — P12 SF2'},
+      {n:'PRS_SPEEDING_CODE',tags:[],t:'TINYINT UNSIGNED — P13'},
+      {n:'PRS_LE_SUSPECTS_ALCOHOL',tags:[],t:'TINYINT UNSIGNED — P20'},
+      {n:'PRS_ALCOHOL_BAC_RESULT',tags:[],t:'VARCHAR(10) — P21 SF3'},
+      {n:'PRS_LE_SUSPECTS_DRUG',tags:[],t:'TINYINT UNSIGNED — P22'},
+      {n:'PRS_TRANSPORT_SOURCE_CODE',tags:[],t:'TINYINT UNSIGNED — P24 SF1'},
+      {n:'PRS_INJURY_AREA_CODE',tags:[],t:'TINYINT UNSIGNED — P25'},
+      {n:'PRS_INJURY_DIAGNOSIS',tags:[],t:'TEXT — P26'},
+      {n:'PRS_INJURY_SEVERITY_CODE',tags:[],t:'TINYINT UNSIGNED — P27'},
+      {n:'PRS_CREATED_BY',tags:['NN'],t:'VARCHAR(100)'},
+      {n:'PRS_CREATED_DT',tags:['NN'],t:'DATETIME'},
+      {n:'PRS_MODIFIED_BY',tags:[],t:'VARCHAR(100)'},
+      {n:'PRS_MODIFIED_DT',tags:[],t:'DATETIME'},
+      {n:'PRS_LAST_UPDATED_ACTIVITY_CODE',tags:['NN'],t:'VARCHAR(20)'}
+    ],
+    refs:['CRASH_TBL','VEHICLE_TBL'], refdBy:['PERSON_AIRBAG_TBL','PERSON_DRIVER_ACTION_TBL','PERSON_DL_RESTRICTION_TBL','PERSON_DRUG_TEST_RESULT_TBL','FATAL_SECTION_TBL','NON_MOTORIST_TBL']
+  },
+  ROADWAY_TBL: {
+    acronym:'RWY', category:'entity', mmucc:'R1–R16',
+    columns:[
+      {n:'RWY_ROADWAY_ID',tags:['PK'],t:'INT UNSIGNED AUTO_INCREMENT'},
+      {n:'RWY_CRASH_ID',tags:['FK','UQ','NN'],t:'INT UNSIGNED → CRASH_TBL'},
+      {n:'RWY_BRIDGE_STRUCTURE_ID',tags:[],t:'VARCHAR(20) — R1'},
+      {n:'RWY_CURVE_RADIUS_FT',tags:[],t:'DECIMAL(8,1) — R2 SF1'},
+      {n:'RWY_GRADE_PERCENT',tags:[],t:'DECIMAL(5,2) — R3 SF2'},
+      {n:'RWY_NATIONAL_HWY_SYS_CODE',tags:[],t:'TINYINT UNSIGNED — R4'},
+      {n:'RWY_FUNCTIONAL_CLASS_CODE',tags:[],t:'TINYINT UNSIGNED — R5'},
+      {n:'RWY_AADT_VALUE',tags:[],t:'INT UNSIGNED — R6 SF2'},
+      {n:'RWY_LANE_WIDTH_FT',tags:[],t:'DECIMAL(5,1) — R7 SF1'},
+      {n:'RWY_MEDIAN_WIDTH_FT',tags:[],t:'DECIMAL(6,1) — R8'},
+      {n:'RWY_ACCESS_CONTROL_CODE',tags:[],t:'TINYINT UNSIGNED — R9'},
+      {n:'RWY_RAILWAY_CROSSING_ID',tags:[],t:'VARCHAR(10) — R10'},
+      {n:'RWY_ROADWAY_LIGHTING_CODE',tags:[],t:'TINYINT UNSIGNED — R11'},
+      {n:'RWY_BICYCLE_FACILITY_CODE',tags:[],t:'TINYINT UNSIGNED — R13 SF1'},
+      {n:'RWY_MAINLINE_LANES_COUNT',tags:[],t:'TINYINT UNSIGNED — R14'},
+      {n:'RWY_CREATED_BY',tags:['NN'],t:'VARCHAR(100)'},
+      {n:'RWY_CREATED_DT',tags:['NN'],t:'DATETIME'},
+      {n:'RWY_MODIFIED_BY',tags:[],t:'VARCHAR(100)'},
+      {n:'RWY_MODIFIED_DT',tags:[],t:'DATETIME'},
+      {n:'RWY_LAST_UPDATED_ACTIVITY_CODE',tags:['NN'],t:'VARCHAR(20)'}
+    ],
+    refs:['CRASH_TBL'], refdBy:[]
+  },
+  CRASH_WEATHER_CONDITION_TBL: { acronym:'CWC', category:'crash-child', mmucc:'C11 (up to 4)',
+    columns:[{n:'CWC_ID',tags:['PK'],t:'INT UNSIGNED'},{n:'CWC_CRASH_ID',tags:['FK','NN'],t:'INT UNSIGNED → CRASH_TBL'},{n:'CWC_SEQUENCE_NUM',tags:['NN'],t:'TINYINT UNSIGNED (1–4)'},{n:'CWC_WEATHER_CONDITION_CODE',tags:['NN'],t:'TINYINT UNSIGNED'},{n:'[UNIQUE]',tags:['UQ'],t:'(CWC_CRASH_ID, CWC_SEQUENCE_NUM)'},{n:'CWC_CREATED_BY … (audit ×5)',tags:[],t:''}], refs:['CRASH_TBL'], refdBy:[] },
+  CRASH_SURFACE_CONDITION_TBL: { acronym:'CSC', category:'crash-child', mmucc:'C13 (up to 4)',
+    columns:[{n:'CSC_ID',tags:['PK'],t:'INT UNSIGNED'},{n:'CSC_CRASH_ID',tags:['FK','NN'],t:'INT UNSIGNED → CRASH_TBL'},{n:'CSC_SEQUENCE_NUM',tags:['NN'],t:'TINYINT UNSIGNED (1–4)'},{n:'CSC_SURFACE_CONDITION_CODE',tags:['NN'],t:'TINYINT UNSIGNED'},{n:'[UNIQUE]',tags:['UQ'],t:'(CSC_CRASH_ID, CSC_SEQUENCE_NUM)'},{n:'CSC_CREATED_BY … (audit ×5)',tags:[],t:''}], refs:['CRASH_TBL'], refdBy:[] },
+  CRASH_CONTRIBUTING_ROADWAY_TBL: { acronym:'CCR', category:'crash-child', mmucc:'C14 (up to 2)',
+    columns:[{n:'CCR_ID',tags:['PK'],t:'INT UNSIGNED'},{n:'CCR_CRASH_ID',tags:['FK','NN'],t:'INT UNSIGNED → CRASH_TBL'},{n:'CCR_SEQUENCE_NUM',tags:['NN'],t:'TINYINT UNSIGNED (1–2)'},{n:'CCR_CONTRIBUTING_CIRC_CODE',tags:['NN'],t:'TINYINT UNSIGNED'},{n:'[UNIQUE]',tags:['UQ'],t:'(CCR_CRASH_ID, CCR_SEQUENCE_NUM)'},{n:'CCR_CREATED_BY … (audit ×5)',tags:[],t:''}], refs:['CRASH_TBL'], refdBy:[] },
+  VEHICLE_TRAFFIC_CONTROL_TBL: { acronym:'VTC', category:'vehicle-child', mmucc:'V17 (up to 4)',
+    columns:[{n:'VTC_ID',tags:['PK'],t:'INT UNSIGNED'},{n:'VTC_VEHICLE_ID',tags:['FK','NN'],t:'INT UNSIGNED → VEHICLE_TBL'},{n:'VTC_CRASH_ID',tags:['FK','NN'],t:'INT UNSIGNED → CRASH_TBL (denorm)'},{n:'VTC_SEQUENCE_NUM',tags:['NN'],t:'TINYINT UNSIGNED (1–4)'},{n:'VTC_TRAFFIC_CONTROL_CODE',tags:['NN'],t:'TINYINT UNSIGNED'},{n:'VTC_DEVICE_INOPERATIVE_CODE',tags:[],t:'TINYINT UNSIGNED'},{n:'[UNIQUE]',tags:['UQ'],t:'(VTC_VEHICLE_ID, VTC_SEQUENCE_NUM)'},{n:'VTC_CREATED_BY … (audit ×5)',tags:[],t:''}], refs:['VEHICLE_TBL','CRASH_TBL'], refdBy:[] },
+  VEHICLE_DAMAGE_AREA_TBL: { acronym:'VDA', category:'vehicle-child', mmucc:'V19 SF2 (up to 13)',
+    columns:[{n:'VDA_ID',tags:['PK'],t:'INT UNSIGNED'},{n:'VDA_VEHICLE_ID',tags:['FK','NN'],t:'INT UNSIGNED → VEHICLE_TBL'},{n:'VDA_CRASH_ID',tags:['FK','NN'],t:'INT UNSIGNED → CRASH_TBL (denorm)'},{n:'VDA_SEQUENCE_NUM',tags:['NN'],t:'TINYINT UNSIGNED (1–13)'},{n:'VDA_DAMAGE_AREA_CODE',tags:['NN'],t:'TINYINT UNSIGNED'},{n:'[UNIQUE]',tags:['UQ'],t:'(VDA_VEHICLE_ID, VDA_SEQUENCE_NUM)'},{n:'VDA_CREATED_BY … (audit ×5)',tags:[],t:''}], refs:['VEHICLE_TBL','CRASH_TBL'], refdBy:[] },
+  VEHICLE_SEQUENCE_EVENT_TBL: { acronym:'VSE', category:'vehicle-child', mmucc:'V20 (up to 4)',
+    columns:[{n:'VSE_ID',tags:['PK'],t:'INT UNSIGNED'},{n:'VSE_VEHICLE_ID',tags:['FK','NN'],t:'INT UNSIGNED → VEHICLE_TBL'},{n:'VSE_CRASH_ID',tags:['FK','NN'],t:'INT UNSIGNED → CRASH_TBL (denorm)'},{n:'VSE_SEQUENCE_NUM',tags:['NN'],t:'TINYINT UNSIGNED (1–4)'},{n:'VSE_EVENT_CODE',tags:['NN'],t:'TINYINT UNSIGNED'},{n:'[UNIQUE]',tags:['UQ'],t:'(VSE_VEHICLE_ID, VSE_SEQUENCE_NUM)'},{n:'VSE_CREATED_BY … (audit ×5)',tags:[],t:''}], refs:['VEHICLE_TBL','CRASH_TBL'], refdBy:[] },
+  PERSON_AIRBAG_TBL: { acronym:'PAB', category:'person-child', mmucc:'P9 (up to 4)',
+    columns:[{n:'PAB_ID',tags:['PK'],t:'INT UNSIGNED'},{n:'PAB_PERSON_ID',tags:['FK','NN'],t:'INT UNSIGNED → PERSON_TBL'},{n:'PAB_CRASH_ID',tags:['FK','NN'],t:'INT UNSIGNED → CRASH_TBL (denorm)'},{n:'PAB_SEQUENCE_NUM',tags:['NN'],t:'TINYINT UNSIGNED (1–4)'},{n:'PAB_AIRBAG_DEPLOYED_CODE',tags:['NN'],t:'TINYINT UNSIGNED'},{n:'[UNIQUE]',tags:['UQ'],t:'(PAB_PERSON_ID, PAB_SEQUENCE_NUM)'},{n:'PAB_CREATED_BY … (audit ×5)',tags:[],t:''}], refs:['PERSON_TBL','CRASH_TBL'], refdBy:[] },
+  PERSON_DRIVER_ACTION_TBL: { acronym:'PDA', category:'person-child', mmucc:'P14 (up to 4)',
+    columns:[{n:'PDA_ID',tags:['PK'],t:'INT UNSIGNED'},{n:'PDA_PERSON_ID',tags:['FK','NN'],t:'INT UNSIGNED → PERSON_TBL'},{n:'PDA_CRASH_ID',tags:['FK','NN'],t:'INT UNSIGNED → CRASH_TBL (denorm)'},{n:'PDA_SEQUENCE_NUM',tags:['NN'],t:'TINYINT UNSIGNED (1–4)'},{n:'PDA_DRIVER_ACTION_CODE',tags:['NN'],t:'TINYINT UNSIGNED'},{n:'[UNIQUE]',tags:['UQ'],t:'(PDA_PERSON_ID, PDA_SEQUENCE_NUM)'},{n:'PDA_CREATED_BY … (audit ×5)',tags:[],t:''}], refs:['PERSON_TBL','CRASH_TBL'], refdBy:[] },
+  PERSON_DL_RESTRICTION_TBL: { acronym:'PDR', category:'person-child', mmucc:'P16 SF1 (up to 3)',
+    columns:[{n:'PDR_ID',tags:['PK'],t:'INT UNSIGNED'},{n:'PDR_PERSON_ID',tags:['FK','NN'],t:'INT UNSIGNED → PERSON_TBL'},{n:'PDR_CRASH_ID',tags:['FK','NN'],t:'INT UNSIGNED → CRASH_TBL (denorm)'},{n:'PDR_SEQUENCE_NUM',tags:['NN'],t:'TINYINT UNSIGNED (1–3)'},{n:'PDR_RESTRICTION_CODE',tags:['NN'],t:'TINYINT UNSIGNED'},{n:'[UNIQUE]',tags:['UQ'],t:'(PDR_PERSON_ID, PDR_SEQUENCE_NUM)'},{n:'PDR_CREATED_BY … (audit ×5)',tags:[],t:''}], refs:['PERSON_TBL','CRASH_TBL'], refdBy:[] },
+  PERSON_DRUG_TEST_RESULT_TBL: { acronym:'DTR', category:'person-child', mmucc:'P23 SF3 (up to 4)',
+    columns:[{n:'DTR_ID',tags:['PK'],t:'INT UNSIGNED'},{n:'DTR_PERSON_ID',tags:['FK','NN'],t:'INT UNSIGNED → PERSON_TBL'},{n:'DTR_CRASH_ID',tags:['FK','NN'],t:'INT UNSIGNED → CRASH_TBL (denorm)'},{n:'DTR_SEQUENCE_NUM',tags:['NN'],t:'TINYINT UNSIGNED (1–4)'},{n:'DTR_DRUG_CATEGORY_CODE',tags:['NN'],t:'TINYINT UNSIGNED'},{n:'DTR_DRUG_TEST_RESULT_CODE',tags:[],t:'TINYINT UNSIGNED'},{n:'[UNIQUE]',tags:['UQ'],t:'(DTR_PERSON_ID, DTR_SEQUENCE_NUM)'},{n:'DTR_CREATED_BY … (audit ×5)',tags:[],t:''}], refs:['PERSON_TBL','CRASH_TBL'], refdBy:[] },
+  FATAL_SECTION_TBL: { acronym:'FSC', category:'conditional', mmucc:'F1–F3 (fatal only)',
+    columns:[{n:'FSC_ID',tags:['PK'],t:'INT UNSIGNED'},{n:'FSC_PERSON_ID',tags:['FK','UQ','NN'],t:'INT UNSIGNED → PERSON_TBL'},{n:'FSC_CRASH_ID',tags:['FK','NN'],t:'INT UNSIGNED → CRASH_TBL (denorm)'},{n:'FSC_LAG_DAYS',tags:[],t:'SMALLINT UNSIGNED — F1'},{n:'FSC_DEATH_DATE',tags:[],t:'DATE'},{n:'FSC_DEATH_TIME',tags:[],t:'TIME'},{n:'FSC_WORK_RELATED_CODE',tags:[],t:'TINYINT UNSIGNED — F2'},{n:'FSC_RESTRAINT_HELMET_CODE',tags:[],t:'TINYINT UNSIGNED — F3'},{n:'FSC_CREATED_BY … (audit ×5)',tags:[],t:''}], refs:['PERSON_TBL','CRASH_TBL'], refdBy:[] },
+  LARGE_VEHICLE_TBL: { acronym:'LVH', category:'conditional', mmucc:'LV1–LV11 (qualifying vehicles)',
+    columns:[{n:'LVH_ID',tags:['PK'],t:'INT UNSIGNED'},{n:'LVH_VEHICLE_ID',tags:['FK','UQ','NN'],t:'INT UNSIGNED → VEHICLE_TBL'},{n:'LVH_CRASH_ID',tags:['FK','NN'],t:'INT UNSIGNED → CRASH_TBL (denorm)'},{n:'LVH_CMV_LICENSE_STATUS_CODE',tags:[],t:'TINYINT UNSIGNED — LV1 SF1'},{n:'LVH_VEHICLE_CONFIG_CODE',tags:[],t:'TINYINT UNSIGNED — LV8 SF1'},{n:'LVH_CARGO_BODY_TYPE_CODE',tags:[],t:'TINYINT UNSIGNED — LV9'},{n:'LVH_HM_ID',tags:[],t:'VARCHAR(10) — LV10 SF1'},{n:'LVH_HM_CLASS',tags:[],t:'VARCHAR(5) — LV10 SF2'},{n:'LVH_AXLES_TRACTOR',tags:[],t:'TINYINT UNSIGNED — LV11 SF1'},{n:'+ carrier/trailer cols (×14)',tags:[],t:''},{n:'LVH_CREATED_BY … (audit ×5)',tags:[],t:''}], refs:['VEHICLE_TBL','CRASH_TBL'], refdBy:['LV_SPECIAL_SIZING_TBL'] },
+  LV_SPECIAL_SIZING_TBL: { acronym:'LVS', category:'grandchild', mmucc:'LV8 SF2 (up to 4)',
+    columns:[{n:'LVS_ID',tags:['PK'],t:'INT UNSIGNED'},{n:'LVS_LVH_ID',tags:['FK','NN'],t:'INT UNSIGNED → LARGE_VEHICLE_TBL'},{n:'LVS_CRASH_ID',tags:['FK','NN'],t:'INT UNSIGNED → CRASH_TBL (denorm)'},{n:'LVS_SEQUENCE_NUM',tags:['NN'],t:'TINYINT UNSIGNED (1–4)'},{n:'LVS_SPECIAL_SIZING_CODE',tags:['NN'],t:'TINYINT UNSIGNED'},{n:'[UNIQUE]',tags:['UQ'],t:'(LVS_LVH_ID, LVS_SEQUENCE_NUM)'},{n:'LVS_CREATED_BY … (audit ×5)',tags:[],t:''}], refs:['LARGE_VEHICLE_TBL','CRASH_TBL'], refdBy:[] },
+  NON_MOTORIST_TBL: { acronym:'NMT', category:'conditional', mmucc:'NM1–NM6 (non-motorists)',
+    columns:[{n:'NMT_ID',tags:['PK'],t:'INT UNSIGNED'},{n:'NMT_PERSON_ID',tags:['FK','UQ','NN'],t:'INT UNSIGNED → PERSON_TBL'},{n:'NMT_CRASH_ID',tags:['FK','NN'],t:'INT UNSIGNED → CRASH_TBL (denorm)'},{n:'NMT_STRIKING_VEHICLE_UNIT',tags:[],t:'TINYINT UNSIGNED — NM1'},{n:'NMT_ACTION_CIRC_CODE',tags:[],t:'TINYINT UNSIGNED — NM2 SF1'},{n:'NMT_CONTRIBUTING_ACTION_1',tags:[],t:'TINYINT UNSIGNED — NM3'},{n:'NMT_CONTRIBUTING_ACTION_2',tags:[],t:'TINYINT UNSIGNED — NM3'},{n:'NMT_LOCATION_AT_CRASH_CODE',tags:[],t:'TINYINT UNSIGNED — NM4'},{n:'NMT_INITIAL_CONTACT_POINT',tags:[],t:'TINYINT UNSIGNED — NM6'},{n:'NMT_CREATED_BY … (audit ×5)',tags:[],t:''}], refs:['PERSON_TBL','CRASH_TBL'], refdBy:['NON_MOTORIST_SAFETY_EQUIPMENT_TBL'] },
+  NON_MOTORIST_SAFETY_EQUIPMENT_TBL: { acronym:'NMS', category:'grandchild', mmucc:'NM5 (up to 5)',
+    columns:[{n:'NMS_ID',tags:['PK'],t:'INT UNSIGNED'},{n:'NMS_NMT_ID',tags:['FK','NN'],t:'INT UNSIGNED → NON_MOTORIST_TBL'},{n:'NMS_CRASH_ID',tags:['FK','NN'],t:'INT UNSIGNED → CRASH_TBL (denorm)'},{n:'NMS_SEQUENCE_NUM',tags:['NN'],t:'TINYINT UNSIGNED (1–5)'},{n:'NMS_SAFETY_EQUIPMENT_CODE',tags:['NN'],t:'TINYINT UNSIGNED'},{n:'[UNIQUE]',tags:['UQ'],t:'(NMS_NMT_ID, NMS_SEQUENCE_NUM)'},{n:'NMS_CREATED_BY … (audit ×5)',tags:[],t:''}], refs:['NON_MOTORIST_TBL','CRASH_TBL'], refdBy:[] },
+  VEHICLE_AUTOMATION_TBL: { acronym:'VAT', category:'grandchild', mmucc:'DV1 SF1',
+    columns:[{n:'VAT_ID',tags:['PK'],t:'INT UNSIGNED'},{n:'VAT_VEHICLE_ID',tags:['FK','UQ','NN'],t:'INT UNSIGNED → VEHICLE_TBL'},{n:'VAT_CRASH_ID',tags:['FK','NN'],t:'INT UNSIGNED → CRASH_TBL (denorm)'},{n:'VAT_AUTOMATION_PRESENT_CODE',tags:['NN'],t:'TINYINT UNSIGNED'},{n:'VAT_CREATED_BY … (audit ×5)',tags:[],t:''}], refs:['VEHICLE_TBL','CRASH_TBL'], refdBy:['VEHICLE_AUTOMATION_LEVEL_IN_VEHICLE_TBL','VEHICLE_AUTOMATION_LEVEL_ENGAGED_TBL'] },
+  VEHICLE_AUTOMATION_LEVEL_IN_VEHICLE_TBL: { acronym:'VAI', category:'grandchild', mmucc:'DV1 SF2 (up to 5)',
+    columns:[{n:'VAI_ID',tags:['PK'],t:'INT UNSIGNED'},{n:'VAI_VAT_ID',tags:['FK','NN'],t:'INT UNSIGNED → VEHICLE_AUTOMATION_TBL'},{n:'VAI_CRASH_ID',tags:['FK','NN'],t:'INT UNSIGNED → CRASH_TBL (denorm)'},{n:'VAI_SEQUENCE_NUM',tags:['NN'],t:'TINYINT UNSIGNED (1–5)'},{n:'VAI_AUTOMATION_LEVEL_CODE',tags:['NN'],t:'TINYINT UNSIGNED'},{n:'[UNIQUE]',tags:['UQ'],t:'(VAI_VAT_ID, VAI_SEQUENCE_NUM)'},{n:'VAI_CREATED_BY … (audit ×5)',tags:[],t:''}], refs:['VEHICLE_AUTOMATION_TBL','CRASH_TBL'], refdBy:[] },
+  VEHICLE_AUTOMATION_LEVEL_ENGAGED_TBL: { acronym:'VAE', category:'grandchild', mmucc:'DV1 SF3 (up to 5)',
+    columns:[{n:'VAE_ID',tags:['PK'],t:'INT UNSIGNED'},{n:'VAE_VAT_ID',tags:['FK','NN'],t:'INT UNSIGNED → VEHICLE_AUTOMATION_TBL'},{n:'VAE_CRASH_ID',tags:['FK','NN'],t:'INT UNSIGNED → CRASH_TBL (denorm)'},{n:'VAE_SEQUENCE_NUM',tags:['NN'],t:'TINYINT UNSIGNED (1–5)'},{n:'VAE_AUTOMATION_LEVEL_CODE',tags:['NN'],t:'TINYINT UNSIGNED'},{n:'[UNIQUE]',tags:['UQ'],t:'(VAE_VAT_ID, VAE_SEQUENCE_NUM)'},{n:'VAE_CREATED_BY … (audit ×5)',tags:[],t:''}], refs:['VEHICLE_AUTOMATION_TBL','CRASH_TBL'], refdBy:[] },
+  APP_USER_TBL: { acronym:'AUS', category:'application', mmucc:'Application',
+    columns:[{n:'AUS_USER_ID',tags:['PK'],t:'INT UNSIGNED AUTO_INCREMENT'},{n:'AUS_USERNAME',tags:['UQ','NN'],t:'VARCHAR(50)'},{n:'AUS_EMAIL',tags:['UQ','NN'],t:'VARCHAR(150)'},{n:'AUS_PASSWORD_HASH',tags:['NN'],t:'VARCHAR(255)'},{n:'AUS_ROLE_CODE',tags:['NN'],t:'VARCHAR(20) — ADMIN/ANALYST/DATA_ENTRY/VIEWER'},{n:'AUS_AGENCY_CODE',tags:[],t:'VARCHAR(20)'},{n:'AUS_IS_ACTIVE_FLG',tags:['NN'],t:'TINYINT(1) DEFAULT 1'},{n:'AUS_LAST_LOGIN_DT',tags:[],t:'DATETIME'},{n:'AUS_FAILED_LOGIN_COUNT',tags:['NN'],t:'TINYINT UNSIGNED DEFAULT 0'},{n:'AUS_ACCOUNT_LOCKED_FLG',tags:['NN'],t:'TINYINT(1) DEFAULT 0'},{n:'AUS_PASSWORD_RESET_TOKEN',tags:[],t:'VARCHAR(255)'},{n:'AUS_PASSWORD_RESET_EXPIRY',tags:[],t:'DATETIME'},{n:'AUS_CREATED_BY … (audit ×5)',tags:[],t:''}], refs:[], refdBy:[] },
+  CRASH_AUDIT_LOG_TBL: { acronym:'CAL', category:'application', mmucc:'Application — append-only',
+    columns:[{n:'CAL_AUDIT_ID',tags:['PK'],t:'BIGINT UNSIGNED AUTO_INCREMENT'},{n:'CAL_CRASH_ID',tags:[],t:'INT UNSIGNED (nullable)'},{n:'CAL_USER_ID',tags:[],t:'INT UNSIGNED (nullable)'},{n:'CAL_USERNAME',tags:['NN'],t:'VARCHAR(50)'},{n:'CAL_ACTION_CODE',tags:['NN'],t:'VARCHAR(20) — CREATE/UPDATE/DELETE/LOGIN/LOGOUT'},{n:'CAL_TABLE_NAME',tags:['NN'],t:'VARCHAR(60)'},{n:'CAL_RECORD_ID',tags:[],t:'INT UNSIGNED'},{n:'CAL_OLD_VALUE',tags:[],t:'JSON — row snapshot before change'},{n:'CAL_NEW_VALUE',tags:[],t:'JSON — row snapshot after change'},{n:'CAL_IP_ADDRESS',tags:[],t:'VARCHAR(45)'},{n:'CAL_SESSION_ID',tags:[],t:'VARCHAR(100)'},{n:'CAL_CREATED_BY … (audit ×5, MODIFIED always NULL)',tags:[],t:''}], refs:[], refdBy:[] }
+};
+
+// Build nodes
+const nodes = new vis.DataSet();
+Object.keys(tableData).forEach(id => {
+  const t = tableData[id];
+  const c = COLORS[t.category];
+  nodes.add({
+    id, label: id.replace(/_TBL$/, '_TBL\n[' + t.acronym + ']'),
+    color: { background: c.bg, border: c.border, highlight: { background: c.hover, border: c.border } },
+    font: { color: 'white', size: 12, face: 'system-ui', bold: true },
+    shape: 'box',
+    margin: 8,
+    shadow: { enabled: true, size: 4, x: 2, y: 2 }
+  });
+});
+
+// Build edges
+const primaryEdges = [
+  {from:'VEHICLE_TBL',to:'CRASH_TBL',label:'VEH_CRASH_ID'},
+  {from:'PERSON_TBL',to:'CRASH_TBL',label:'PRS_CRASH_ID'},
+  {from:'PERSON_TBL',to:'VEHICLE_TBL',label:'PRS_VEHICLE_ID',dashes:true},
+  {from:'ROADWAY_TBL',to:'CRASH_TBL',label:'RWY_CRASH_ID'},
+  {from:'CRASH_WEATHER_CONDITION_TBL',to:'CRASH_TBL',label:'CWC_CRASH_ID'},
+  {from:'CRASH_SURFACE_CONDITION_TBL',to:'CRASH_TBL',label:'CSC_CRASH_ID'},
+  {from:'CRASH_CONTRIBUTING_ROADWAY_TBL',to:'CRASH_TBL',label:'CCR_CRASH_ID'},
+  {from:'VEHICLE_TRAFFIC_CONTROL_TBL',to:'VEHICLE_TBL',label:'VTC_VEHICLE_ID'},
+  {from:'VEHICLE_DAMAGE_AREA_TBL',to:'VEHICLE_TBL',label:'VDA_VEHICLE_ID'},
+  {from:'VEHICLE_SEQUENCE_EVENT_TBL',to:'VEHICLE_TBL',label:'VSE_VEHICLE_ID'},
+  {from:'PERSON_AIRBAG_TBL',to:'PERSON_TBL',label:'PAB_PERSON_ID'},
+  {from:'PERSON_DRIVER_ACTION_TBL',to:'PERSON_TBL',label:'PDA_PERSON_ID'},
+  {from:'PERSON_DL_RESTRICTION_TBL',to:'PERSON_TBL',label:'PDR_PERSON_ID'},
+  {from:'PERSON_DRUG_TEST_RESULT_TBL',to:'PERSON_TBL',label:'DTR_PERSON_ID'},
+  {from:'FATAL_SECTION_TBL',to:'PERSON_TBL',label:'FSC_PERSON_ID'},
+  {from:'LARGE_VEHICLE_TBL',to:'VEHICLE_TBL',label:'LVH_VEHICLE_ID'},
+  {from:'LV_SPECIAL_SIZING_TBL',to:'LARGE_VEHICLE_TBL',label:'LVS_LVH_ID'},
+  {from:'NON_MOTORIST_TBL',to:'PERSON_TBL',label:'NMT_PERSON_ID'},
+  {from:'NON_MOTORIST_SAFETY_EQUIPMENT_TBL',to:'NON_MOTORIST_TBL',label:'NMS_NMT_ID'},
+  {from:'VEHICLE_AUTOMATION_TBL',to:'VEHICLE_TBL',label:'VAT_VEHICLE_ID'},
+  {from:'VEHICLE_AUTOMATION_LEVEL_IN_VEHICLE_TBL',to:'VEHICLE_AUTOMATION_TBL',label:'VAI_VAT_ID'},
+  {from:'VEHICLE_AUTOMATION_LEVEL_ENGAGED_TBL',to:'VEHICLE_AUTOMATION_TBL',label:'VAE_VAT_ID'}
+];
+
+const denormEdges = [
+  'VEHICLE_TRAFFIC_CONTROL_TBL','VEHICLE_DAMAGE_AREA_TBL','VEHICLE_SEQUENCE_EVENT_TBL',
+  'PERSON_AIRBAG_TBL','PERSON_DRIVER_ACTION_TBL','PERSON_DL_RESTRICTION_TBL','PERSON_DRUG_TEST_RESULT_TBL',
+  'FATAL_SECTION_TBL','LARGE_VEHICLE_TBL','LV_SPECIAL_SIZING_TBL',
+  'NON_MOTORIST_TBL','NON_MOTORIST_SAFETY_EQUIPMENT_TBL',
+  'VEHICLE_AUTOMATION_TBL','VEHICLE_AUTOMATION_LEVEL_IN_VEHICLE_TBL','VEHICLE_AUTOMATION_LEVEL_ENGAGED_TBL'
+];
+
+let showDenorm = false;
+const edges = new vis.DataSet();
+let edgeId = 1;
+primaryEdges.forEach(e => {
+  edges.add({ id: edgeId++, from: e.from, to: e.to, label: e.label || '',
+    arrows: 'to', dashes: e.dashes || false,
+    color: { color: e.dashes ? '#aaa' : '#4a90d9', highlight: '#e8a838' },
+    font: { size: 9, color: '#667', align: 'middle' },
+    width: 1.5, smooth: { type: 'curvedCW', roundness: 0.1 }
+  });
+});
+denormEdges.forEach(from => {
+  edges.add({ id: edgeId++, from, to: 'CRASH_TBL', label: '',
+    group: 'denorm', hidden: true,
+    arrows: 'to', dashes: [4,4],
+    color: { color: '#bbb' }, font: { size: 8 }, width: 1,
+    smooth: { type: 'curvedCCW', roundness: 0.15 }
+  });
+});
+
+const container = document.getElementById('network');
+const network = new vis.Network(container, { nodes, edges }, {
+  physics: { enabled: true, stabilization: { iterations: 200 },
+    forceAtlas2Based: { gravitationalConstant: -80, centralGravity: 0.005, springLength: 180, springConstant: 0.06 },
+    solver: 'forceAtlas2Based' },
+  interaction: { hover: true, tooltipDelay: 200 },
+  edges: { smooth: { type: 'dynamic' } },
+  nodes: { borderWidth: 2 }
+});
+
+network.on('click', params => {
+  if (params.nodes.length > 0) showDetails(params.nodes[0]);
+});
+
+function showDetails(id) {
+  const t = tableData[id];
+  if (!t) return;
+  const c = COLORS[t.category];
+  let html = `<div class="table-name">${id}</div>`;
+  html += `<div class="meta">
+    <span class="meta-badge" style="background:${c.bg};color:white">${t.acronym}</span>
+    <span class="meta-badge">${t.category}</span>
+    <span class="meta-badge">${t.mmucc}</span>
+  </div>`;
+  html += `<h4>Columns</h4>`;
+  t.columns.forEach(col => {
+    if (!col.n) return;
+    const tags = col.tags.map(tg => `<span class="tag tag-${tg.toLowerCase()}">${tg}</span>`).join(' ');
+    html += `<div class="col-row"><span class="col-name">${col.n}</span><span class="col-type">${col.t}</span> ${tags}</div>`;
+  });
+  if (t.refs && t.refs.length) {
+    html += `<h4>References (FK →)</h4>`;
+    t.refs.forEach(r => html += `<div class="rel-item">→ <span>${r}</span></div>`);
+  }
+  if (t.refdBy && t.refdBy.length) {
+    html += `<h4>Referenced By (← FK)</h4>`;
+    t.refdBy.forEach(r => html += `<div class="rel-item">← <span>${r}</span></div>`);
+  }
+  document.getElementById('sidebar-content').innerHTML = html;
+  document.getElementById('sidebar').classList.remove('collapsed');
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('collapsed');
+}
+
+function toggleDenorm() {
+  showDenorm = !showDenorm;
+  edges.forEach(e => { if (e.group === 'denorm') edges.update({ id: e.id, hidden: !showDenorm }); });
+}
+
+function searchTable(val) {
+  if (!val) { nodes.forEach(n => nodes.update({ id: n.id, opacity: 1 })); return; }
+  const v = val.toUpperCase();
+  nodes.forEach(n => nodes.update({ id: n.id, opacity: n.id.toUpperCase().includes(v) ? 1 : 0.2 }));
+}
+
+function resetLayout() {
+  network.setOptions({ physics: { enabled: true } });
+  setTimeout(() => network.setOptions({ physics: { enabled: false } }), 3000);
+}
+
+network.once('stabilized', () => { network.setOptions({ physics: { enabled: false } }); network.fit(); });
+</script>
+</body>
+</html>
