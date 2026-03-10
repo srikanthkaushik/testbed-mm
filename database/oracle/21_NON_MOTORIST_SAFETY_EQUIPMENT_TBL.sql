@@ -1,0 +1,37 @@
+-- =============================================================================
+-- Table : NON_MOTORIST_SAFETY_EQUIPMENT_TBL
+-- Acronym: NMS
+-- Source : MMUCC v5 NM5 - Non-Motorist Safety Equipment (select 1-5)
+-- Notes : Child of NON_MOTORIST_TBL. Up to 5 safety equipment codes per non-motorist.
+-- =============================================================================
+CREATE TABLE NON_MOTORIST_SAFETY_EQUIPMENT_TBL (
+    NMS_ID                          NUMBER(10)          GENERATED ALWAYS AS IDENTITY CONSTRAINT PK_NMS PRIMARY KEY,
+    NMS_NMT_ID                      NUMBER(10)          NOT NULL,
+    NMS_CRASH_ID                    NUMBER(10)          NOT NULL,
+    NMS_SEQUENCE_NUM                NUMBER(3)           NOT NULL,
+    NMS_SAFETY_EQUIPMENT_CODE       NUMBER(3)           NOT NULL,
+
+    -- Audit Columns
+    NMS_CREATED_BY                  VARCHAR2(100)       NOT NULL,
+    NMS_CREATED_DT                  DATE                DEFAULT SYSDATE NOT NULL,
+    NMS_MODIFIED_BY                 VARCHAR2(100),
+    NMS_MODIFIED_DT                 DATE,
+    NMS_LAST_UPDATED_ACTIVITY_CODE  VARCHAR2(20)        NOT NULL,
+
+    CONSTRAINT UQ_NMS_NMT_SEQ       UNIQUE (NMS_NMT_ID, NMS_SEQUENCE_NUM)
+);
+
+COMMENT ON TABLE NON_MOTORIST_SAFETY_EQUIPMENT_TBL IS 'MMUCC NM5: Non-Motorist Safety Equipment Used. Multi-value child of NON_MOTORIST_TBL (up to 5).';
+COMMENT ON COLUMN NON_MOTORIST_SAFETY_EQUIPMENT_TBL.NMS_NMT_ID IS 'FK to NON_MOTORIST_TBL';
+COMMENT ON COLUMN NON_MOTORIST_SAFETY_EQUIPMENT_TBL.NMS_CRASH_ID IS 'FK to CRASH_TBL (denormalized for query convenience)';
+COMMENT ON COLUMN NON_MOTORIST_SAFETY_EQUIPMENT_TBL.NMS_SEQUENCE_NUM IS 'Entry sequence (1-5)';
+COMMENT ON COLUMN NON_MOTORIST_SAFETY_EQUIPMENT_TBL.NMS_SAFETY_EQUIPMENT_CODE IS 'NM5: Values: 1=Helmet (bicycle/ski), 2=Reflective Clothing, 3=Protective Pads, 4=Lighting, 5=Visibility Aids, 6=Eyewear, 7=None, 98=Other, 99=Unknown';
+COMMENT ON COLUMN NON_MOTORIST_SAFETY_EQUIPMENT_TBL.NMS_LAST_UPDATED_ACTIVITY_CODE IS 'Values: CREATE=Initial creation, UPDATE=Manual update, IMPORT=Bulk import, CORRECT=Data correction, REVIEW=Reviewed and approved';
+
+CREATE INDEX IDX_NMS_NMT_ID   ON NON_MOTORIST_SAFETY_EQUIPMENT_TBL (NMS_NMT_ID);
+CREATE INDEX IDX_NMS_CRASH_ID ON NON_MOTORIST_SAFETY_EQUIPMENT_TBL (NMS_CRASH_ID);
+
+ALTER TABLE NON_MOTORIST_SAFETY_EQUIPMENT_TBL ADD CONSTRAINT FK_NMS_NMT
+    FOREIGN KEY (NMS_NMT_ID)   REFERENCES NON_MOTORIST_TBL (NMT_ID)       ON DELETE CASCADE;
+ALTER TABLE NON_MOTORIST_SAFETY_EQUIPMENT_TBL ADD CONSTRAINT FK_NMS_CRASH
+    FOREIGN KEY (NMS_CRASH_ID) REFERENCES CRASH_TBL        (CRS_CRASH_ID) ON DELETE CASCADE;
