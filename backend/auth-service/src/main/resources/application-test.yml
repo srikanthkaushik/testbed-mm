@@ -1,0 +1,31 @@
+# Test profile — used by Testcontainers integration tests.
+# Datasource URL is overridden at runtime via @DynamicPropertySource.
+
+spring:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+firebase:
+  # Firebase is mocked in tests via @MockBean FirebaseAuthGateway.
+  # This path is intentionally a non-existent placeholder so FirebaseConfig
+  # does not attempt to read a real credential file during tests.
+  service-account-path: classpath:firebase-service-account-mock.json
+
+mmucc:
+  jwt:
+    secret: dGVzdC1zZWNyZXQtMjU2LWJpdHMtYWFhYWJiYmJjY2NjZGRkZA==
+    access-token-expiration-ms: 900000
+    issuer: mmucc-auth-service
+  cors:
+    allowed-origins: http://localhost:4200
+
+logging:
+  level:
+    gov.nhtsa.mmucc: DEBUG
+    org.springframework.security: DEBUG

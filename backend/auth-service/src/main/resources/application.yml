@@ -1,0 +1,73 @@
+spring:
+  application:
+    name: mmucc-auth-service
+
+  datasource:
+    url: ${MMUCC_DB_URL:jdbc:mysql://localhost:3306/mmucc_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+    username: ${MMUCC_DB_USER}
+    password: ${MMUCC_DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate  # Flyway owns the schema; Hibernate only validates on startup
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: false
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+    validate-on-migrate: true
+
+mmucc:
+  jwt:
+    # Base64-encoded 256-bit key. MUST be set via MMUCC_JWT_SECRET env var in every environment.
+    secret: ${MMUCC_JWT_SECRET}
+    access-token-expiration-ms: 900000   # 15 minutes
+    refresh-token-expiration-days: 7
+    issuer: mmucc-auth-service
+  cors:
+    allowed-origins: ${MMUCC_CORS_ORIGINS:http://localhost:4200}
+
+firebase:
+  # Path to Firebase service account JSON. Set via FIREBASE_SERVICE_ACCOUNT_PATH env var.
+  # Supports absolute paths and classpath: prefix (e.g., classpath:firebase-sa.json for tests).
+  service-account-path: ${FIREBASE_SERVICE_ACCOUNT_PATH}
+
+server:
+  port: 8081
+  servlet:
+    context-path: /
+  error:
+    include-message: never
+    include-stacktrace: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    gov.nhtsa.mmucc: INFO
+    org.springframework.security: WARN
+    org.flywaydb: INFO

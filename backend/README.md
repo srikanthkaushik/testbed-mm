@@ -30,11 +30,12 @@ Start with `auth-service` and `crash-service` — everything else depends on the
 - This gives repeatable, versioned schema management from day one
 
 ### 3. auth-service
-- Spring Security + JWT (stateless)
-- BCrypt password hashing (already defined in `APP_USER_TBL.AUS_PASSWORD_HASH`)
-- Endpoints: login, logout, refresh token, forgot password, reset password
+- Firebase Authentication integration — verifies Firebase ID tokens, issues internal JWTs
 - Role-based access: `ADMIN`, `DATA_ENTRY`, `ANALYST`, `VIEWER`
+- Refresh token rotation with HttpOnly cookie transport
 - Writes login/logout events to `CRASH_AUDIT_LOG_TBL`
+
+See [AUTH.md](AUTH.md) for full implementation details, API reference, token design, and setup instructions.
 
 ### 4. crash-service
 This is the core service. Structure it around the MMUCC hierarchy:
