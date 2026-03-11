@@ -23,14 +23,22 @@ MMUCC is a voluntary national guideline that defines a minimum set of 115 data e
 
 ## Project Status
 
-> **Phase: Database Design Complete — Application Development Not Yet Started**
+> **Phase: Backend Sprints 1–2 Complete — Frontend Login In Progress**
 
 - [x] MMUCC v5 specification analysis
 - [x] MySQL 8.0 schema — 31 tables covering all 115 MMUCC data elements
 - [x] Oracle 19c schema — 26 tables with consolidated lookup table design
-- [ ] Spring Boot microservices
-- [ ] Angular micro-frontend UI
-- [ ] Authentication and authorization
+- [x] Spring Boot microservices — auth-service (Sprint 1) and crash-service (Sprint 2) complete
+  - [x] auth-service — Firebase SSO, JWT + HttpOnly refresh-token rotation, user CRUD, RBAC (`ADMIN` / `DATA_ENTRY` / `ANALYST` / `VIEWER`)
+  - [x] crash-service — full CRUD for crashes, vehicles, roadway, and all 6 multi-value child tables; Flyway migrations; Testcontainers integration tests
+  - [ ] crash-service — Person (P1–P27) and conditional sections (Fatal, Non-Motorist, Large Vehicle) — Sprint 3
+  - [ ] reference-service, audit enhancements, MMUCC validation rules — Sprint 4
+  - [ ] report-service, CSV/Excel export — Sprint 5
+- [x] Angular frontend — project bootstrapped (Angular 17 standalone, signals, OnPush)
+  - [x] Core services: `AuthService`, `FirebaseAuthService`, auth interceptor, auth guard, `APP_INITIALIZER` session restore
+  - [x] Login page — ADA/WCAG 2.1 AA compliant, Google SSO + email/password, muted color scheme
+  - [ ] Dashboard, crash list, crash form, vehicle form, user management
+- [x] Authentication and authorization — JWT in-memory, HttpOnly refresh cookie, RBAC enforced at controller level
 - [ ] Reporting and data export
 
 ---
@@ -59,15 +67,25 @@ mmucc-develop/
 ├── MMUCC-v5.pdf                  Reference specification document
 ├── CLAUDE.md                     AI assistant guidance for this repo
 ├── README.md                     This file
+├── backend/
+│   ├── README.md                 Backend architecture and sprint plan
+│   ├── CRASH.md                  crash-service API reference
+│   ├── common/                   Shared DTOs, exceptions, audit utilities
+│   ├── auth-service/             Firebase → JWT authentication (port 8081)
+│   └── crash-service/            Crash/Vehicle/Roadway CRUD (port 8082)
+├── frontend/
+│   ├── README.md                 Frontend architecture and sprint plan
+│   ├── mockup/                   Balsamiq-style HTML wireframes (7 screens)
+│   └── mmucc-app/                Angular 17 application
 └── database/
     ├── mysql/
-    │   ├── MYSQL_SETUP.md        MySQL setup and verification guide
+    │   ├── README.md             MySQL setup and verification guide
     │   ├── 01_REF_CRASH_TYPE_TBL.sql
     │   ├── 02_REF_HARMFUL_EVENT_TBL.sql
     │   ├── ...                   (31 SQL files total)
     │   └── 31_CRASH_AUDIT_LOG_TBL.sql
     └── oracle/
-        ├── ORACLE_SETUP.md       Oracle 19c setup and verification guide
+        ├── README.md             Oracle 19c setup and verification guide
         ├── 01_LOOKUP_CODE_TYPES_TBL.sql
         ├── 02_LOOKUP_CODE_VALUES_TBL.sql
         ├── ...                   (26 SQL files total)
@@ -80,7 +98,7 @@ mmucc-develop/
 
 ### MySQL
 
-See [`database/mysql/MYSQL_SETUP.md`](database/mysql/MYSQL_SETUP.md) for full instructions. Summary:
+See [`database/mysql/README.md`](database/mysql/README.md) for full instructions. Summary:
 
 1. Create a database and note the credentials
 2. Run the 31 SQL scripts in numbered order
@@ -94,7 +112,7 @@ done
 
 ### Oracle 19c
 
-See [`database/oracle/ORACLE_SETUP.md`](database/oracle/ORACLE_SETUP.md) for full instructions. Summary:
+See [`database/oracle/README.md`](database/oracle/README.md) for full instructions. Summary:
 
 1. Connect to an existing Oracle schema with CREATE TABLE / CREATE INDEX / ALTER TABLE privileges
 2. Run the 26 SQL scripts in numbered order
