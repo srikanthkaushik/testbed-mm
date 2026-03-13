@@ -23,7 +23,7 @@ MMUCC is a voluntary national guideline that defines a minimum set of 115 data e
 
 ## Project Status
 
-> **Phase: Backend Sprints 1–2 Complete — Frontend Login In Progress**
+> **Phase: Backend Sprints 1–2 Complete — Frontend Sprint 1 Complete**
 
 - [x] MMUCC v5 specification analysis
 - [x] MySQL 8.0 schema — 31 tables covering all 115 MMUCC data elements
@@ -34,10 +34,11 @@ MMUCC is a voluntary national guideline that defines a minimum set of 115 data e
   - [ ] crash-service — Person (P1–P27) and conditional sections (Fatal, Non-Motorist, Large Vehicle) — Sprint 3
   - [ ] reference-service, audit enhancements, MMUCC validation rules — Sprint 4
   - [ ] report-service, CSV/Excel export — Sprint 5
-- [x] Angular frontend — project bootstrapped (Angular 17 standalone, signals, OnPush)
+- [x] Angular frontend — Sprint 1 complete
   - [x] Core services: `AuthService`, `FirebaseAuthService`, auth interceptor, auth guard, `APP_INITIALIZER` session restore
   - [x] Login page — ADA/WCAG 2.1 AA compliant, Google SSO + email/password, muted color scheme
-  - [ ] Dashboard, crash list, crash form, vehicle form, user management
+  - [x] End-to-end authentication verified: Google sign-in → Firebase → auth-service JWT → crash-service requests authorized
+  - [ ] Dashboard, crash list, crash form, vehicle form, user management — Sprint 2+
 - [x] Authentication and authorization — JWT in-memory, HttpOnly refresh cookie, RBAC enforced at controller level
 - [ ] Reporting and data export
 

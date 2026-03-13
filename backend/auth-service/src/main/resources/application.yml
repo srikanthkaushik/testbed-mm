@@ -27,11 +27,12 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: false
     validate-on-migrate: true
+    table: flyway_auth_schema_history
 
 mmucc:
   jwt:
     # Base64-encoded 256-bit key. MUST be set via MMUCC_JWT_SECRET env var in every environment.
-    secret: ${MMUCC_JWT_SECRET}
+    secret: ${MMUCC_JWT_SECRET:bG9jYWwtZGV2LXNlY3JldC1rZXktbXVzdC1iZS0yNTYtYml0cw==}
     access-token-expiration-ms: 900000   # 15 minutes
     refresh-token-expiration-days: 7
     issuer: mmucc-auth-service

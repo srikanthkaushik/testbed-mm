@@ -1,18 +1,23 @@
 # Local development overrides — do NOT commit real secrets
 spring:
   datasource:
-    username: mmucc_app
-    password: changeme_local
+    url: jdbc:mysql://localhost:3306/mmucc5?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: mmucc_user
+    password: P@ssword08
+
+  flyway:
+    baseline-on-migrate: true
 
   jpa:
     show-sql: true
     properties:
       hibernate:
         format_sql: true
-
 mmucc:
   jwt:
-    secret: bG9jYWxkZXZzZWNyZXRsb2NhbGRldnNlY3JldGxvY2FsZGV2c2VjcmV0bG9jYQ==
+    secret: bG9jYWwtZGV2LXNlY3JldC1rZXktbXVzdC1iZS0yNTYtYml0cw==
+  cors:
+    allowed-origins: http://localhost:4200
 
 logging:
   level:

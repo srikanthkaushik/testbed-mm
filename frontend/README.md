@@ -215,7 +215,7 @@ All colour values are defined as CSS custom properties in `src/styles.scss`:
 
 | Sprint | Frontend Scope |
 |---|---|
-| **Sprint 1** ✅ | Routing scaffold, core services, login page (Google SSO + email/password) |
+| **Sprint 1** ✅ | Routing scaffold, core services, login page (Google SSO + email/password), end-to-end auth verified |
 | **Sprint 2** | Authenticated shell (nav + sidebar), dashboard screen |
 | **Sprint 3** | Crash list with filters and pagination |
 | **Sprint 4** | Multi-step crash entry form (C1–C27 MMUCC fields) |
@@ -223,3 +223,14 @@ All colour values are defined as CSS custom properties in `src/styles.scss`:
 | **Sprint 6** | Vehicle entry modal (V1–V24), roadway upsert form |
 | **Sprint 7** | Admin: user management, role assignment |
 | **Sprint 8** | Reports, CSV export, analytics charts |
+
+### Sprint 1 — Completed
+
+- [x] Angular 17 project bootstrapped (standalone components, `OnPush`, esbuild)
+- [x] Lazy-loaded route table with `authGuard` and `returnUrl` support
+- [x] `FirebaseAuthService` — Firebase JS SDK v10 modular wrapper (Google popup + email/password)
+- [x] `AuthService` — in-memory JWT storage, auto-refresh timer (60 s before expiry), `APP_INITIALIZER` session restore
+- [x] `authInterceptor` — Bearer token attachment, silent 401 → refresh → retry cycle
+- [x] Login page — ADA/WCAG 2.1 AA compliant, Google SSO + email/password, muted color scheme
+- [x] Dev proxy configured (`/auth` → `:8081`, `/crashes` → `:8082`)
+- [x] End-to-end authentication verified: Google sign-in → Firebase ID token → auth-service JWT → crash-service requests authorized
