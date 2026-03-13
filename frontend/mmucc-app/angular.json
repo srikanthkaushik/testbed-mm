@@ -59,6 +59,9 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          },
           "configurations": {
             "production": { "buildTarget": "mmucc-app:build:production" },
             "development": { "buildTarget": "mmucc-app:build:development" }
@@ -77,5 +80,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

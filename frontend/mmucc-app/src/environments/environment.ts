@@ -9,11 +9,11 @@ export const environment = {
   // Replace these values with your actual Firebase project settings.
   // See: https://firebase.google.com/docs/web/setup
   firebase: {
-    apiKey:            'YOUR_API_KEY',
-    authDomain:        'YOUR_PROJECT_ID.firebaseapp.com',
-    projectId:         'YOUR_PROJECT_ID',
-    storageBucket:     'YOUR_PROJECT_ID.appspot.com',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    appId:             'YOUR_APP_ID',
+    apiKey: "AIzaSyCArZ8gSlSQkT-WYZzVutB1aDWmXTLq41I",
+	authDomain: "mm5-test.firebaseapp.com",
+	projectId: "mm5-test",
+	storageBucket: "mm5-test.firebasestorage.app",
+	messagingSenderId: "604687779949",
+	appId: "1:604687779949:web:d6ca295c24e4a17d771764"
   },
 };

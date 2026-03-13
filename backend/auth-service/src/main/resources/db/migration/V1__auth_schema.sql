@@ -8,7 +8,7 @@
 -- =============================================================================
 
 CREATE TABLE IF NOT EXISTS APP_USER_TBL (
-    AUS_USER_ID                     INT UNSIGNED        NOT NULL    AUTO_INCREMENT  COMMENT 'Surrogate primary key',
+    AUS_USER_ID                     BIGINT              NOT NULL    AUTO_INCREMENT  COMMENT 'Surrogate primary key',
     AUS_USERNAME                    VARCHAR(50)         NOT NULL    COMMENT 'Unique login username',
     AUS_EMAIL                       VARCHAR(150)        NOT NULL    COMMENT 'Unique user email address',
     AUS_PASSWORD_HASH               VARCHAR(255)        NULL        COMMENT 'BCrypt hashed password. NULL for Firebase-only users.',
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS APP_USER_TBL (
     AUS_LAST_NAME                   VARCHAR(75)         NULL        COMMENT 'User last name',
     AUS_IS_ACTIVE_FLG               TINYINT(1)          NOT NULL    DEFAULT 1 COMMENT 'Account active flag. Values: 1=Active, 0=Disabled',
     AUS_LAST_LOGIN_DT               DATETIME            NULL        COMMENT 'Timestamp of last successful login',
-    AUS_FAILED_LOGIN_COUNT          TINYINT UNSIGNED    NOT NULL    DEFAULT 0 COMMENT 'Consecutive failed login attempts (reset on success)',
+    AUS_FAILED_LOGIN_COUNT          INT                 NOT NULL    DEFAULT 0 COMMENT 'Consecutive failed login attempts (reset on success)',
     AUS_ACCOUNT_LOCKED_FLG          TINYINT(1)          NOT NULL    DEFAULT 0 COMMENT 'Account locked flag. Values: 1=Locked, 0=Not Locked',
     AUS_PASSWORD_RESET_TOKEN        VARCHAR(255)        NULL        COMMENT 'One-time password reset token (hashed); cleared after use',
     AUS_PASSWORD_RESET_EXPIRY       DATETIME            NULL        COMMENT 'Expiry timestamp for the password reset token',
