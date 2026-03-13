@@ -239,7 +239,8 @@ class CrashIntegrationTest {
                 null, null, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null,
                 null, null, null, null, null, null,
-                null, null, null
+                null, null,
+                List.of(), List.of(), List.of()
         );
 
         mockMvc.perform(post("/crashes/" + crashId + "/vehicles")
@@ -335,7 +336,8 @@ class CrashIntegrationTest {
                 null, null, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null,
                 null, null, null, null, null, null,
-                null, null, null
+                null, null,
+                List.of(), List.of(), List.of()
         );
         mockMvc.perform(post("/crashes/" + crashId + "/vehicles")
                         .header("Authorization", "Bearer " + dataEntryToken)
