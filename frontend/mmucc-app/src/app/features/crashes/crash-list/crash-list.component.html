@@ -1,0 +1,288 @@
+<div class="crash-list">
+
+  <!-- ── Page header ──────────────────────────────────────────────────── -->
+  <div class="crash-list__header">
+    <h1 class="crash-list__title">Crashes</h1>
+  </div>
+
+  <!-- ── Filter bar ───────────────────────────────────────────────────── -->
+  <section class="filter-bar" aria-label="Filter crashes">
+    <form
+      [formGroup]="filterForm"
+      (ngSubmit)="applyFilters()"
+      class="filter-bar__form"
+      novalidate
+    >
+      <div class="filter-bar__fields">
+
+        <div class="filter-bar__field">
+          <label for="filter-date-from" class="filter-bar__label">Date From</label>
+          <input
+            id="filter-date-from"
+            type="date"
+            class="filter-bar__input"
+            formControlName="dateFrom"
+            aria-label="Filter by date from"
+          />
+        </div>
+
+        <div class="filter-bar__field">
+          <label for="filter-date-to" class="filter-bar__label">Date To</label>
+          <input
+            id="filter-date-to"
+            type="date"
+            class="filter-bar__input"
+            formControlName="dateTo"
+            aria-label="Filter by date to"
+          />
+        </div>
+
+        <div class="filter-bar__field">
+          <label for="filter-county" class="filter-bar__label">County</label>
+          <input
+            id="filter-county"
+            type="text"
+            class="filter-bar__input"
+            formControlName="county"
+            placeholder="County name"
+            aria-label="Filter by county name"
+            autocomplete="off"
+          />
+        </div>
+
+      </div>
+
+      <div class="filter-bar__actions">
+        <button
+          type="submit"
+          class="btn btn--primary"
+          [disabled]="loading()"
+          [attr.aria-busy]="loading()"
+        >
+          <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          Search
+        </button>
+        <button
+          type="button"
+          class="btn btn--ghost"
+          (click)="clearFilters()"
+          [disabled]="loading()"
+        >
+          Clear
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ── Error alert ───────────────────────────────────────────────────── -->
+  @if (errorMessage()) {
+    <app-alert [message]="errorMessage()" type="error" />
+  }
+
+  <!-- ── Aria live region for status announcements ─────────────────────── -->
+  <div aria-live="polite" aria-atomic="true" class="sr-only">
+    @if (loading()) {
+      Loading crash records…
+    } @else if (page()) {
+      {{ page()!.totalElements }} crash records loaded.
+    }
+  </div>
+
+  <!-- ── Table area ────────────────────────────────────────────────────── -->
+  <div class="table-container">
+    <table class="crash-table" aria-label="Crash records">
+      <caption class="crash-table__caption">
+        Crash records —
+        @if (loading()) {
+          loading…
+        } @else {
+          {{ page()?.totalElements ?? 0 }} result{{ (page()?.totalElements ?? 0) === 1 ? '' : 's' }}
+        }
+      </caption>
+
+      <thead class="crash-table__head">
+        <tr>
+          <th scope="col" class="crash-table__th">Case #</th>
+          <th
+            scope="col"
+            class="crash-table__th crash-table__th--sortable"
+            [attr.aria-sort]="sortAsc() ? 'ascending' : 'descending'"
+          >
+            <button
+              type="button"
+              class="sort-btn"
+              (click)="toggleSort()"
+              [attr.aria-label]="'Sort by crash date, currently ' + (sortAsc() ? 'ascending' : 'descending')"
+            >
+              Date
+              <svg aria-hidden="true" focusable="false" class="sort-btn__icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                @if (sortAsc()) {
+                  <polyline points="18 15 12 9 6 15"/>
+                } @else {
+                  <polyline points="6 9 12 15 18 9"/>
+                }
+              </svg>
+            </button>
+          </th>
+          <th scope="col" class="crash-table__th">Time</th>
+          <th scope="col" class="crash-table__th">Location</th>
+          <th scope="col" class="crash-table__th crash-table__th--center">Fatalities</th>
+          <th scope="col" class="crash-table__th crash-table__th--center">Injuries</th>
+          <th scope="col" class="crash-table__th crash-table__th--center">Vehicles</th>
+          <th scope="col" class="crash-table__th crash-table__th--center">Persons</th>
+          <th scope="col" class="crash-table__th crash-table__th--actions">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody class="crash-table__body">
+
+        <!-- Loading skeleton rows -->
+        @if (loading()) {
+          @for (row of skeletonRows; track row) {
+            <tr class="crash-table__skeleton-row" aria-hidden="true">
+              <td><span class="skeleton skeleton--short"></span></td>
+              <td><span class="skeleton skeleton--medium"></span></td>
+              <td><span class="skeleton skeleton--short"></span></td>
+              <td><span class="skeleton skeleton--long"></span></td>
+              <td class="crash-table__td--center"><span class="skeleton skeleton--xs"></span></td>
+              <td class="crash-table__td--center"><span class="skeleton skeleton--xs"></span></td>
+              <td class="crash-table__td--center"><span class="skeleton skeleton--xs"></span></td>
+              <td class="crash-table__td--center"><span class="skeleton skeleton--xs"></span></td>
+              <td><span class="skeleton skeleton--short"></span></td>
+            </tr>
+          }
+        }
+
+        <!-- Data rows -->
+        @if (!loading() && page()) {
+          @for (crash of page()!.content; track crash.crashId) {
+            <tr class="crash-table__row">
+              <td class="crash-table__td crash-table__td--mono">
+                {{ crash.caseNumber ?? '—' }}
+              </td>
+              <td class="crash-table__td crash-table__td--mono">
+                {{ formatDate(crash.crashDate) }}
+              </td>
+              <td class="crash-table__td crash-table__td--mono">
+                {{ crash.crashTime ?? '—' }}
+              </td>
+              <td class="crash-table__td">
+                {{ formatLocation(crash) }}
+              </td>
+              <td class="crash-table__td crash-table__td--center">
+                @if (crash.totalFatalities > 0) {
+                  <span class="badge badge--danger" [attr.aria-label]="crash.totalFatalities + ' fatalities'">
+                    {{ crash.totalFatalities }}
+                  </span>
+                } @else {
+                  <span class="crash-table__zero">0</span>
+                }
+              </td>
+              <td class="crash-table__td crash-table__td--center">
+                @if (crash.totalInjuries > 0) {
+                  <span class="badge badge--warning" [attr.aria-label]="crash.totalInjuries + ' injuries'">
+                    {{ crash.totalInjuries }}
+                  </span>
+                } @else {
+                  <span class="crash-table__zero">0</span>
+                }
+              </td>
+              <td class="crash-table__td crash-table__td--center">
+                {{ crash.vehicleCount }}
+              </td>
+              <td class="crash-table__td crash-table__td--center">
+                {{ crash.personCount }}
+              </td>
+              <td class="crash-table__td crash-table__td--actions">
+                <a
+                  [routerLink]="['/crashes', crash.crashId]"
+                  class="btn btn--sm btn--outline"
+                  aria-disabled="true"
+                  tabindex="-1"
+                  [attr.aria-label]="'View crash ' + (crash.caseNumber ?? crash.crashId)"
+                >
+                  View
+                </a>
+              </td>
+            </tr>
+          }
+        }
+
+      </tbody>
+    </table>
+
+    <!-- Empty state -->
+    @if (!loading() && page() && page()!.content.length === 0) {
+      <div class="empty-state" role="status" aria-live="polite">
+        <svg class="empty-state__icon" aria-hidden="true" focusable="false" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <p class="empty-state__heading">No crashes found</p>
+        <p class="empty-state__body">Try adjusting your filters or broadening the date range.</p>
+      </div>
+    }
+  </div>
+
+  <!-- ── Pagination ─────────────────────────────────────────────────────── -->
+  @if (!loading() && page() && page()!.totalElements > 0) {
+    <div class="pagination" role="navigation" aria-label="Pagination">
+
+      <div class="pagination__info">
+        Showing
+        <strong>{{ rangeStart() }}</strong>
+        –
+        <strong>{{ rangeEnd() }}</strong>
+        of
+        <strong>{{ page()!.totalElements }}</strong>
+        results
+      </div>
+
+      <div class="pagination__controls">
+        <button
+          type="button"
+          class="btn btn--sm btn--outline"
+          [disabled]="page()!.first"
+          (click)="goToPage(currentPage() - 1)"
+          aria-label="Previous page"
+        >
+          &lsaquo; Prev
+        </button>
+
+        <span class="pagination__page-indicator" aria-current="page" [attr.aria-label]="'Page ' + (currentPage() + 1) + ' of ' + page()?.totalPages">
+          {{ currentPage() + 1 }} / {{ page()!.totalPages }}
+        </span>
+
+        <button
+          type="button"
+          class="btn btn--sm btn--outline"
+          [disabled]="page()!.last"
+          (click)="goToPage(currentPage() + 1)"
+          aria-label="Next page"
+        >
+          Next &rsaquo;
+        </button>
+      </div>
+
+      <div class="pagination__size">
+        <label for="page-size" class="pagination__size-label">Rows per page</label>
+        <select
+          id="page-size"
+          class="pagination__size-select"
+          [value]="pageSize()"
+          (change)="changePageSize($event)"
+          aria-label="Rows per page"
+        >
+          @for (opt of pageSizeOptions; track opt) {
+            <option [value]="opt" [selected]="opt === pageSize()">{{ opt }}</option>
+          }
+        </select>
+      </div>
+
+    </div>
+  }
+
+</div>
