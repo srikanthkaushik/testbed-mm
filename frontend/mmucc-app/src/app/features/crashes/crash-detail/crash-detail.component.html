@@ -1,0 +1,352 @@
+<div class="detail">
+
+  <!-- ── Back link ──────────────────────────────────────────────────────── -->
+  <a [routerLink]="['/crashes']" class="detail__back">
+    <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24"
+         fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 18 9 12 15 6"/>
+    </svg>
+    Back to Crashes
+  </a>
+
+  <!-- ── Loading state ─────────────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="detail__loading" role="status" aria-live="polite">
+      <span class="spinner" aria-hidden="true"></span>
+      <span class="sr-only">Loading crash record…</span>
+    </div>
+  }
+
+  <!-- ── Error state ───────────────────────────────────────────────────── -->
+  @if (errorMessage()) {
+    <app-alert [message]="errorMessage()" type="error" />
+  }
+
+  <!-- ── Loaded content ────────────────────────────────────────────────── -->
+  @if (!loading() && crash()) {
+    <div class="detail__content">
+
+      <!-- Header -->
+      <div class="detail__header">
+        <div class="detail__title-row">
+          <h1 class="detail__title">{{ pageTitle() }}</h1>
+          <span class="badge" [class]="severityBadgeClass(crash()!.crashSeverityCode)">
+            {{ severityLabel(crash()!.crashSeverityCode) }}
+          </span>
+        </div>
+        <p class="detail__subtitle">
+          {{ formatDate(crash()!.crashDate) }}
+          @if (crash()!.crashTime) { at {{ formatTime(crash()!.crashTime) }} }
+          &nbsp;·&nbsp;
+          {{ crash()!.cityPlaceName ?? '' }}{{ crash()!.cityPlaceName && crash()!.countyName ? ', ' : '' }}{{ crash()!.countyName ?? '' }}
+        </p>
+      </div>
+
+      <!-- Stats strip -->
+      <div class="stats-strip" role="list" aria-label="Crash summary statistics">
+        <div class="stat-card" role="listitem">
+          <span class="stat-card__value">{{ crash()!.numFatalities ?? 0 }}</span>
+          <span class="stat-card__label">Fatalities</span>
+        </div>
+        <div class="stat-card" role="listitem">
+          <span class="stat-card__value">{{ crash()!.numNonFatallyInjured ?? 0 }}</span>
+          <span class="stat-card__label">Injured</span>
+        </div>
+        <div class="stat-card" role="listitem">
+          <span class="stat-card__value">{{ crash()!.numMotorVehicles ?? 0 }}</span>
+          <span class="stat-card__label">Vehicles</span>
+        </div>
+        <div class="stat-card" role="listitem">
+          <span class="stat-card__value">{{ (crash()!.numMotorists ?? 0) + (crash()!.numNonMotorists ?? 0) }}</span>
+          <span class="stat-card__label">Persons</span>
+        </div>
+      </div>
+
+      <!-- Tab bar -->
+      <div class="tabs" role="tablist" aria-label="Crash detail sections">
+        @for (tab of tabs; track tab.id) {
+          <button
+            type="button"
+            role="tab"
+            class="tabs__tab"
+            [class.tabs__tab--active]="activeTab() === tab.id"
+            [attr.aria-selected]="activeTab() === tab.id"
+            [attr.aria-controls]="'panel-' + tab.id"
+            [id]="'tab-' + tab.id"
+            (click)="setTab(tab.id)"
+          >
+            {{ tab.label }}
+          </button>
+        }
+      </div>
+
+      <!-- ── Overview tab ─────────────────────────────────────────────── -->
+      @if (activeTab() === 'overview') {
+        <div
+          id="panel-overview"
+          role="tabpanel"
+          aria-labelledby="tab-overview"
+          class="tab-panel"
+        >
+          <div class="field-grid">
+
+            <div class="field-section">
+              <h2 class="field-section__title">Identification</h2>
+              <dl class="field-list">
+                <div class="field-list__row">
+                  <dt>Case Number</dt>
+                  <dd>{{ nullOr(crash()!.crashIdentifier) }}</dd>
+                </div>
+                <div class="field-list__row">
+                  <dt>Day of Week</dt>
+                  <dd>{{ dayLabel(crash()!.dayOfWeekCode) }}</dd>
+                </div>
+              </dl>
+            </div>
+
+            <div class="field-section">
+              <h2 class="field-section__title">Location</h2>
+              <dl class="field-list">
+                <div class="field-list__row">
+                  <dt>County FIPS</dt>
+                  <dd>{{ nullOr(crash()!.countyFipsCode) }}</dd>
+                </div>
+                <div class="field-list__row">
+                  <dt>County</dt>
+                  <dd>{{ nullOr(crash()!.countyName) }}</dd>
+                </div>
+                <div class="field-list__row">
+                  <dt>City / Place</dt>
+                  <dd>{{ nullOr(crash()!.cityPlaceName) }}</dd>
+                </div>
+                <div class="field-list__row">
+                  <dt>Latitude</dt>
+                  <dd>{{ formatCoord(crash()!.latitude) }}</dd>
+                </div>
+                <div class="field-list__row">
+                  <dt>Longitude</dt>
+                  <dd>{{ formatCoord(crash()!.longitude) }}</dd>
+                </div>
+                <div class="field-list__row">
+                  <dt>Route ID</dt>
+                  <dd>{{ nullOr(crash()!.routeId) }}</dd>
+                </div>
+              </dl>
+            </div>
+
+            <div class="field-section">
+              <h2 class="field-section__title">Conditions</h2>
+              <dl class="field-list">
+                <div class="field-list__row">
+                  <dt>Manner of Collision</dt>
+                  <dd>{{ nullOr(crash()!.mannerCollisionCode) }}</dd>
+                </div>
+                <div class="field-list__row">
+                  <dt>Light Condition</dt>
+                  <dd>{{ nullOr(crash()!.lightConditionCode) }}</dd>
+                </div>
+                <div class="field-list__row">
+                  <dt>Weather</dt>
+                  <dd>
+                    @if (crash()!.weatherConditions.length) {
+                      {{ formatCodes(crash()!.weatherConditions) }}
+                    } @else {
+                      —
+                    }
+                  </dd>
+                </div>
+                <div class="field-list__row">
+                  <dt>Surface Condition</dt>
+                  <dd>
+                    @if (crash()!.surfaceConditions.length) {
+                      {{ formatCodes(crash()!.surfaceConditions) }}
+                    } @else {
+                      —
+                    }
+                  </dd>
+                </div>
+                <div class="field-list__row">
+                  <dt>Alcohol Involvement</dt>
+                  <dd>{{ nullOr(crash()!.alcoholInvolvementCode) }}</dd>
+                </div>
+                <div class="field-list__row">
+                  <dt>Drug Involvement</dt>
+                  <dd>{{ nullOr(crash()!.drugInvolvementCode) }}</dd>
+                </div>
+              </dl>
+            </div>
+
+            <div class="field-section">
+              <h2 class="field-section__title">Junction / Work Zone</h2>
+              <dl class="field-list">
+                <div class="field-list__row">
+                  <dt>Junction Type</dt>
+                  <dd>{{ nullOr(crash()!.junctionInterchangeFlg) }}</dd>
+                </div>
+                <div class="field-list__row">
+                  <dt>School Bus Related</dt>
+                  <dd>{{ crash()!.schoolBusRelatedCode === 1 ? 'Yes' : crash()!.schoolBusRelatedCode === 2 ? 'No' : '—' }}</dd>
+                </div>
+                <div class="field-list__row">
+                  <dt>Work Zone Related</dt>
+                  <dd>{{ crash()!.workZoneRelatedCode === 1 ? 'Yes' : crash()!.workZoneRelatedCode === 2 ? 'No' : '—' }}</dd>
+                </div>
+              </dl>
+            </div>
+
+          </div>
+        </div>
+      }
+
+      <!-- ── Vehicles tab ─────────────────────────────────────────────── -->
+      @if (activeTab() === 'vehicles') {
+        <div
+          id="panel-vehicles"
+          role="tabpanel"
+          aria-labelledby="tab-vehicles"
+          class="tab-panel"
+        >
+          @if (crash()!.vehicles.length === 0) {
+            <p class="empty-note">No vehicles recorded for this crash.</p>
+          } @else {
+            @for (v of crash()!.vehicles; track v.vehicleId) {
+              <div class="vehicle-card">
+                <h2 class="vehicle-card__title">
+                  Unit {{ v.unitNumber ?? '?' }} — {{ vehicleLabel(v) }}
+                </h2>
+                <div class="field-grid">
+
+                  <div class="field-section">
+                    <h3 class="field-section__title">Identification</h3>
+                    <dl class="field-list">
+                      <div class="field-list__row"><dt>VIN</dt><dd>{{ nullOr(v.vin) }}</dd></div>
+                      <div class="field-list__row"><dt>License Plate</dt><dd>{{ nullOr(v.licensePlate) }}</dd></div>
+                      <div class="field-list__row"><dt>State</dt><dd>{{ nullOr(v.registrationState) }}</dd></div>
+                      <div class="field-list__row"><dt>Reg. Year</dt><dd>{{ nullOr(v.registrationYear) }}</dd></div>
+                      <div class="field-list__row"><dt>Body Type</dt><dd>{{ nullOr(v.bodyTypeCode) }}</dd></div>
+                    </dl>
+                  </div>
+
+                  <div class="field-section">
+                    <h3 class="field-section__title">Travel & Damage</h3>
+                    <dl class="field-list">
+                      <div class="field-list__row"><dt>Speed Limit</dt><dd>{{ v.speedLimitMph != null ? v.speedLimitMph + ' mph' : '—' }}</dd></div>
+                      <div class="field-list__row"><dt>Maneuver</dt><dd>{{ nullOr(v.maneuverCode) }}</dd></div>
+                      <div class="field-list__row"><dt>Damage Extent</dt><dd>{{ nullOr(v.damageExtentCode) }}</dd></div>
+                      <div class="field-list__row"><dt>Hit &amp; Run</dt><dd>{{ v.hitAndRunCode === 1 ? 'Yes' : v.hitAndRunCode === 2 ? 'No' : '—' }}</dd></div>
+                      <div class="field-list__row"><dt>Towed</dt><dd>{{ nullOr(v.towedCode) }}</dd></div>
+                      <div class="field-list__row"><dt>Occupants</dt><dd>{{ nullOr(v.totalOccupants) }}</dd></div>
+                    </dl>
+                  </div>
+
+                  @if (v.sequenceEvents.length) {
+                    <div class="field-section">
+                      <h3 class="field-section__title">Sequence of Events</h3>
+                      <ol class="code-list">
+                        @for (e of v.sequenceEvents; track e.sequenceNum) {
+                          <li>Event {{ e.code }}</li>
+                        }
+                      </ol>
+                    </div>
+                  }
+
+                  @if (v.damageAreas.length) {
+                    <div class="field-section">
+                      <h3 class="field-section__title">Damage Areas</h3>
+                      <ul class="code-list">
+                        @for (d of v.damageAreas; track d.sequenceNum) {
+                          <li>Area {{ d.code }}</li>
+                        }
+                      </ul>
+                    </div>
+                  }
+
+                </div>
+              </div>
+            }
+          }
+        </div>
+      }
+
+      <!-- ── Roadway tab ──────────────────────────────────────────────── -->
+      @if (activeTab() === 'roadway') {
+        <div
+          id="panel-roadway"
+          role="tabpanel"
+          aria-labelledby="tab-roadway"
+          class="tab-panel"
+        >
+          @if (!crash()!.roadway) {
+            <p class="empty-note">No roadway data recorded for this crash.</p>
+          } @else {
+            <div class="field-grid">
+
+              <div class="field-section">
+                <h2 class="field-section__title">Classification</h2>
+                <dl class="field-list">
+                  <div class="field-list__row"><dt>Functional Class</dt><dd>{{ nullOr(crash()!.roadway!.functionalClassCode) }}</dd></div>
+                  <div class="field-list__row"><dt>National Highway System</dt><dd>{{ crash()!.roadway!.nationalHwySysCode === 1 ? 'Yes' : crash()!.roadway!.nationalHwySysCode === 2 ? 'No' : '—' }}</dd></div>
+                  <div class="field-list__row"><dt>Access Control</dt><dd>{{ nullOr(crash()!.roadway!.accessControlCode) }}</dd></div>
+                </dl>
+              </div>
+
+              <div class="field-section">
+                <h2 class="field-section__title">Geometry</h2>
+                <dl class="field-list">
+                  <div class="field-list__row"><dt>Lane Width</dt><dd>{{ crash()!.roadway!.laneWidthFt != null ? crash()!.roadway!.laneWidthFt + ' ft' : '—' }}</dd></div>
+                  <div class="field-list__row"><dt>Median Width</dt><dd>{{ crash()!.roadway!.medianWidthFt != null ? crash()!.roadway!.medianWidthFt + ' ft' : '—' }}</dd></div>
+                  <div class="field-list__row"><dt>Grade %</dt><dd>{{ crash()!.roadway!.gradePercent != null ? crash()!.roadway!.gradePercent + '%' : '—' }}</dd></div>
+                  <div class="field-list__row"><dt>Curve Radius</dt><dd>{{ crash()!.roadway!.curveRadiusFt != null ? crash()!.roadway!.curveRadiusFt + ' ft' : '—' }}</dd></div>
+                  <div class="field-list__row"><dt>Mainline Lanes</dt><dd>{{ nullOr(crash()!.roadway!.mainlineLanesCount) }}</dd></div>
+                </dl>
+              </div>
+
+              <div class="field-section">
+                <h2 class="field-section__title">Traffic Volume (AADT)</h2>
+                <dl class="field-list">
+                  <div class="field-list__row"><dt>AADT Year</dt><dd>{{ nullOr(crash()!.roadway!.aadtYear) }}</dd></div>
+                  <div class="field-list__row"><dt>AADT Value</dt><dd>{{ nullOr(crash()!.roadway!.aadtValue) }}</dd></div>
+                  <div class="field-list__row"><dt>Truck %</dt><dd>{{ nullOr(crash()!.roadway!.aadtTruckMeasure) }}</dd></div>
+                </dl>
+              </div>
+
+              <div class="field-section">
+                <h2 class="field-section__title">Markings &amp; Lighting</h2>
+                <dl class="field-list">
+                  <div class="field-list__row"><dt>Roadway Lighting</dt><dd>{{ nullOr(crash()!.roadway!.roadwayLightingCode) }}</dd></div>
+                  <div class="field-list__row"><dt>Centerline Pavement Marking</dt><dd>{{ nullOr(crash()!.roadway!.pavementCenterlineCode) }}</dd></div>
+                  <div class="field-list__row"><dt>Edgeline Pavement Marking</dt><dd>{{ nullOr(crash()!.roadway!.pavementEdgelineCode) }}</dd></div>
+                </dl>
+              </div>
+
+            </div>
+          }
+        </div>
+      }
+
+      <!-- ── Audit tab ────────────────────────────────────────────────── -->
+      @if (activeTab() === 'audit') {
+        <div
+          id="panel-audit"
+          role="tabpanel"
+          aria-labelledby="tab-audit"
+          class="tab-panel"
+        >
+          <div class="field-grid">
+            <div class="field-section">
+              <h2 class="field-section__title">Record History</h2>
+              <dl class="field-list">
+                <div class="field-list__row"><dt>Created By</dt><dd>{{ nullOr(crash()!.createdBy) }}</dd></div>
+                <div class="field-list__row"><dt>Created At</dt><dd>{{ formatDateTime(crash()!.createdDt) }}</dd></div>
+                <div class="field-list__row"><dt>Last Modified By</dt><dd>{{ nullOr(crash()!.modifiedBy) }}</dd></div>
+                <div class="field-list__row"><dt>Last Modified At</dt><dd>{{ formatDateTime(crash()!.modifiedDt) }}</dd></div>
+                <div class="field-list__row"><dt>Crash ID</dt><dd class="detail__id">{{ crash()!.crashId }}</dd></div>
+              </dl>
+            </div>
+          </div>
+        </div>
+      }
+
+    </div>
+  }
+</div>

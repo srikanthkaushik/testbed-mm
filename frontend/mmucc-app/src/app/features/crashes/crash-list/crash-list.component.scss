@@ -222,6 +222,14 @@
     }
   }
 
+  .crash-table__row--clickable {
+    cursor: pointer;
+
+    &:hover td {
+      background: var(--color-primary-light, #EFF6FF);
+    }
+  }
+
   &__td {
     padding: var(--space-3) var(--space-4);
     color: var(--color-text-body);

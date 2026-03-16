@@ -58,26 +58,27 @@ export type AlertType = 'error' | 'success' | 'warning' | 'info';
       line-height: 1.5;
       margin-bottom: var(--space-4);
 
-      &--error {
-        background: var(--color-error-bg);
-        border-color: var(--color-error-border);
-        color: var(--color-error);
-      }
-      &--success {
-        background: var(--color-success-bg);
-        border-color: #A7F3D0;
-        color: var(--color-success);
-      }
-      &--warning {
-        background: var(--color-warning-bg);
-        border-color: #FDE68A;
-        color: var(--color-warning);
-      }
-      &--info {
-        background: var(--color-primary-light);
-        border-color: #BFDBFE;
-        color: var(--color-primary);
-      }
+    }
+
+    .alert--error {
+      background: var(--color-error-bg);
+      border-color: var(--color-error-border);
+      color: var(--color-error);
+    }
+    .alert--success {
+      background: var(--color-success-bg);
+      border-color: #A7F3D0;
+      color: var(--color-success);
+    }
+    .alert--warning {
+      background: var(--color-warning-bg);
+      border-color: #FDE68A;
+      color: var(--color-warning);
+    }
+    .alert--info {
+      background: var(--color-primary-light);
+      border-color: #BFDBFE;
+      color: var(--color-primary);
     }
 
     .alert__icon {

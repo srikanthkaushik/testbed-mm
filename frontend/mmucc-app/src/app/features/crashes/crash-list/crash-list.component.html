@@ -129,10 +129,9 @@
           </th>
           <th scope="col" class="crash-table__th">Time</th>
           <th scope="col" class="crash-table__th">Location</th>
+          <th scope="col" class="crash-table__th crash-table__th--center">Severity</th>
           <th scope="col" class="crash-table__th crash-table__th--center">Fatalities</th>
-          <th scope="col" class="crash-table__th crash-table__th--center">Injuries</th>
           <th scope="col" class="crash-table__th crash-table__th--center">Vehicles</th>
-          <th scope="col" class="crash-table__th crash-table__th--center">Persons</th>
           <th scope="col" class="crash-table__th crash-table__th--actions">Actions</th>
         </tr>
       </thead>
@@ -150,7 +149,6 @@
               <td class="crash-table__td--center"><span class="skeleton skeleton--xs"></span></td>
               <td class="crash-table__td--center"><span class="skeleton skeleton--xs"></span></td>
               <td class="crash-table__td--center"><span class="skeleton skeleton--xs"></span></td>
-              <td class="crash-table__td--center"><span class="skeleton skeleton--xs"></span></td>
               <td><span class="skeleton skeleton--short"></span></td>
             </tr>
           }
@@ -159,50 +157,44 @@
         <!-- Data rows -->
         @if (!loading() && page()) {
           @for (crash of page()!.content; track crash.crashId) {
-            <tr class="crash-table__row">
+            <tr
+              class="crash-table__row crash-table__row--clickable"
+              [routerLink]="['/crashes', crash.crashId]"
+              role="link"
+              [attr.aria-label]="'View crash ' + (crash.crashIdentifier ?? crash.crashId)"
+            >
               <td class="crash-table__td crash-table__td--mono">
-                {{ crash.caseNumber ?? '—' }}
+                {{ crash.crashIdentifier ?? '—' }}
               </td>
               <td class="crash-table__td crash-table__td--mono">
                 {{ formatDate(crash.crashDate) }}
               </td>
               <td class="crash-table__td crash-table__td--mono">
-                {{ crash.crashTime ?? '—' }}
+                {{ crash.crashTime ? crash.crashTime.substring(0, 5) : '—' }}
               </td>
               <td class="crash-table__td">
                 {{ formatLocation(crash) }}
               </td>
               <td class="crash-table__td crash-table__td--center">
-                @if (crash.totalFatalities > 0) {
-                  <span class="badge badge--danger" [attr.aria-label]="crash.totalFatalities + ' fatalities'">
-                    {{ crash.totalFatalities }}
+                {{ severityLabel(crash.crashSeverityCode) }}
+              </td>
+              <td class="crash-table__td crash-table__td--center">
+                @if (crash.numFatalities > 0) {
+                  <span class="badge badge--danger" [attr.aria-label]="crash.numFatalities + ' fatalities'">
+                    {{ crash.numFatalities }}
                   </span>
                 } @else {
                   <span class="crash-table__zero">0</span>
                 }
               </td>
               <td class="crash-table__td crash-table__td--center">
-                @if (crash.totalInjuries > 0) {
-                  <span class="badge badge--warning" [attr.aria-label]="crash.totalInjuries + ' injuries'">
-                    {{ crash.totalInjuries }}
-                  </span>
-                } @else {
-                  <span class="crash-table__zero">0</span>
-                }
-              </td>
-              <td class="crash-table__td crash-table__td--center">
-                {{ crash.vehicleCount }}
-              </td>
-              <td class="crash-table__td crash-table__td--center">
-                {{ crash.personCount }}
+                {{ crash.numMotorVehicles }}
               </td>
               <td class="crash-table__td crash-table__td--actions">
                 <a
                   [routerLink]="['/crashes', crash.crashId]"
                   class="btn btn--sm btn--outline"
-                  aria-disabled="true"
-                  tabindex="-1"
-                  [attr.aria-label]="'View crash ' + (crash.caseNumber ?? crash.crashId)"
+                  [attr.aria-label]="'View crash ' + (crash.crashIdentifier ?? crash.crashId)"
                 >
                   View
                 </a>

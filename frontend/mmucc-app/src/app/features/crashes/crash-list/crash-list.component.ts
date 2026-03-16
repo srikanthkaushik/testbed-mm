@@ -177,8 +177,23 @@ export class CrashListComponent implements OnInit {
    * Builds a human-readable location string from city and county.
    */
   formatLocation(crash: CrashSummary): string {
-    const parts = [crash.cityName, crash.countyName].filter(Boolean);
+    const parts = [crash.cityPlaceName, crash.countyName].filter(Boolean);
     return parts.join(', ') || '—';
+  }
+
+  /**
+   * Returns a human-readable severity label for a MMUCC crash severity code.
+   * Codes: 1=Fatal, 2=Serious Injury, 3=Minor Injury, 4=Possible Injury, 5=No Apparent Injury (PDO)
+   */
+  severityLabel(code: number | null): string {
+    const labels: Record<number, string> = {
+      1: 'Fatal',
+      2: 'Serious Injury',
+      3: 'Minor Injury',
+      4: 'Possible Injury',
+      5: 'PDO',
+    };
+    return code != null ? (labels[code] ?? `Code ${code}`) : '—';
   }
 
   // ── Private helpers ───────────────────────────────────────────────────

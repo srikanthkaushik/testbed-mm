@@ -49,6 +49,16 @@ export const routes: Routes = [
         title: 'Crashes — MMUCC Crash Reporting',
       },
 
+      // Crash detail
+      {
+        path: 'crashes/:id',
+        loadComponent: () =>
+          import(
+            './features/crashes/crash-detail/crash-detail.component'
+          ).then((m) => m.CrashDetailComponent),
+        title: 'Crash Detail — MMUCC Crash Reporting',
+      },
+
       // Reports (placeholder)
       {
         path: 'reports',
