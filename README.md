@@ -23,23 +23,25 @@ MMUCC is a voluntary national guideline that defines a minimum set of 115 data e
 
 ## Project Status
 
-> **Phase: Backend Sprints 1–3 Complete — Frontend Sprint 1 Complete**
+> **Phase: Backend Sprints 1–3 Complete — Frontend Sprints 1–5 Complete**
 
 - [x] MMUCC v5 specification analysis
 - [x] MySQL 8.0 schema — 31 tables covering all 115 MMUCC data elements
 - [x] Oracle 19c schema — 26 tables with consolidated lookup table design
-- [x] Spring Boot microservices — auth-service (Sprint 1) and crash-service (Sprint 2) complete
+- [x] Spring Boot microservices — auth-service and crash-service complete
   - [x] auth-service — Firebase SSO, JWT + HttpOnly refresh-token rotation, user CRUD, RBAC (`ADMIN` / `DATA_ENTRY` / `ANALYST` / `VIEWER`)
   - [x] crash-service — full CRUD for crashes, vehicles, roadway, and all 6 multi-value child tables; Flyway migrations; Testcontainers integration tests
   - [x] crash-service — Person (P1–P27), Fatal Section, Non-Motorist, Large Vehicle/HazMat, Vehicle Automation; 28 integration tests passing
   - [ ] reference-service, audit enhancements, MMUCC validation rules — Sprint 4
   - [ ] report-service, CSV/Excel export — Sprint 5
-- [x] Angular frontend — Sprint 1 complete
-  - [x] Core services: `AuthService`, `FirebaseAuthService`, auth interceptor, auth guard, `APP_INITIALIZER` session restore
-  - [x] Login page — ADA/WCAG 2.1 AA compliant, Google SSO + email/password, muted color scheme
-  - [x] End-to-end authentication verified: Google sign-in → Firebase → auth-service JWT → crash-service requests authorized
-  - [ ] Dashboard, crash list, crash form, vehicle form, user management — Sprint 2+
+- [x] Angular frontend — Sprints 1–5 complete
+  - [x] Login page — ADA/WCAG 2.1 AA compliant, Google SSO + email/password
+  - [x] Authenticated shell — responsive nav, collapsible sidebar, role-aware links
+  - [x] Crash list — filters, sort, pagination, URL state sync, skeleton shimmer
+  - [x] Crash detail — tabbed view (Overview, Vehicles, Roadway, Audit), stats strip
+  - [ ] Crash entry form, vehicle form, admin, reports — Sprint 4+
 - [x] Authentication and authorization — JWT in-memory, HttpOnly refresh cookie, RBAC enforced at controller level
+- [x] Test data seed script — 8 realistic crash records with vehicles, roadway, weather/surface conditions
 - [ ] Reporting and data export
 
 ---
@@ -84,7 +86,9 @@ mmucc-develop/
     │   ├── 01_REF_CRASH_TYPE_TBL.sql
     │   ├── 02_REF_HARMFUL_EVENT_TBL.sql
     │   ├── ...                   (31 SQL files total)
-    │   └── 31_CRASH_AUDIT_LOG_TBL.sql
+    │   ├── 31_CRASH_AUDIT_LOG_TBL.sql
+    │   └── test-data/
+    │       └── seed_crashes.sql  Idempotent seed: 8 sample crashes with vehicles/roadway/conditions
     └── oracle/
         ├── README.md             Oracle 19c setup and verification guide
         ├── 01_LOOKUP_CODE_TYPES_TBL.sql

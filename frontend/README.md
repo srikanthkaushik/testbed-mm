@@ -55,10 +55,14 @@ frontend/
                 │   ├── shell.component.html      ← responsive nav + collapsible sidebar
                 │   └── shell.component.scss      ← layout, role badge, mobile breakpoints
                 └── crashes/
-                    └── crash-list/
-                        ├── crash-list.component.ts    ← filter/page/sort + URL sync
-                        ├── crash-list.component.html  ← table, filters, pagination controls
-                        └── crash-list.component.scss  ← table styling, skeleton shimmer
+                    ├── crash-list/
+                    │   ├── crash-list.component.ts    ← filter/page/sort + URL sync
+                    │   ├── crash-list.component.html  ← table, filters, pagination controls
+                    │   └── crash-list.component.scss  ← table styling, skeleton shimmer
+                    └── crash-detail/
+                        ├── crash-detail.component.ts    ← tabbed detail, signals, formatters
+                        ├── crash-detail.component.html  ← 4-tab layout with stats strip
+                        └── crash-detail.component.scss  ← field grid, vehicle cards, tab bar
 ```
 
 ---
@@ -167,6 +171,7 @@ User
 | `/login` | `LoginComponent` | — | Public |
 | `/` | — | — | Redirects to `/crashes` |
 | `/crashes` | `CrashListComponent` | `authGuard` | Authenticated |
+| `/crashes/:id` | `CrashDetailComponent` | `authGuard` | Authenticated |
 | `/dashboard` | `ComingSoonComponent` | `authGuard` | Authenticated |
 | `/reports` | `ComingSoonComponent` | `authGuard` | Authenticated |
 | `/admin/users` | `ComingSoonComponent` | `authGuard` | Authenticated |
@@ -233,7 +238,7 @@ All colour values are defined as CSS custom properties in `src/styles.scss`:
 | **Sprint 2** | Authenticated shell (responsive nav + collapsible sidebar, role-aware links, logout) | ✅ Complete |
 | **Sprint 3** | Crash list with date/county filters, sort, pagination, URL state sync, skeleton shimmer | ✅ Complete |
 | **Sprint 4** | Multi-step crash entry form (C1–C27 MMUCC fields) | 🔲 Not started |
-| **Sprint 5** | Crash detail view (tabbed: overview, vehicles, roadway, audit log) | 🔲 Not started |
+| **Sprint 5** | Crash detail view (tabbed: overview, vehicles, roadway, audit log) | ✅ Complete |
 | **Sprint 6** | Vehicle entry modal (V1–V24), roadway upsert form | 🔲 Not started |
 | **Sprint 7** | Admin: user management, role assignment | 🔲 Not started |
 | **Sprint 8** | Reports, CSV export, analytics charts | 🔲 Not started |
@@ -269,3 +274,18 @@ All colour values are defined as CSS custom properties in `src/styles.scss`:
 - [x] "Showing X–Y of Z records" label driven by computed signals
 - [x] URL query-param sync — filter + page + sort state survives browser back/forward and bookmarks
 - [x] Skeleton shimmer rows shown during load; `AlertComponent` shown on fetch error
+- [x] Field names corrected to match backend DTOs (`crashIdentifier`, `cityPlaceName`, `numFatalities`, `numMotorVehicles`, `crashSeverityCode`)
+- [x] Severity column added to list; Injuries/Persons columns removed (not in summary response); rows clickable
+
+### Sprint 5 — Completed
+
+- [x] `CrashDetailComponent` — tabbed read-only detail page at `/crashes/:id`
+- [x] Stats strip — fatalities, injured, vehicles, persons counts from the detail response
+- [x] **Overview tab** — identification, location (lat/lng, county, city, route), collision conditions (weather codes, surface codes, light, manner), junction/work zone fields
+- [x] **Vehicles tab** — card per vehicle: unit number, make/model/year, speed limit, maneuver, damage extent/contact, tow status, sequence-of-events list, damage areas list
+- [x] **Roadway tab** — functional class, NHS membership, AADT, lane width, grade, curve radius, pavement markings, lighting
+- [x] **Audit tab** — created by/at, last modified by/at, crash ID
+- [x] Back link to crash list; spinner during load; `AlertComponent` on fetch error
+- [x] `CrashDetail`, `VehicleDetail`, `RoadwayDetail`, `ChildCode`, `TrafficControl` TypeScript interfaces added to `crash.models.ts`
+- [x] `CrashService.getCrash(id)` — typed `GET /crashes/{id}`
+- [x] View button in crash list enabled; rows now navigate directly to detail on click

@@ -248,6 +248,42 @@ The Spring Boot service layer is responsible for populating `MODIFIED_BY` and `M
 
 ---
 
+## Test Data Seed Script
+
+`test-data/seed_crashes.sql` inserts **8 realistic sample crash records** (case numbers `TEST-001` through `TEST-008`) so the UI crash list and crash detail views have data to display immediately after setup.
+
+The script is **idempotent** — it deletes any existing `TEST-*` records (cascade removes all child rows) before inserting, so it is safe to re-run at any time without duplicating data.
+
+### What it seeds
+
+| Case # | Date | County | Scenario | Severity | Vehicles |
+|---|---|---|---|---|---|
+| TEST-001 | 2024-07-15 | Wayne (Detroit) | Fatal rear-end, I-94 | Fatal (1) | 2 |
+| TEST-002 | 2024-08-22 | Oakland (Troy) | Angle collision, signalized intersection | Serious Injury | 2 |
+| TEST-003 | 2024-09-10 | Washtenaw (Ann Arbor) | Single vehicle rollover, rain + fog | Minor Injury | 1 |
+| TEST-004 | 2024-10-05 | Macomb (Sterling Heights) | Head-on, dark road | Fatal (1) | 2 |
+| TEST-005 | 2024-11-12 | Wayne (Detroit) | PDO rear-end, I-696 | PDO | 2 |
+| TEST-006 | 2024-11-28 | Wayne (Dearborn) | Sideswipe, nighttime | Possible Injury | 2 |
+| TEST-007 | 2025-01-08 | Ingham (Lansing) | Work zone, pedestrian involved | Serious Injury | 2 |
+| TEST-008 | 2025-02-03 | Kent (Grand Rapids) | 3-vehicle chain, snow + ice | Minor Injury | 3 |
+
+Child data included: 10 vehicles, 4 roadway records, 6 weather conditions, 2 surface conditions, 5 vehicle sequence events.
+
+### How to run
+
+```bash
+mysql -u <USERNAME> -p <DATABASE_NAME> < test-data/seed_crashes.sql
+```
+
+### To remove test data
+
+```sql
+DELETE FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER LIKE 'TEST-%';
+-- Cascade deletes all child records automatically
+```
+
+---
+
 ## Drop All Tables (if re-running from scratch)
 
 Run this **only** in a development or test environment. Tables must be dropped in reverse dependency order.
