@@ -1,35 +1,34 @@
 -- =============================================================================
 -- Test Data Seed Script — MMUCC Crash Reporting System
 -- File    : seed_crashes.sql
--- Purpose : Insert realistic sample crash records so the UI has data to
---           display in the crash list and crash detail views.
 -- State   : New Hampshire (FIPS state prefix 33)
--- Safety  : All test records use the prefix 'TEST-' in CRS_CRASH_IDENTIFIER.
---           The DELETE at the top removes only those rows (cascades to all
---           child tables), so this script is safe to re-run at any time.
+-- Covers  : CRASH_TBL, VEHICLE_TBL, ROADWAY_TBL, PERSON_TBL,
+--           FATAL_SECTION_TBL, NON_MOTORIST_TBL,
+--           CRASH_WEATHER_CONDITION_TBL, CRASH_SURFACE_CONDITION_TBL,
+--           VEHICLE_SEQUENCE_EVENT_TBL, VEHICLE_DAMAGE_AREA_TBL,
+--           VEHICLE_TRAFFIC_CONTROL_TBL, PERSON_DRIVER_ACTION_TBL
+-- Safety  : All test records use prefix 'TEST-' in CRS_CRASH_IDENTIFIER.
+--           The DELETE at the top cascades to all child tables.
+--           Script is safe to re-run at any time.
 -- Run     : mysql -u mmucc_user -p mmucc5 < seed_crashes.sql
 -- =============================================================================
 
 SET FOREIGN_KEY_CHECKS = 0;
-
--- ---------------------------------------------------------------------------
--- Clean out any previously seeded test records (cascade deletes all children)
--- ---------------------------------------------------------------------------
 DELETE FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER LIKE 'TEST-%';
-
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- ===========================================================================
--- NH COUNTY FIPS REFERENCE
+-- NH COUNTY FIPS:
 --   Belknap 33001 | Carroll 33003 | Cheshire 33005 | Coos    33007
 --   Grafton 33009 | Hillsborough 33011 | Merrimack 33013 | Rockingham 33015
 --   Strafford 33017 | Sullivan 33019
 -- ===========================================================================
 
--- ---------------------------------------------------------------------------
--- CRASH 1 — Fatal rear-end collision, I-93 southbound near Manchester
---           Hillsborough County — 1 fatality, 2 vehicles, daytime, clear
--- ---------------------------------------------------------------------------
+-- ===========================================================================
+-- SECTION 1 — CRASHES
+-- ===========================================================================
+
+-- TEST-001: Fatal rear-end, I-93 SB near Manchester, Hillsborough County
 INSERT INTO CRASH_TBL (
     CRS_CRASH_IDENTIFIER, CRS_CRASH_TYPE_CODE, CRS_FIRST_HARMFUL_EVENT_CODE,
     CRS_CRASH_DATE, CRS_CRASH_TIME,
@@ -45,25 +44,15 @@ INSERT INTO CRASH_TBL (
     CRS_ALCOHOL_INVOLVEMENT_CODE, CRS_DRUG_INVOLVEMENT_CODE, CRS_DAY_OF_WEEK_CODE,
     CRS_CREATED_BY, CRS_LAST_UPDATED_ACTIVITY_CODE
 ) VALUES (
-    'TEST-001', 2, 29,
-    '2024-07-15', '14:23:00',
+    'TEST-001', 2, 29, '2024-07-15', '14:23:00',
     '33011', 'Hillsborough', '3349060', 'Manchester',
-    'I-93', 3, 6,
-    42.9705, -71.4521,
-    1, 2,
-    1, 1,
-    1, 1, 1,
-    1,
-    2, 3, 0,
-    0, 1,
-    2, 2, 2,
+    'I-93', 3, 6, 42.9705, -71.4521,
+    1, 2, 1, 1, 1, 1, 1, 1,
+    2, 3, 0, 0, 1, 2, 2, 2,
     'seed_script', 'IMPORT'
 );
 
--- ---------------------------------------------------------------------------
--- CRASH 2 — Angle collision at signalized intersection, Rockingham County
---           Portsmouth, US-1 at Woodbury Ave — 2 serious injuries, evening
--- ---------------------------------------------------------------------------
+-- TEST-002: Angle collision, US-1 at signalized intersection, Portsmouth
 INSERT INTO CRASH_TBL (
     CRS_CRASH_IDENTIFIER, CRS_CRASH_TYPE_CODE, CRS_FIRST_HARMFUL_EVENT_CODE,
     CRS_CRASH_DATE, CRS_CRASH_TIME,
@@ -81,27 +70,15 @@ INSERT INTO CRASH_TBL (
     CRS_ALCOHOL_INVOLVEMENT_CODE, CRS_DRUG_INVOLVEMENT_CODE, CRS_DAY_OF_WEEK_CODE,
     CRS_CREATED_BY, CRS_LAST_UPDATED_ACTIVITY_CODE
 ) VALUES (
-    'TEST-002', 4, 25,
-    '2024-08-22', '18:05:00',
+    'TEST-002', 4, 25, '2024-08-22', '18:05:00',
     '33015', 'Rockingham', '3362440', 'Portsmouth',
-    'US-1', 2,
-    43.0591, -70.7631,
-    1, 5,
-    1, 5,
-    2, 5,
-    4, 3, 1,
-    1, 1,
-    2,
-    2, 4, 0,
-    2, 0,
-    2, 2, 5,
+    'US-1', 2, 43.0591, -70.7631,
+    1, 5, 1, 5, 2, 5, 4, 3, 1, 1, 1, 2,
+    2, 4, 0, 2, 0, 2, 2, 5,
     'seed_script', 'IMPORT'
 );
 
--- ---------------------------------------------------------------------------
--- CRASH 3 — Single vehicle rollover, Grafton County
---           NH-16 northbound near North Conway — 3 minor injuries, rain + fog
--- ---------------------------------------------------------------------------
+-- TEST-003: Single vehicle rollover, NH-16 NB near Conway, rain + fog
 INSERT INTO CRASH_TBL (
     CRS_CRASH_IDENTIFIER, CRS_CRASH_TYPE_CODE, CRS_FIRST_HARMFUL_EVENT_CODE,
     CRS_CRASH_DATE, CRS_CRASH_TIME,
@@ -117,25 +94,15 @@ INSERT INTO CRASH_TBL (
     CRS_ALCOHOL_INVOLVEMENT_CODE, CRS_DRUG_INVOLVEMENT_CODE, CRS_DAY_OF_WEEK_CODE,
     CRS_CREATED_BY, CRS_LAST_UPDATED_ACTIVITY_CODE
 ) VALUES (
-    'TEST-003', 1, 11,
-    '2024-09-10', '22:47:00',
+    'TEST-003', 1, 11, '2024-09-10', '22:47:00',
     '33003', 'Carroll', '3314300', 'Conway',
-    'NH-16', 1,
-    44.0531, -71.1275,
-    1, 1,
-    1, 3,
-    1, 1, 1,
-    3,
-    1, 2, 0,
-    3, 0,
-    2, 2, 3,
+    'NH-16', 1, 44.0531, -71.1275,
+    1, 1, 1, 3, 1, 1, 1, 3,
+    1, 3, 0, 3, 0, 2, 2, 3,
     'seed_script', 'IMPORT'
 );
 
--- ---------------------------------------------------------------------------
--- CRASH 4 — Head-on collision, Carroll County
---           US-302 through Crawford Notch — 1 fatality, 1 serious injury, dark
--- ---------------------------------------------------------------------------
+-- TEST-004: Head-on collision, US-302 through Crawford Notch, 1 fatality, dark
 INSERT INTO CRASH_TBL (
     CRS_CRASH_IDENTIFIER, CRS_CRASH_TYPE_CODE, CRS_FIRST_HARMFUL_EVENT_CODE,
     CRS_CRASH_DATE, CRS_CRASH_TIME,
@@ -151,25 +118,15 @@ INSERT INTO CRASH_TBL (
     CRS_ALCOHOL_INVOLVEMENT_CODE, CRS_DRUG_INVOLVEMENT_CODE, CRS_DAY_OF_WEEK_CODE,
     CRS_CREATED_BY, CRS_LAST_UPDATED_ACTIVITY_CODE
 ) VALUES (
-    'TEST-004', 3, 25,
-    '2024-10-05', '02:15:00',
+    'TEST-004', 3, 25, '2024-10-05', '02:15:00',
     '33003', 'Carroll', '3321900', 'Hart''s Location',
-    'US-302', 2, 3,
-    44.2167, -71.4021,
-    1, 3,
-    1, 2,
-    1, 1, 1,
-    1,
-    2, 3, 0,
-    1, 1,
-    2, 2, 7,
+    'US-302', 2, 3, 44.2167, -71.4021,
+    1, 3, 1, 2, 1, 1, 1, 1,
+    2, 3, 0, 1, 1, 2, 2, 7,
     'seed_script', 'IMPORT'
 );
 
--- ---------------------------------------------------------------------------
--- CRASH 5 — PDO rear-end, F.E. Everett Turnpike (US-3), Hillsborough County
---           Near Nashua — no injuries, 2 vehicles, morning rush, daylight
--- ---------------------------------------------------------------------------
+-- TEST-005: PDO rear-end, F.E. Everett Turnpike (US-3) near Nashua
 INSERT INTO CRASH_TBL (
     CRS_CRASH_IDENTIFIER, CRS_CRASH_TYPE_CODE, CRS_FIRST_HARMFUL_EVENT_CODE,
     CRS_CRASH_DATE, CRS_CRASH_TIME,
@@ -185,25 +142,15 @@ INSERT INTO CRASH_TBL (
     CRS_ALCOHOL_INVOLVEMENT_CODE, CRS_DRUG_INVOLVEMENT_CODE, CRS_DAY_OF_WEEK_CODE,
     CRS_CREATED_BY, CRS_LAST_UPDATED_ACTIVITY_CODE
 ) VALUES (
-    'TEST-005', 2, 29,
-    '2024-11-12', '08:33:00',
+    'TEST-005', 2, 29, '2024-11-12', '08:33:00',
     '33011', 'Hillsborough', '3358300', 'Nashua',
-    'US-3', 2, 1,
-    42.7724, -71.4802,
-    1, 2,
-    1, 1,
-    1, 1, 1,
-    5,
-    2, 2, 0,
-    0, 0,
-    2, 2, 3,
+    'US-3', 2, 1, 42.7724, -71.4802,
+    1, 2, 1, 1, 1, 1, 1, 5,
+    2, 2, 0, 0, 0, 2, 2, 3,
     'seed_script', 'IMPORT'
 );
 
--- ---------------------------------------------------------------------------
--- CRASH 6 — Sideswipe, nighttime, Merrimack County
---           NH-9 westbound near Concord — 1 possible injury, dark-lighted
--- ---------------------------------------------------------------------------
+-- TEST-006: Sideswipe, NH-9 WB near Concord, nighttime, 1 possible injury
 INSERT INTO CRASH_TBL (
     CRS_CRASH_IDENTIFIER, CRS_CRASH_TYPE_CODE, CRS_FIRST_HARMFUL_EVENT_CODE,
     CRS_CRASH_DATE, CRS_CRASH_TIME,
@@ -219,25 +166,15 @@ INSERT INTO CRASH_TBL (
     CRS_ALCOHOL_INVOLVEMENT_CODE, CRS_DRUG_INVOLVEMENT_CODE, CRS_DAY_OF_WEEK_CODE,
     CRS_CREATED_BY, CRS_LAST_UPDATED_ACTIVITY_CODE
 ) VALUES (
-    'TEST-006', 2, 27,
-    '2024-11-28', '23:11:00',
+    'TEST-006', 2, 27, '2024-11-28', '23:11:00',
     '33013', 'Merrimack', '3318820', 'Concord',
-    'NH-9', 1,
-    43.2030, -71.5680,
-    1, 6,
-    1, 3,
-    1, 1, 1,
-    4,
-    2, 2, 0,
-    1, 0,
-    2, 2, 5,
+    'NH-9', 1, 43.2030, -71.5680,
+    1, 6, 1, 3, 1, 1, 1, 4,
+    2, 2, 0, 1, 0, 2, 2, 5,
     'seed_script', 'IMPORT'
 );
 
--- ---------------------------------------------------------------------------
--- CRASH 7 — Work zone crash with pedestrian, Rockingham County
---           I-95 northbound near Hampton toll plaza — 1 serious injury
--- ---------------------------------------------------------------------------
+-- TEST-007: Work zone crash with pedestrian, I-95 NB near Hampton toll plaza
 INSERT INTO CRASH_TBL (
     CRS_CRASH_IDENTIFIER, CRS_CRASH_TYPE_CODE, CRS_FIRST_HARMFUL_EVENT_CODE,
     CRS_CRASH_DATE, CRS_CRASH_TIME,
@@ -255,27 +192,15 @@ INSERT INTO CRASH_TBL (
     CRS_ALCOHOL_INVOLVEMENT_CODE, CRS_DRUG_INVOLVEMENT_CODE, CRS_DAY_OF_WEEK_CODE,
     CRS_CREATED_BY, CRS_LAST_UPDATED_ACTIVITY_CODE
 ) VALUES (
-    'TEST-007', 2, 19,
-    '2025-01-08', '07:50:00',
+    'TEST-007', 2, 19, '2025-01-08', '07:50:00',
     '33015', 'Rockingham', '3333980', 'Hampton',
-    'I-95', 3,
-    42.9331, -70.8384,
-    1, 5,
-    1, 1,
-    1, 1,
-    2, 4, 1,
-    2, 2,
-    2,
-    2, 3, 1,
-    1, 0,
-    2, 2, 4,
+    'I-95', 3, 42.9331, -70.8384,
+    1, 5, 1, 1, 1, 1, 2, 4, 1, 2, 2, 2,
+    2, 3, 1, 1, 0, 2, 2, 4,
     'seed_script', 'IMPORT'
 );
 
--- ---------------------------------------------------------------------------
--- CRASH 8 — Multi-vehicle (3+), icy/snowy conditions, Belknap County
---           NH-11 near Laconia — 2 minor injuries, winter morning, 3 vehicles
--- ---------------------------------------------------------------------------
+-- TEST-008: 3-vehicle chain reaction, NH-11 near Laconia, snow + ice
 INSERT INTO CRASH_TBL (
     CRS_CRASH_IDENTIFIER, CRS_CRASH_TYPE_CODE, CRS_FIRST_HARMFUL_EVENT_CODE,
     CRS_CRASH_DATE, CRS_CRASH_TIME,
@@ -291,28 +216,31 @@ INSERT INTO CRASH_TBL (
     CRS_ALCOHOL_INVOLVEMENT_CODE, CRS_DRUG_INVOLVEMENT_CODE, CRS_DAY_OF_WEEK_CODE,
     CRS_CREATED_BY, CRS_LAST_UPDATED_ACTIVITY_CODE
 ) VALUES (
-    'TEST-008', 6, 29,
-    '2025-02-03', '07:15:00',
+    'TEST-008', 6, 29, '2025-02-03', '07:15:00',
     '33001', 'Belknap', '3341300', 'Laconia',
-    'NH-11', 1, 3,
-    43.5279, -71.4703,
-    1, 2,
-    1, 1,
-    1, 1, 1,
-    3,
-    3, 5, 0,
-    2, 0,
-    2, 2, 2,
+    'NH-11', 1, 3, 43.5279, -71.4703,
+    1, 2, 1, 1, 1, 1, 1, 3,
+    3, 5, 0, 2, 0, 2, 2, 2,
     'seed_script', 'IMPORT'
 );
 
 -- ===========================================================================
--- VEHICLES
+-- SECTION 2 — CRASH ID VARIABLES
+-- ===========================================================================
+SET @c1 = (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-001');
+SET @c2 = (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-002');
+SET @c3 = (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-003');
+SET @c4 = (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-004');
+SET @c5 = (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-005');
+SET @c6 = (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-006');
+SET @c7 = (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-007');
+SET @c8 = (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-008');
+
+-- ===========================================================================
+-- SECTION 3 — VEHICLES
 -- ===========================================================================
 
--- ---------------------------------------------------------------------------
--- Vehicles for TEST-001 (fatal rear-end, I-93 near Manchester)
--- ---------------------------------------------------------------------------
+-- TEST-001: Fatal rear-end on I-93 (Unit 1 = Honda Accord striking, Unit 2 = Toyota Camry struck)
 INSERT INTO VEHICLE_TBL (
     VEH_CRASH_ID, VEH_VIN, VEH_UNIT_TYPE_CODE, VEH_UNIT_NUMBER,
     VEH_REGISTRATION_STATE, VEH_REGISTRATION_YEAR, VEH_LICENSE_PLATE,
@@ -323,41 +251,20 @@ INSERT INTO VEHICLE_TBL (
     VEH_TOTAL_THROUGH_LANES, VEH_ROADWAY_ALIGNMENT_CODE, VEH_ROADWAY_GRADE_CODE,
     VEH_MANEUVER_CODE, VEH_DAMAGE_INITIAL_CONTACT, VEH_DAMAGE_EXTENT_CODE,
     VEH_MOST_HARMFUL_EVENT_CODE, VEH_HIT_AND_RUN_CODE, VEH_TOWED_CODE,
-    VEH_CONTRIBUTING_CIRC_CODE,
-    VEH_CREATED_BY, VEH_LAST_UPDATED_ACTIVITY_CODE
+    VEH_CONTRIBUTING_CIRC_CODE, VEH_CREATED_BY, VEH_LAST_UPDATED_ACTIVITY_CODE
 ) VALUES
-(
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-001'),
-    '1HGBH41JXMN109186', 1, 1,
-    'NH', 2019, '4663991',
-    'Honda', 2019, 'Accord', 4,
-    1, 1, 1,
-    65, 6,
-    1, 3,
-    3, 1, 1,
-    6, 12, 3,
-    29, 1, 2,
-    0,
-    'seed_script', 'IMPORT'
+(   @c1, '1HGBH41JXMN109186', 1, 1,
+    'NH', 2019, '4663991', 'Honda', 2019, 'Accord', 4,
+    1, 1, 1, 65, 6, 1, 3, 3, 1, 1,
+    6, 12, 3, 29, 1, 2, 0, 'seed_script', 'IMPORT'
 ),
-(
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-001'),
-    '2T1BURHE0JC014827', 1, 2,
-    'NH', 2021, '4882107',
-    'Toyota', 2021, 'Camry', 4,
-    1, 1, 2,
-    65, 6,
-    1, 3,
-    3, 1, 1,
-    11, 1, 3,
-    29, 1, 2,
-    0,
-    'seed_script', 'IMPORT'
+(   @c1, '2T1BURHE0JC014827', 1, 2,
+    'NH', 2021, '4882107', 'Toyota', 2021, 'Camry', 4,
+    1, 1, 2, 65, 6, 1, 3, 3, 1, 1,
+    11, 6, 3, 29, 1, 2, 0, 'seed_script', 'IMPORT'
 );
 
--- ---------------------------------------------------------------------------
--- Vehicles for TEST-002 (angle collision, Portsmouth US-1)
--- ---------------------------------------------------------------------------
+-- TEST-002: Angle collision on US-1 at Woodbury Ave, Portsmouth
 INSERT INTO VEHICLE_TBL (
     VEH_CRASH_ID, VEH_UNIT_TYPE_CODE, VEH_UNIT_NUMBER,
     VEH_REGISTRATION_STATE, VEH_REGISTRATION_YEAR, VEH_LICENSE_PLATE,
@@ -370,36 +277,18 @@ INSERT INTO VEHICLE_TBL (
     VEH_MOST_HARMFUL_EVENT_CODE, VEH_HIT_AND_RUN_CODE, VEH_TOWED_CODE,
     VEH_CREATED_BY, VEH_LAST_UPDATED_ACTIVITY_CODE
 ) VALUES
-(
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-002'),
-    1, 1,
-    'NH', 2020, '3917452',
+(   @c2, 1, 1, 'NH', 2020, '3917452',
     'Ford', 2020, 'F-150', 19,
-    1, 1, 2,
-    35, 1,
-    2, 2,
-    1, 1,
-    13, 9, 3,
-    25, 1, 2,
-    'seed_script', 'IMPORT'
+    2, 1, 2, 35, 1, 2, 2, 1, 1,
+    13, 3, 3, 25, 1, 2, 'seed_script', 'IMPORT'
 ),
-(
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-002'),
-    1, 2,
-    'NH', 2022, '5024816',
+(   @c2, 1, 2, 'NH', 2022, '5024816',
     'Chevrolet', 2022, 'Malibu', 4,
-    1, 1, 2,
-    35, 6,
-    2, 2,
-    1, 1,
-    12, 3, 3,
-    25, 1, 2,
-    'seed_script', 'IMPORT'
+    1, 1, 2, 35, 6, 2, 2, 1, 1,
+    13, 9, 3, 25, 1, 2, 'seed_script', 'IMPORT'
 );
 
--- ---------------------------------------------------------------------------
--- Vehicle for TEST-003 (single vehicle rollover, NH-16 Conway)
--- ---------------------------------------------------------------------------
+-- TEST-003: Single vehicle rollover on NH-16 near Conway (3 occupants)
 INSERT INTO VEHICLE_TBL (
     VEH_CRASH_ID, VEH_VIN, VEH_UNIT_TYPE_CODE, VEH_UNIT_NUMBER,
     VEH_REGISTRATION_STATE, VEH_REGISTRATION_YEAR, VEH_LICENSE_PLATE,
@@ -412,22 +301,37 @@ INSERT INTO VEHICLE_TBL (
     VEH_MOST_HARMFUL_EVENT_CODE, VEH_HIT_AND_RUN_CODE, VEH_TOWED_CODE,
     VEH_CREATED_BY, VEH_LAST_UPDATED_ACTIVITY_CODE
 ) VALUES (
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-003'),
-    '5UXWX9C55E0D19282', 1, 1,
-    'NH', 2018, '2741039',
+    @c3, '5UXWX9C55E0D19282', 1, 1, 'NH', 2018, '2741039',
     'Subaru', 2018, 'Outback', 20,
-    1, 1, 3,
-    45, 1,
-    1, 2,
-    2, 2, 4,
-    7, 0, 3,
-    11, 1, 2,
-    'seed_script', 'IMPORT'
+    1, 1, 3, 45, 1, 2, 2, 2, 4, 4,
+    12, 12, 3, 11, 1, 2, 'seed_script', 'IMPORT'
 );
 
--- ---------------------------------------------------------------------------
--- Vehicles for TEST-005 (PDO rear-end, US-3 Everett Turnpike near Nashua)
--- ---------------------------------------------------------------------------
+-- TEST-004: Head-on collision, US-302 Crawford Notch (Unit 1 victim, Unit 2 wrong-way drunk)
+INSERT INTO VEHICLE_TBL (
+    VEH_CRASH_ID, VEH_VIN, VEH_UNIT_TYPE_CODE, VEH_UNIT_NUMBER,
+    VEH_REGISTRATION_STATE, VEH_REGISTRATION_YEAR, VEH_LICENSE_PLATE,
+    VEH_MAKE, VEH_MODEL_YEAR, VEH_MODEL, VEH_BODY_TYPE_CODE,
+    VEH_VEHICLE_SIZE_CODE, VEH_HM_PLACARD_FLG, VEH_TOTAL_OCCUPANTS,
+    VEH_SPEED_LIMIT_MPH, VEH_DIRECTION_OF_TRAVEL_CODE,
+    VEH_TRAFFICWAY_TRAVEL_DIR_CODE, VEH_TRAFFICWAY_DIVIDED_CODE,
+    VEH_TOTAL_THROUGH_LANES, VEH_ROADWAY_ALIGNMENT_CODE, VEH_ROADWAY_GRADE_CODE,
+    VEH_MANEUVER_CODE, VEH_DAMAGE_INITIAL_CONTACT, VEH_DAMAGE_EXTENT_CODE,
+    VEH_MOST_HARMFUL_EVENT_CODE, VEH_HIT_AND_RUN_CODE, VEH_TOWED_CODE,
+    VEH_CONTRIBUTING_CIRC_CODE, VEH_CREATED_BY, VEH_LAST_UPDATED_ACTIVITY_CODE
+) VALUES
+(   @c4, '1GCRYDED4KZ200001', 1, 1, 'NH', 2019, '2644870',
+    'Chevrolet', 2019, 'Silverado 1500', 19,
+    2, 1, 2, 45, 3, 2, 0, 2, 4, 4,
+    6, 12, 3, 25, 1, 2, 0, 'seed_script', 'IMPORT'
+),
+(   @c4, 'JM3KFADM7H0200002', 1, 2, 'NH', 2017, '1837562',
+    'Mazda', 2017, 'CX-5', 20,
+    1, 1, 1, 45, 9, 2, 0, 2, 4, 4,
+    3, 12, 3, 25, 1, 2, 0, 'seed_script', 'IMPORT'
+);
+
+-- TEST-005: PDO rear-end, US-3 Everett Turnpike near Nashua
 INSERT INTO VEHICLE_TBL (
     VEH_CRASH_ID, VEH_UNIT_TYPE_CODE, VEH_UNIT_NUMBER,
     VEH_REGISTRATION_STATE, VEH_REGISTRATION_YEAR, VEH_LICENSE_PLATE,
@@ -440,36 +344,66 @@ INSERT INTO VEHICLE_TBL (
     VEH_MOST_HARMFUL_EVENT_CODE, VEH_HIT_AND_RUN_CODE, VEH_TOWED_CODE,
     VEH_CREATED_BY, VEH_LAST_UPDATED_ACTIVITY_CODE
 ) VALUES
-(
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-005'),
-    1, 1,
-    'NH', 2023, '5113774',
+(   @c5, 1, 1, 'NH', 2023, '5113774',
     'Jeep', 2023, 'Grand Cherokee', 20,
-    1, 1, 1,
-    65, 1,
-    1, 3,
-    3, 1, 1,
-    6, 6, 1,
-    29, 1, 1,
-    'seed_script', 'IMPORT'
+    1, 1, 1, 65, 1, 1, 3, 3, 1, 1,
+    11, 6, 1, 29, 1, 0, 'seed_script', 'IMPORT'
 ),
-(
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-005'),
-    1, 2,
-    'NH', 2021, '4730562',
+(   @c5, 1, 2, 'NH', 2021, '4730562',
     'Nissan', 2021, 'Altima', 4,
-    1, 1, 1,
-    65, 1,
-    1, 3,
-    3, 1, 1,
-    10, 12, 1,
-    29, 1, 0,
-    'seed_script', 'IMPORT'
+    1, 1, 1, 65, 1, 1, 3, 3, 1, 1,
+    5, 12, 1, 29, 1, 1, 'seed_script', 'IMPORT'
 );
 
--- ---------------------------------------------------------------------------
--- Vehicles for TEST-008 (3-vehicle chain, NH-11 Laconia, icy)
--- ---------------------------------------------------------------------------
+-- TEST-006: Sideswipe, NH-9 WB near Concord (Unit 1 victim, Unit 2 lane-changer)
+INSERT INTO VEHICLE_TBL (
+    VEH_CRASH_ID, VEH_VIN, VEH_UNIT_TYPE_CODE, VEH_UNIT_NUMBER,
+    VEH_REGISTRATION_STATE, VEH_REGISTRATION_YEAR, VEH_LICENSE_PLATE,
+    VEH_MAKE, VEH_MODEL_YEAR, VEH_MODEL, VEH_BODY_TYPE_CODE,
+    VEH_VEHICLE_SIZE_CODE, VEH_HM_PLACARD_FLG, VEH_TOTAL_OCCUPANTS,
+    VEH_SPEED_LIMIT_MPH, VEH_DIRECTION_OF_TRAVEL_CODE,
+    VEH_TRAFFICWAY_TRAVEL_DIR_CODE, VEH_TRAFFICWAY_DIVIDED_CODE,
+    VEH_TOTAL_THROUGH_LANES, VEH_ROADWAY_ALIGNMENT_CODE, VEH_ROADWAY_GRADE_CODE,
+    VEH_MANEUVER_CODE, VEH_DAMAGE_INITIAL_CONTACT, VEH_DAMAGE_EXTENT_CODE,
+    VEH_MOST_HARMFUL_EVENT_CODE, VEH_HIT_AND_RUN_CODE, VEH_TOWED_CODE,
+    VEH_CONTRIBUTING_CIRC_CODE, VEH_CREATED_BY, VEH_LAST_UPDATED_ACTIVITY_CODE
+) VALUES
+(   @c6, '2T3W1RFV5MC200003', 1, 1, 'NH', 2021, '5229143',
+    'Toyota', 2021, 'RAV4', 20,
+    1, 1, 1, 35, 9, 2, 0, 2, 1, 1,
+    6, 3, 2, 27, 1, 2, 0, 'seed_script', 'IMPORT'
+),
+(   @c6, '2HGFC2F87LH200004', 1, 2, 'NH', 2020, '3982610',
+    'Honda', 2020, 'Civic', 4,
+    1, 1, 1, 35, 9, 2, 0, 2, 1, 1,
+    2, 9, 1, 27, 1, 0, 0, 'seed_script', 'IMPORT'
+);
+
+-- TEST-007: Work zone crash, I-95 NB Hampton (Unit 1 = F-250 struck worker, Unit 2 = Legacy)
+INSERT INTO VEHICLE_TBL (
+    VEH_CRASH_ID, VEH_VIN, VEH_UNIT_TYPE_CODE, VEH_UNIT_NUMBER,
+    VEH_REGISTRATION_STATE, VEH_REGISTRATION_YEAR, VEH_LICENSE_PLATE,
+    VEH_MAKE, VEH_MODEL_YEAR, VEH_MODEL, VEH_BODY_TYPE_CODE,
+    VEH_VEHICLE_SIZE_CODE, VEH_HM_PLACARD_FLG, VEH_TOTAL_OCCUPANTS,
+    VEH_SPEED_LIMIT_MPH, VEH_DIRECTION_OF_TRAVEL_CODE,
+    VEH_TRAFFICWAY_TRAVEL_DIR_CODE, VEH_TRAFFICWAY_DIVIDED_CODE,
+    VEH_TOTAL_THROUGH_LANES, VEH_ROADWAY_ALIGNMENT_CODE, VEH_ROADWAY_GRADE_CODE,
+    VEH_MANEUVER_CODE, VEH_DAMAGE_INITIAL_CONTACT, VEH_DAMAGE_EXTENT_CODE,
+    VEH_MOST_HARMFUL_EVENT_CODE, VEH_HIT_AND_RUN_CODE, VEH_TOWED_CODE,
+    VEH_CONTRIBUTING_CIRC_CODE, VEH_CREATED_BY, VEH_LAST_UPDATED_ACTIVITY_CODE
+) VALUES
+(   @c7, '1FTBW2BT8NED20005', 1, 1, 'NH', 2022, '6112894',
+    'Ford', 2022, 'F-250', 19,
+    2, 1, 2, 55, 1, 2, 3, 3, 1, 1,
+    6, 12, 2, 19, 1, 0, 0, 'seed_script', 'IMPORT'
+),
+(   @c7, '4S3BNAA65J3020006', 1, 2, 'NH', 2018, '4457231',
+    'Subaru', 2018, 'Legacy', 4,
+    1, 1, 1, 55, 1, 2, 3, 3, 1, 1,
+    11, 12, 1, 29, 1, 0, 0, 'seed_script', 'IMPORT'
+);
+
+-- TEST-008: 3-vehicle chain on NH-11, Laconia (Unit 1 lead, Unit 2 middle, Unit 3 rear)
 INSERT INTO VEHICLE_TBL (
     VEH_CRASH_ID, VEH_UNIT_TYPE_CODE, VEH_UNIT_NUMBER,
     VEH_REGISTRATION_STATE, VEH_REGISTRATION_YEAR, VEH_LICENSE_PLATE,
@@ -482,281 +416,967 @@ INSERT INTO VEHICLE_TBL (
     VEH_MOST_HARMFUL_EVENT_CODE, VEH_HIT_AND_RUN_CODE, VEH_TOWED_CODE,
     VEH_CREATED_BY, VEH_LAST_UPDATED_ACTIVITY_CODE
 ) VALUES
-(
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-008'),
-    1, 1,
-    'NH', 2020, '3806291',
+(   @c8, 1, 1, 'NH', 2020, '3806291',
     'Dodge', 2020, 'Ram 1500', 19,
-    1, 1, 2,
-    45, 3,
-    2, 0,
-    2, 1, 1,
-    10, 6, 2,
-    29, 1, 2,
-    'seed_script', 'IMPORT'
+    2, 1, 2, 45, 3, 2, 0, 2, 1, 1,
+    11, 6, 2, 29, 1, 2, 'seed_script', 'IMPORT'
 ),
-(
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-008'),
-    1, 2,
-    'NH', 2019, '3541887',
+(   @c8, 1, 2, 'NH', 2019, '3541887',
     'Hyundai', 2019, 'Elantra', 4,
-    1, 1, 2,
-    45, 3,
-    2, 0,
-    2, 1, 1,
-    11, 6, 2,
-    29, 1, 2,
-    'seed_script', 'IMPORT'
+    1, 1, 2, 45, 3, 2, 0, 2, 1, 1,
+    6, 12, 2, 29, 1, 2, 'seed_script', 'IMPORT'
 ),
-(
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-008'),
-    1, 3,
-    'NH', 2022, '4991345',
+(   @c8, 1, 3, 'NH', 2022, '4991345',
     'Kia', 2022, 'Sportage', 20,
-    1, 1, 1,
-    45, 3,
-    2, 0,
-    2, 1, 1,
-    6, 1, 1,
-    29, 1, 0,
-    'seed_script', 'IMPORT'
+    1, 1, 1, 45, 3, 2, 0, 2, 1, 1,
+    6, 12, 1, 29, 1, 0, 'seed_script', 'IMPORT'
 );
 
 -- ===========================================================================
--- ROADWAY DATA
+-- SECTION 4 — VEHICLE ID VARIABLES
+-- ===========================================================================
+SET @v1_1 = (SELECT VEH_VEHICLE_ID FROM VEHICLE_TBL WHERE VEH_CRASH_ID = @c1 AND VEH_UNIT_NUMBER = 1);
+SET @v1_2 = (SELECT VEH_VEHICLE_ID FROM VEHICLE_TBL WHERE VEH_CRASH_ID = @c1 AND VEH_UNIT_NUMBER = 2);
+SET @v2_1 = (SELECT VEH_VEHICLE_ID FROM VEHICLE_TBL WHERE VEH_CRASH_ID = @c2 AND VEH_UNIT_NUMBER = 1);
+SET @v2_2 = (SELECT VEH_VEHICLE_ID FROM VEHICLE_TBL WHERE VEH_CRASH_ID = @c2 AND VEH_UNIT_NUMBER = 2);
+SET @v3_1 = (SELECT VEH_VEHICLE_ID FROM VEHICLE_TBL WHERE VEH_CRASH_ID = @c3 AND VEH_UNIT_NUMBER = 1);
+SET @v4_1 = (SELECT VEH_VEHICLE_ID FROM VEHICLE_TBL WHERE VEH_CRASH_ID = @c4 AND VEH_UNIT_NUMBER = 1);
+SET @v4_2 = (SELECT VEH_VEHICLE_ID FROM VEHICLE_TBL WHERE VEH_CRASH_ID = @c4 AND VEH_UNIT_NUMBER = 2);
+SET @v5_1 = (SELECT VEH_VEHICLE_ID FROM VEHICLE_TBL WHERE VEH_CRASH_ID = @c5 AND VEH_UNIT_NUMBER = 1);
+SET @v5_2 = (SELECT VEH_VEHICLE_ID FROM VEHICLE_TBL WHERE VEH_CRASH_ID = @c5 AND VEH_UNIT_NUMBER = 2);
+SET @v6_1 = (SELECT VEH_VEHICLE_ID FROM VEHICLE_TBL WHERE VEH_CRASH_ID = @c6 AND VEH_UNIT_NUMBER = 1);
+SET @v6_2 = (SELECT VEH_VEHICLE_ID FROM VEHICLE_TBL WHERE VEH_CRASH_ID = @c6 AND VEH_UNIT_NUMBER = 2);
+SET @v7_1 = (SELECT VEH_VEHICLE_ID FROM VEHICLE_TBL WHERE VEH_CRASH_ID = @c7 AND VEH_UNIT_NUMBER = 1);
+SET @v7_2 = (SELECT VEH_VEHICLE_ID FROM VEHICLE_TBL WHERE VEH_CRASH_ID = @c7 AND VEH_UNIT_NUMBER = 2);
+SET @v8_1 = (SELECT VEH_VEHICLE_ID FROM VEHICLE_TBL WHERE VEH_CRASH_ID = @c8 AND VEH_UNIT_NUMBER = 1);
+SET @v8_2 = (SELECT VEH_VEHICLE_ID FROM VEHICLE_TBL WHERE VEH_CRASH_ID = @c8 AND VEH_UNIT_NUMBER = 2);
+SET @v8_3 = (SELECT VEH_VEHICLE_ID FROM VEHICLE_TBL WHERE VEH_CRASH_ID = @c8 AND VEH_UNIT_NUMBER = 3);
+
+-- ===========================================================================
+-- SECTION 5 — ROADWAY DATA
 -- ===========================================================================
 
--- TEST-001: I-93 near Manchester — NHS interstate, divided, lighted
+-- TEST-001: I-93 near Manchester — NHS interstate, divided, 3 lanes, lighted
 INSERT INTO ROADWAY_TBL (
-    RWY_CRASH_ID,
-    RWY_NATIONAL_HWY_SYS_CODE, RWY_FUNCTIONAL_CLASS_CODE,
+    RWY_CRASH_ID, RWY_NATIONAL_HWY_SYS_CODE, RWY_FUNCTIONAL_CLASS_CODE,
     RWY_AADT_YEAR, RWY_AADT_VALUE, RWY_AADT_TRUCK_MEASURE,
     RWY_LANE_WIDTH_FT, RWY_LEFT_SHOULDER_WIDTH_FT, RWY_RIGHT_SHOULDER_WIDTH_FT,
-    RWY_MEDIAN_WIDTH_FT, RWY_ACCESS_CONTROL_CODE,
-    RWY_ROADWAY_LIGHTING_CODE,
+    RWY_MEDIAN_WIDTH_FT, RWY_ACCESS_CONTROL_CODE, RWY_ROADWAY_LIGHTING_CODE,
     RWY_PAVEMENT_EDGELINE_CODE, RWY_PAVEMENT_CENTERLINE_CODE, RWY_PAVEMENT_LANE_LINE_CODE,
-    RWY_MAINLINE_LANES_COUNT,
-    RWY_CREATED_BY, RWY_LAST_UPDATED_ACTIVITY_CODE
+    RWY_MAINLINE_LANES_COUNT, RWY_CREATED_BY, RWY_LAST_UPDATED_ACTIVITY_CODE
 ) VALUES (
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-001'),
-    2, 9,
-    2023, 74000, '11%',
-    12.0, 10.0, 10.0,
-    60.0, 3,
-    1,
-    2, 3, 2,
-    3,
-    'seed_script', 'IMPORT'
+    @c1, 2, 9, 2023, 74000, '11%',
+    12.0, 10.0, 10.0, 60.0, 3, 1,
+    2, 3, 2, 3, 'seed_script', 'IMPORT'
 );
 
 -- TEST-002: US-1, Portsmouth — urban principal arterial, signalized intersection
 INSERT INTO ROADWAY_TBL (
-    RWY_CRASH_ID,
-    RWY_NATIONAL_HWY_SYS_CODE, RWY_FUNCTIONAL_CLASS_CODE,
+    RWY_CRASH_ID, RWY_NATIONAL_HWY_SYS_CODE, RWY_FUNCTIONAL_CLASS_CODE,
     RWY_AADT_YEAR, RWY_AADT_VALUE, RWY_AADT_TRUCK_MEASURE,
-    RWY_LANE_WIDTH_FT, RWY_RIGHT_SHOULDER_WIDTH_FT,
-    RWY_ACCESS_CONTROL_CODE,
+    RWY_LANE_WIDTH_FT, RWY_RIGHT_SHOULDER_WIDTH_FT, RWY_ACCESS_CONTROL_CODE,
     RWY_ROADWAY_LIGHTING_CODE,
     RWY_PAVEMENT_EDGELINE_CODE, RWY_PAVEMENT_CENTERLINE_CODE, RWY_PAVEMENT_LANE_LINE_CODE,
     RWY_MAINLINE_LANES_COUNT, RWY_CROSS_STREET_LANES_COUNT,
     RWY_ENTERING_VEHICLES_YEAR, RWY_ENTERING_VEHICLES_AADT,
     RWY_CREATED_BY, RWY_LAST_UPDATED_ACTIVITY_CODE
 ) VALUES (
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-002'),
-    1, 11,
-    2023, 24500, '4%',
-    11.0, 4.0,
-    1,
-    1,
-    2, 3, 2,
-    3, 2,
-    2023, 19800,
+    @c2, 1, 11, 2023, 24500, '4%',
+    11.0, 4.0, 1, 1,
+    2, 3, 2, 3, 2, 2023, 19800,
     'seed_script', 'IMPORT'
 );
 
--- TEST-003: NH-16, Conway — rural principal arterial, curved mountain road
+-- TEST-003: NH-16, Conway — rural principal arterial, curved mountain road, unlighted
 INSERT INTO ROADWAY_TBL (
-    RWY_CRASH_ID,
-    RWY_NATIONAL_HWY_SYS_CODE, RWY_FUNCTIONAL_CLASS_CODE,
+    RWY_CRASH_ID, RWY_NATIONAL_HWY_SYS_CODE, RWY_FUNCTIONAL_CLASS_CODE,
     RWY_AADT_YEAR, RWY_AADT_VALUE,
     RWY_CURVE_RADIUS_FT, RWY_CURVE_LENGTH_FT,
     RWY_GRADE_DIRECTION, RWY_GRADE_PERCENT,
-    RWY_LANE_WIDTH_FT, RWY_RIGHT_SHOULDER_WIDTH_FT,
-    RWY_ACCESS_CONTROL_CODE,
+    RWY_LANE_WIDTH_FT, RWY_RIGHT_SHOULDER_WIDTH_FT, RWY_ACCESS_CONTROL_CODE,
     RWY_ROADWAY_LIGHTING_CODE,
     RWY_PAVEMENT_EDGELINE_CODE, RWY_PAVEMENT_CENTERLINE_CODE,
     RWY_CREATED_BY, RWY_LAST_UPDATED_ACTIVITY_CODE
 ) VALUES (
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-003'),
-    1, 3,
-    2022, 17200,
-    900.0, 400.0,
-    '+', 3.80,
-    11.0, 4.0,
-    1,
-    3,
-    2, 3,
-    'seed_script', 'IMPORT'
+    @c3, 1, 3, 2022, 17200, 900.0, 400.0, '+', 3.80,
+    11.0, 4.0, 1, 3, 2, 3, 'seed_script', 'IMPORT'
 );
 
--- TEST-008: NH-11, Laconia — urban minor arterial, winter conditions
+-- TEST-004: US-302, Crawford Notch — rural minor arterial, two-lane mountain road, unlighted
 INSERT INTO ROADWAY_TBL (
-    RWY_CRASH_ID,
-    RWY_NATIONAL_HWY_SYS_CODE, RWY_FUNCTIONAL_CLASS_CODE,
-    RWY_AADT_YEAR, RWY_AADT_VALUE, RWY_AADT_TRUCK_MEASURE,
-    RWY_LANE_WIDTH_FT, RWY_RIGHT_SHOULDER_WIDTH_FT,
-    RWY_MEDIAN_WIDTH_FT, RWY_ACCESS_CONTROL_CODE,
+    RWY_CRASH_ID, RWY_NATIONAL_HWY_SYS_CODE, RWY_FUNCTIONAL_CLASS_CODE,
+    RWY_AADT_YEAR, RWY_AADT_VALUE,
+    RWY_CURVE_RADIUS_FT, RWY_CURVE_LENGTH_FT,
+    RWY_GRADE_DIRECTION, RWY_GRADE_PERCENT,
+    RWY_LANE_WIDTH_FT, RWY_RIGHT_SHOULDER_WIDTH_FT, RWY_ACCESS_CONTROL_CODE,
     RWY_ROADWAY_LIGHTING_CODE,
-    RWY_PAVEMENT_EDGELINE_CODE, RWY_PAVEMENT_CENTERLINE_CODE, RWY_PAVEMENT_LANE_LINE_CODE,
-    RWY_MAINLINE_LANES_COUNT,
-    RWY_CREATED_BY, RWY_LAST_UPDATED_ACTIVITY_CODE
+    RWY_PAVEMENT_EDGELINE_CODE, RWY_PAVEMENT_CENTERLINE_CODE,
+    RWY_MAINLINE_LANES_COUNT, RWY_CREATED_BY, RWY_LAST_UPDATED_ACTIVITY_CODE
 ) VALUES (
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-008'),
-    1, 12,
-    2023, 18400, '6%',
-    11.0, 4.0,
-    12.0, 1,
-    2,
-    2, 3, 2,
-    2,
+    @c4, 1, 6, 2022, 3800, 700.0, 300.0, '-', 5.20,
+    10.0, 2.0, 1, 3, 2, 3, 2, 'seed_script', 'IMPORT'
+);
+
+-- TEST-005: US-3 Everett Turnpike near Nashua — NHS expressway, divided, 3 lanes
+INSERT INTO ROADWAY_TBL (
+    RWY_CRASH_ID, RWY_NATIONAL_HWY_SYS_CODE, RWY_FUNCTIONAL_CLASS_CODE,
+    RWY_AADT_YEAR, RWY_AADT_VALUE, RWY_AADT_TRUCK_MEASURE,
+    RWY_LANE_WIDTH_FT, RWY_LEFT_SHOULDER_WIDTH_FT, RWY_RIGHT_SHOULDER_WIDTH_FT,
+    RWY_MEDIAN_WIDTH_FT, RWY_ACCESS_CONTROL_CODE, RWY_ROADWAY_LIGHTING_CODE,
+    RWY_PAVEMENT_EDGELINE_CODE, RWY_PAVEMENT_CENTERLINE_CODE, RWY_PAVEMENT_LANE_LINE_CODE,
+    RWY_MAINLINE_LANES_COUNT, RWY_CREATED_BY, RWY_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @c5, 2, 9, 2023, 52000, '8%',
+    12.0, 8.0, 10.0, 48.0, 3, 1,
+    2, 3, 2, 3, 'seed_script', 'IMPORT'
+);
+
+-- TEST-006: NH-9, Concord — urban minor arterial, two-lane, partial lighting
+INSERT INTO ROADWAY_TBL (
+    RWY_CRASH_ID, RWY_NATIONAL_HWY_SYS_CODE, RWY_FUNCTIONAL_CLASS_CODE,
+    RWY_AADT_YEAR, RWY_AADT_VALUE,
+    RWY_LANE_WIDTH_FT, RWY_RIGHT_SHOULDER_WIDTH_FT,
+    RWY_ACCESS_CONTROL_CODE, RWY_ROADWAY_LIGHTING_CODE,
+    RWY_PAVEMENT_EDGELINE_CODE, RWY_PAVEMENT_CENTERLINE_CODE, RWY_PAVEMENT_LANE_LINE_CODE,
+    RWY_MAINLINE_LANES_COUNT, RWY_CREATED_BY, RWY_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @c6, 1, 12, 2023, 16200,
+    11.0, 3.0, 1, 2,
+    2, 3, 2, 2, 'seed_script', 'IMPORT'
+);
+
+-- TEST-007: I-95, Hampton — NHS interstate, divided, 3 lanes, fully lighted
+INSERT INTO ROADWAY_TBL (
+    RWY_CRASH_ID, RWY_NATIONAL_HWY_SYS_CODE, RWY_FUNCTIONAL_CLASS_CODE,
+    RWY_AADT_YEAR, RWY_AADT_VALUE, RWY_AADT_TRUCK_MEASURE,
+    RWY_LANE_WIDTH_FT, RWY_LEFT_SHOULDER_WIDTH_FT, RWY_RIGHT_SHOULDER_WIDTH_FT,
+    RWY_MEDIAN_WIDTH_FT, RWY_ACCESS_CONTROL_CODE, RWY_ROADWAY_LIGHTING_CODE,
+    RWY_PAVEMENT_EDGELINE_CODE, RWY_PAVEMENT_CENTERLINE_CODE, RWY_PAVEMENT_LANE_LINE_CODE,
+    RWY_MAINLINE_LANES_COUNT, RWY_CREATED_BY, RWY_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @c7, 2, 9, 2023, 81000, '13%',
+    12.0, 10.0, 10.0, 60.0, 3, 1,
+    2, 3, 2, 3, 'seed_script', 'IMPORT'
+);
+
+-- TEST-008: NH-11, Laconia — urban minor arterial, partial median, partial lighting
+INSERT INTO ROADWAY_TBL (
+    RWY_CRASH_ID, RWY_NATIONAL_HWY_SYS_CODE, RWY_FUNCTIONAL_CLASS_CODE,
+    RWY_AADT_YEAR, RWY_AADT_VALUE, RWY_AADT_TRUCK_MEASURE,
+    RWY_LANE_WIDTH_FT, RWY_RIGHT_SHOULDER_WIDTH_FT, RWY_MEDIAN_WIDTH_FT,
+    RWY_ACCESS_CONTROL_CODE, RWY_ROADWAY_LIGHTING_CODE,
+    RWY_PAVEMENT_EDGELINE_CODE, RWY_PAVEMENT_CENTERLINE_CODE, RWY_PAVEMENT_LANE_LINE_CODE,
+    RWY_MAINLINE_LANES_COUNT, RWY_CREATED_BY, RWY_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @c8, 1, 12, 2023, 18400, '6%',
+    11.0, 4.0, 12.0, 1, 2,
+    2, 3, 2, 2, 'seed_script', 'IMPORT'
+);
+
+-- ===========================================================================
+-- SECTION 6 — WEATHER CONDITIONS  (1=Clear 2=Cloudy 3=Rain 4=Snow 5=Fog 7=Blowing Snow)
+-- ===========================================================================
+INSERT INTO CRASH_WEATHER_CONDITION_TBL (CWC_CRASH_ID, CWC_SEQUENCE_NUM, CWC_WEATHER_CODE, CWC_CREATED_BY, CWC_LAST_UPDATED_ACTIVITY_CODE) VALUES
+(@c1, 1, 1, 'seed_script', 'IMPORT'),   -- TEST-001: Clear
+(@c2, 1, 2, 'seed_script', 'IMPORT'),   -- TEST-002: Cloudy
+(@c3, 1, 3, 'seed_script', 'IMPORT'),   -- TEST-003: Rain
+(@c3, 2, 5, 'seed_script', 'IMPORT'),   -- TEST-003: Fog (White Mountains)
+(@c4, 1, 1, 'seed_script', 'IMPORT'),   -- TEST-004: Clear
+(@c5, 1, 1, 'seed_script', 'IMPORT'),   -- TEST-005: Clear
+(@c6, 1, 2, 'seed_script', 'IMPORT'),   -- TEST-006: Cloudy
+(@c7, 1, 1, 'seed_script', 'IMPORT'),   -- TEST-007: Clear
+(@c8, 1, 4, 'seed_script', 'IMPORT'),   -- TEST-008: Snow
+(@c8, 2, 7, 'seed_script', 'IMPORT');   -- TEST-008: Blowing Snow
+
+-- ===========================================================================
+-- SECTION 7 — SURFACE CONDITIONS  (1=Dry 2=Wet 3=Snow 4=Ice)
+-- ===========================================================================
+INSERT INTO CRASH_SURFACE_CONDITION_TBL (CSC_CRASH_ID, CSC_SEQUENCE_NUM, CSC_SURFACE_CODE, CSC_CREATED_BY, CSC_LAST_UPDATED_ACTIVITY_CODE) VALUES
+(@c1, 1, 1, 'seed_script', 'IMPORT'),   -- TEST-001: Dry
+(@c2, 1, 1, 'seed_script', 'IMPORT'),   -- TEST-002: Dry
+(@c3, 1, 2, 'seed_script', 'IMPORT'),   -- TEST-003: Wet (rain)
+(@c4, 1, 1, 'seed_script', 'IMPORT'),   -- TEST-004: Dry
+(@c5, 1, 1, 'seed_script', 'IMPORT'),   -- TEST-005: Dry
+(@c6, 1, 1, 'seed_script', 'IMPORT'),   -- TEST-006: Dry
+(@c7, 1, 1, 'seed_script', 'IMPORT'),   -- TEST-007: Dry
+(@c8, 1, 3, 'seed_script', 'IMPORT'),   -- TEST-008: Snow-covered
+(@c8, 2, 4, 'seed_script', 'IMPORT');   -- TEST-008: Ice patches
+
+-- ===========================================================================
+-- SECTION 8 — VEHICLE SEQUENCE EVENTS
+-- ===========================================================================
+
+-- TEST-001 Unit 1 (Honda Accord, striking): went straight → collided with MV (29)
+INSERT INTO VEHICLE_SEQUENCE_EVENT_TBL (VSE_VEHICLE_ID, VSE_CRASH_ID, VSE_SEQUENCE_NUM, VSE_EVENT_CODE, VSE_CREATED_BY, VSE_LAST_UPDATED_ACTIVITY_CODE) VALUES
+(@v1_1, @c1, 1, 29, 'seed_script', 'IMPORT');
+
+-- TEST-001 Unit 2 (Toyota Camry, struck): struck by MV (29) → hit guardrail (34)
+INSERT INTO VEHICLE_SEQUENCE_EVENT_TBL (VSE_VEHICLE_ID, VSE_CRASH_ID, VSE_SEQUENCE_NUM, VSE_EVENT_CODE, VSE_CREATED_BY, VSE_LAST_UPDATED_ACTIVITY_CODE) VALUES
+(@v1_2, @c1, 1, 29, 'seed_script', 'IMPORT'),
+(@v1_2, @c1, 2, 34, 'seed_script', 'IMPORT');   -- 34=guardrail
+
+-- TEST-003 Unit 1 (Subaru Outback): ran off road (6) → rolled over (11)
+INSERT INTO VEHICLE_SEQUENCE_EVENT_TBL (VSE_VEHICLE_ID, VSE_CRASH_ID, VSE_SEQUENCE_NUM, VSE_EVENT_CODE, VSE_CREATED_BY, VSE_LAST_UPDATED_ACTIVITY_CODE) VALUES
+(@v3_1, @c3, 1, 6,  'seed_script', 'IMPORT'),   -- 6=ran off road
+(@v3_1, @c3, 2, 11, 'seed_script', 'IMPORT');   -- 11=rollover
+
+-- TEST-004 Unit 1 (Silverado, eastbound victim): head-on with MV
+INSERT INTO VEHICLE_SEQUENCE_EVENT_TBL (VSE_VEHICLE_ID, VSE_CRASH_ID, VSE_SEQUENCE_NUM, VSE_EVENT_CODE, VSE_CREATED_BY, VSE_LAST_UPDATED_ACTIVITY_CODE) VALUES
+(@v4_1, @c4, 1, 25, 'seed_script', 'IMPORT');   -- 25=motor vehicle in transport
+
+-- TEST-004 Unit 2 (Mazda CX-5, wrong-way drunk driver): crossed centerline → head-on
+INSERT INTO VEHICLE_SEQUENCE_EVENT_TBL (VSE_VEHICLE_ID, VSE_CRASH_ID, VSE_SEQUENCE_NUM, VSE_EVENT_CODE, VSE_CREATED_BY, VSE_LAST_UPDATED_ACTIVITY_CODE) VALUES
+(@v4_2, @c4, 1, 25, 'seed_script', 'IMPORT');
+
+-- TEST-008 Unit 1 (Dodge Ram, lead vehicle): struck from behind
+INSERT INTO VEHICLE_SEQUENCE_EVENT_TBL (VSE_VEHICLE_ID, VSE_CRASH_ID, VSE_SEQUENCE_NUM, VSE_EVENT_CODE, VSE_CREATED_BY, VSE_LAST_UPDATED_ACTIVITY_CODE) VALUES
+(@v8_1, @c8, 1, 29, 'seed_script', 'IMPORT');
+
+-- TEST-008 Unit 2 (Hyundai Elantra, middle): struck Unit 1, then struck by Unit 3
+INSERT INTO VEHICLE_SEQUENCE_EVENT_TBL (VSE_VEHICLE_ID, VSE_CRASH_ID, VSE_SEQUENCE_NUM, VSE_EVENT_CODE, VSE_CREATED_BY, VSE_LAST_UPDATED_ACTIVITY_CODE) VALUES
+(@v8_2, @c8, 1, 29, 'seed_script', 'IMPORT'),
+(@v8_2, @c8, 2, 29, 'seed_script', 'IMPORT');
+
+-- TEST-008 Unit 3 (Kia Sportage, rear vehicle): struck Unit 2
+INSERT INTO VEHICLE_SEQUENCE_EVENT_TBL (VSE_VEHICLE_ID, VSE_CRASH_ID, VSE_SEQUENCE_NUM, VSE_EVENT_CODE, VSE_CREATED_BY, VSE_LAST_UPDATED_ACTIVITY_CODE) VALUES
+(@v8_3, @c8, 1, 29, 'seed_script', 'IMPORT');
+
+-- ===========================================================================
+-- SECTION 9 — VEHICLE DAMAGE AREAS  (3=Right 6=Rear 9=Left 12=Front 13=Top)
+-- ===========================================================================
+
+-- TEST-001: Accord (Unit 1) front damage; Camry (Unit 2) rear then right (guardrail)
+INSERT INTO VEHICLE_DAMAGE_AREA_TBL (VDA_VEHICLE_ID, VDA_CRASH_ID, VDA_SEQUENCE_NUM, VDA_AREA_CODE, VDA_CREATED_BY, VDA_LAST_UPDATED_ACTIVITY_CODE) VALUES
+(@v1_1, @c1, 1, 12, 'seed_script', 'IMPORT'),
+(@v1_2, @c1, 1,  6, 'seed_script', 'IMPORT'),
+(@v1_2, @c1, 2,  3, 'seed_script', 'IMPORT');
+
+-- TEST-002: F-150 (Unit 1) right+front; Malibu (Unit 2) left+front
+INSERT INTO VEHICLE_DAMAGE_AREA_TBL (VDA_VEHICLE_ID, VDA_CRASH_ID, VDA_SEQUENCE_NUM, VDA_AREA_CODE, VDA_CREATED_BY, VDA_LAST_UPDATED_ACTIVITY_CODE) VALUES
+(@v2_1, @c2, 1,  3, 'seed_script', 'IMPORT'),
+(@v2_1, @c2, 2, 12, 'seed_script', 'IMPORT'),
+(@v2_2, @c2, 1,  9, 'seed_script', 'IMPORT'),
+(@v2_2, @c2, 2, 12, 'seed_script', 'IMPORT');
+
+-- TEST-003: Subaru Outback rollover — front, left side, roof
+INSERT INTO VEHICLE_DAMAGE_AREA_TBL (VDA_VEHICLE_ID, VDA_CRASH_ID, VDA_SEQUENCE_NUM, VDA_AREA_CODE, VDA_CREATED_BY, VDA_LAST_UPDATED_ACTIVITY_CODE) VALUES
+(@v3_1, @c3, 1, 12, 'seed_script', 'IMPORT'),
+(@v3_1, @c3, 2,  9, 'seed_script', 'IMPORT'),
+(@v3_1, @c3, 3, 13, 'seed_script', 'IMPORT');
+
+-- TEST-004: Head-on — both vehicles front damage
+INSERT INTO VEHICLE_DAMAGE_AREA_TBL (VDA_VEHICLE_ID, VDA_CRASH_ID, VDA_SEQUENCE_NUM, VDA_AREA_CODE, VDA_CREATED_BY, VDA_LAST_UPDATED_ACTIVITY_CODE) VALUES
+(@v4_1, @c4, 1, 12, 'seed_script', 'IMPORT'),
+(@v4_2, @c4, 1, 12, 'seed_script', 'IMPORT');
+
+-- TEST-005: Jeep (Unit 1) rear damage; Nissan (Unit 2) front damage
+INSERT INTO VEHICLE_DAMAGE_AREA_TBL (VDA_VEHICLE_ID, VDA_CRASH_ID, VDA_SEQUENCE_NUM, VDA_AREA_CODE, VDA_CREATED_BY, VDA_LAST_UPDATED_ACTIVITY_CODE) VALUES
+(@v5_1, @c5, 1,  6, 'seed_script', 'IMPORT'),
+(@v5_2, @c5, 1, 12, 'seed_script', 'IMPORT');
+
+-- TEST-006: RAV4 (Unit 1) left side; Civic (Unit 2) right side
+INSERT INTO VEHICLE_DAMAGE_AREA_TBL (VDA_VEHICLE_ID, VDA_CRASH_ID, VDA_SEQUENCE_NUM, VDA_AREA_CODE, VDA_CREATED_BY, VDA_LAST_UPDATED_ACTIVITY_CODE) VALUES
+(@v6_1, @c6, 1,  9, 'seed_script', 'IMPORT'),
+(@v6_2, @c6, 1,  3, 'seed_script', 'IMPORT');
+
+-- TEST-007: F-250 (Unit 1) front; Legacy (Unit 2) front (braked into Unit 1)
+INSERT INTO VEHICLE_DAMAGE_AREA_TBL (VDA_VEHICLE_ID, VDA_CRASH_ID, VDA_SEQUENCE_NUM, VDA_AREA_CODE, VDA_CREATED_BY, VDA_LAST_UPDATED_ACTIVITY_CODE) VALUES
+(@v7_1, @c7, 1, 12, 'seed_script', 'IMPORT'),
+(@v7_2, @c7, 1, 12, 'seed_script', 'IMPORT');
+
+-- TEST-008: Ram (Unit 1) rear; Elantra (Unit 2) front+rear; Sportage (Unit 3) front
+INSERT INTO VEHICLE_DAMAGE_AREA_TBL (VDA_VEHICLE_ID, VDA_CRASH_ID, VDA_SEQUENCE_NUM, VDA_AREA_CODE, VDA_CREATED_BY, VDA_LAST_UPDATED_ACTIVITY_CODE) VALUES
+(@v8_1, @c8, 1,  6, 'seed_script', 'IMPORT'),
+(@v8_2, @c8, 1, 12, 'seed_script', 'IMPORT'),
+(@v8_2, @c8, 2,  6, 'seed_script', 'IMPORT'),
+(@v8_3, @c8, 1, 12, 'seed_script', 'IMPORT');
+
+-- ===========================================================================
+-- SECTION 10 — VEHICLE TRAFFIC CONTROLS  (2=Signal functioning, 14=Const/Work Zone)
+-- ===========================================================================
+
+-- TEST-002: Both vehicles faced a functioning traffic signal
+INSERT INTO VEHICLE_TRAFFIC_CONTROL_TBL (VTC_VEHICLE_ID, VTC_CRASH_ID, VTC_SEQUENCE_NUM, VTC_TCD_TYPE_CODE, VTC_TCD_INOPERATIVE_CODE, VTC_CREATED_BY, VTC_LAST_UPDATED_ACTIVITY_CODE) VALUES
+(@v2_1, @c2, 1, 2, 0, 'seed_script', 'IMPORT'),
+(@v2_2, @c2, 1, 2, 0, 'seed_script', 'IMPORT');
+
+-- TEST-007: Both vehicles in a work zone with construction zone signs
+INSERT INTO VEHICLE_TRAFFIC_CONTROL_TBL (VTC_VEHICLE_ID, VTC_CRASH_ID, VTC_SEQUENCE_NUM, VTC_TCD_TYPE_CODE, VTC_TCD_INOPERATIVE_CODE, VTC_CREATED_BY, VTC_LAST_UPDATED_ACTIVITY_CODE) VALUES
+(@v7_1, @c7, 1, 14, 0, 'seed_script', 'IMPORT'),
+(@v7_2, @c7, 1, 14, 0, 'seed_script', 'IMPORT');
+
+-- ===========================================================================
+-- SECTION 11 — PERSONS (drivers first to capture IDs for PDA/FSC/NMT)
+-- PRS_SEX_CODE: 1=Female 2=Male
+-- PRS_PERSON_TYPE_CODE: 1=Driver 2=Passenger 6=Pedestrian
+-- PRS_INJURY_STATUS_CODE: 1=Fatal 2=Serious 3=Minor 4=Possible 5=No Apparent
+-- PRS_SEATING_ROW_CODE: 1=Front 2=Second  PRS_SEATING_SEAT_CODE: 7=Left 9=Right
+-- PRS_RESTRAINT_CODE: 8=Shoulder+Lap 6=None  PRS_EJECTION_CODE: 0=Not 1=Partial 2=Total
+-- PRS_DL_JURISDICTION_TYPE: 5=State  PRS_DL_CLASS_CODE: 5=Regular  PRS_DL_IS_CDL_FLG: 1=No
+-- PRS_DL_STATUS_TYPE_CODE: 1=Non-CDL  PRS_DL_STATUS_CODE: 6=Valid
+-- PRS_SPEEDING_CODE: 1=No 2=Exceeded 4=Too Fast  PRS_CONDITION_CODE_1: 0=Normal 1=Fatigued 5=Impaired
+-- PRS_LE_SUSPECTS_ALCOHOL: 1=No 2=Yes  PRS_ALCOHOL_TEST_STATUS_CODE: 0=Not Given 1=Given
+-- PRS_TRANSPORT_SOURCE_CODE: 0=Not Transported 1=EMS Air 2=EMS Ground 3=Law Enforcement
+-- ===========================================================================
+
+-- ---------------------------------------------------------------------------
+-- TEST-001 — I-93 fatal rear-end near Manchester
+-- ---------------------------------------------------------------------------
+
+-- Driver, Unit 1 (Honda Accord) — Jason Reyes, fell asleep at wheel, suspected alcohol
+INSERT INTO PERSON_TBL (
+    PRS_CRASH_ID, PRS_VEHICLE_ID, PRS_PERSON_NAME,
+    PRS_DOB_YEAR, PRS_DOB_MONTH, PRS_DOB_DAY, PRS_SEX_CODE,
+    PRS_PERSON_TYPE_CODE, PRS_INJURY_STATUS_CODE,
+    PRS_VEHICLE_UNIT_NUMBER, PRS_SEATING_ROW_CODE, PRS_SEATING_SEAT_CODE,
+    PRS_RESTRAINT_CODE, PRS_RESTRAINT_IMPROPER_FLG, PRS_EJECTION_CODE,
+    PRS_DL_JURISDICTION_TYPE, PRS_DL_JURISDICTION_CODE,
+    PRS_DL_NUMBER, PRS_DL_CLASS_CODE, PRS_DL_IS_CDL_FLG,
+    PRS_DL_STATUS_TYPE_CODE, PRS_DL_STATUS_CODE,
+    PRS_SPEEDING_CODE, PRS_CONDITION_CODE_1,
+    PRS_LE_SUSPECTS_ALCOHOL, PRS_ALCOHOL_TEST_STATUS_CODE,
+    PRS_LE_SUSPECTS_DRUG, PRS_DRUG_TEST_STATUS_CODE,
+    PRS_TRANSPORT_SOURCE_CODE,
+    PRS_CREATED_BY, PRS_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @c1, @v1_1, 'Jason Reyes',
+    1990, 3, 15, 2,
+    1, 5,
+    1, 1, 7,
+    8, 1, 0,
+    5, 'NH', 'NH784123', 5, 1, 1, 6,
+    1, 1, 2, 0, 1, 0, 0,
+    'seed_script', 'IMPORT'
+);
+SET @p001_d1 = LAST_INSERT_ID();
+
+-- Driver, Unit 2 (Toyota Camry) — Robert Tremblay, FATAL (struck from behind)
+INSERT INTO PERSON_TBL (
+    PRS_CRASH_ID, PRS_VEHICLE_ID, PRS_PERSON_NAME,
+    PRS_DOB_YEAR, PRS_DOB_MONTH, PRS_DOB_DAY, PRS_SEX_CODE,
+    PRS_PERSON_TYPE_CODE, PRS_INJURY_STATUS_CODE,
+    PRS_VEHICLE_UNIT_NUMBER, PRS_SEATING_ROW_CODE, PRS_SEATING_SEAT_CODE,
+    PRS_RESTRAINT_CODE, PRS_RESTRAINT_IMPROPER_FLG, PRS_EJECTION_CODE,
+    PRS_DL_JURISDICTION_TYPE, PRS_DL_JURISDICTION_CODE,
+    PRS_DL_NUMBER, PRS_DL_CLASS_CODE, PRS_DL_IS_CDL_FLG,
+    PRS_DL_STATUS_TYPE_CODE, PRS_DL_STATUS_CODE,
+    PRS_SPEEDING_CODE, PRS_CONDITION_CODE_1,
+    PRS_LE_SUSPECTS_ALCOHOL, PRS_ALCOHOL_TEST_STATUS_CODE,
+    PRS_LE_SUSPECTS_DRUG, PRS_DRUG_TEST_STATUS_CODE,
+    PRS_TRANSPORT_SOURCE_CODE, PRS_MEDICAL_FACILITY, PRS_INJURY_AREA_CODE,
+    PRS_CREATED_BY, PRS_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @c1, @v1_2, 'Robert Tremblay',
+    1972, 9, 22, 2,
+    1, 1,
+    2, 1, 7,
+    8, 1, 0,
+    5, 'NH', 'NH223489', 5, 1, 1, 6,
+    1, 0, 1, 0, 1, 0,
+    2, 'Elliot Hospital, Manchester', 1,
+    'seed_script', 'IMPORT'
+);
+SET @p001_d2_fatal = LAST_INSERT_ID();
+
+-- Passenger, Unit 2 (Toyota Camry) — Linda Tremblay, no injury
+INSERT INTO PERSON_TBL (
+    PRS_CRASH_ID, PRS_VEHICLE_ID, PRS_PERSON_NAME,
+    PRS_DOB_YEAR, PRS_DOB_MONTH, PRS_DOB_DAY, PRS_SEX_CODE,
+    PRS_PERSON_TYPE_CODE, PRS_INJURY_STATUS_CODE,
+    PRS_VEHICLE_UNIT_NUMBER, PRS_SEATING_ROW_CODE, PRS_SEATING_SEAT_CODE,
+    PRS_RESTRAINT_CODE, PRS_RESTRAINT_IMPROPER_FLG, PRS_EJECTION_CODE,
+    PRS_LE_SUSPECTS_ALCOHOL, PRS_LE_SUSPECTS_DRUG, PRS_TRANSPORT_SOURCE_CODE,
+    PRS_CREATED_BY, PRS_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @c1, @v1_2, 'Linda Tremblay',
+    1976, 2, 14, 1, 2, 5,
+    2, 1, 9, 8, 1, 0, 1, 1, 0,
+    'seed_script', 'IMPORT'
+);
+
+-- ---------------------------------------------------------------------------
+-- TEST-002 — US-1 angle collision, Portsmouth
+-- ---------------------------------------------------------------------------
+
+-- Driver, Unit 1 (Ford F-150) — Michael Bouchard, serious injury
+INSERT INTO PERSON_TBL (
+    PRS_CRASH_ID, PRS_VEHICLE_ID, PRS_PERSON_NAME,
+    PRS_DOB_YEAR, PRS_DOB_MONTH, PRS_DOB_DAY, PRS_SEX_CODE,
+    PRS_PERSON_TYPE_CODE, PRS_INJURY_STATUS_CODE,
+    PRS_VEHICLE_UNIT_NUMBER, PRS_SEATING_ROW_CODE, PRS_SEATING_SEAT_CODE,
+    PRS_RESTRAINT_CODE, PRS_RESTRAINT_IMPROPER_FLG, PRS_EJECTION_CODE,
+    PRS_DL_JURISDICTION_TYPE, PRS_DL_JURISDICTION_CODE,
+    PRS_DL_NUMBER, PRS_DL_CLASS_CODE, PRS_DL_IS_CDL_FLG,
+    PRS_DL_STATUS_TYPE_CODE, PRS_DL_STATUS_CODE,
+    PRS_SPEEDING_CODE, PRS_CONDITION_CODE_1,
+    PRS_LE_SUSPECTS_ALCOHOL, PRS_ALCOHOL_TEST_STATUS_CODE,
+    PRS_LE_SUSPECTS_DRUG, PRS_DRUG_TEST_STATUS_CODE,
+    PRS_TRANSPORT_SOURCE_CODE, PRS_MEDICAL_FACILITY, PRS_INJURY_AREA_CODE,
+    PRS_CREATED_BY, PRS_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @c2, @v2_1, 'Michael Bouchard',
+    1983, 11, 8, 2, 1, 2,
+    1, 1, 7, 8, 1, 0,
+    5, 'NH', 'NH391567', 5, 1, 1, 6,
+    1, 0, 1, 0, 1, 0,
+    2, 'Portsmouth Regional Hospital', 4,
+    'seed_script', 'IMPORT'
+);
+SET @p002_d1 = LAST_INSERT_ID();
+
+-- Driver, Unit 2 (Chevy Malibu) — Ashley Moreau, serious injury, ran red light
+INSERT INTO PERSON_TBL (
+    PRS_CRASH_ID, PRS_VEHICLE_ID, PRS_PERSON_NAME,
+    PRS_DOB_YEAR, PRS_DOB_MONTH, PRS_DOB_DAY, PRS_SEX_CODE,
+    PRS_PERSON_TYPE_CODE, PRS_INJURY_STATUS_CODE,
+    PRS_VEHICLE_UNIT_NUMBER, PRS_SEATING_ROW_CODE, PRS_SEATING_SEAT_CODE,
+    PRS_RESTRAINT_CODE, PRS_RESTRAINT_IMPROPER_FLG, PRS_EJECTION_CODE,
+    PRS_DL_JURISDICTION_TYPE, PRS_DL_JURISDICTION_CODE,
+    PRS_DL_NUMBER, PRS_DL_CLASS_CODE, PRS_DL_IS_CDL_FLG,
+    PRS_DL_STATUS_TYPE_CODE, PRS_DL_STATUS_CODE,
+    PRS_SPEEDING_CODE, PRS_CONDITION_CODE_1,
+    PRS_LE_SUSPECTS_ALCOHOL, PRS_ALCOHOL_TEST_STATUS_CODE,
+    PRS_LE_SUSPECTS_DRUG, PRS_DRUG_TEST_STATUS_CODE,
+    PRS_TRANSPORT_SOURCE_CODE, PRS_MEDICAL_FACILITY, PRS_INJURY_AREA_CODE,
+    PRS_CREATED_BY, PRS_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @c2, @v2_2, 'Ashley Moreau',
+    1997, 4, 12, 1, 1, 2,
+    2, 1, 7, 8, 1, 0,
+    5, 'NH', 'NH512048', 5, 1, 1, 6,
+    1, 0, 1, 0, 1, 0,
+    2, 'Portsmouth Regional Hospital', 5,
+    'seed_script', 'IMPORT'
+);
+SET @p002_d2 = LAST_INSERT_ID();
+
+-- Passengers for TEST-002 (Sarah Bouchard front-right F-150; Tyler Moreau front-right Malibu)
+INSERT INTO PERSON_TBL (
+    PRS_CRASH_ID, PRS_VEHICLE_ID, PRS_PERSON_NAME,
+    PRS_DOB_YEAR, PRS_DOB_MONTH, PRS_DOB_DAY, PRS_SEX_CODE,
+    PRS_PERSON_TYPE_CODE, PRS_INJURY_STATUS_CODE,
+    PRS_VEHICLE_UNIT_NUMBER, PRS_SEATING_ROW_CODE, PRS_SEATING_SEAT_CODE,
+    PRS_RESTRAINT_CODE, PRS_RESTRAINT_IMPROPER_FLG, PRS_EJECTION_CODE,
+    PRS_LE_SUSPECTS_ALCOHOL, PRS_LE_SUSPECTS_DRUG, PRS_TRANSPORT_SOURCE_CODE,
+    PRS_CREATED_BY, PRS_LAST_UPDATED_ACTIVITY_CODE
+) VALUES
+(   @c2, @v2_1, 'Sarah Bouchard', 1986, 6, 30, 1, 2, 5, 1, 1, 9, 8, 1, 0, 1, 1, 0, 'seed_script', 'IMPORT'),
+(   @c2, @v2_2, 'Tyler Moreau',   1999, 8, 25, 2, 2, 5, 2, 1, 9, 8, 1, 0, 1, 1, 0, 'seed_script', 'IMPORT');
+
+-- ---------------------------------------------------------------------------
+-- TEST-003 — NH-16 rollover near Conway (3 occupants, 3 minor injuries)
+-- ---------------------------------------------------------------------------
+
+-- Driver, Unit 1 (Subaru Outback) — Ethan Coulombe, minor injury, too fast for conditions
+INSERT INTO PERSON_TBL (
+    PRS_CRASH_ID, PRS_VEHICLE_ID, PRS_PERSON_NAME,
+    PRS_DOB_YEAR, PRS_DOB_MONTH, PRS_DOB_DAY, PRS_SEX_CODE,
+    PRS_PERSON_TYPE_CODE, PRS_INJURY_STATUS_CODE,
+    PRS_VEHICLE_UNIT_NUMBER, PRS_SEATING_ROW_CODE, PRS_SEATING_SEAT_CODE,
+    PRS_RESTRAINT_CODE, PRS_RESTRAINT_IMPROPER_FLG, PRS_EJECTION_CODE,
+    PRS_DL_JURISDICTION_TYPE, PRS_DL_JURISDICTION_CODE,
+    PRS_DL_NUMBER, PRS_DL_CLASS_CODE, PRS_DL_IS_CDL_FLG,
+    PRS_DL_STATUS_TYPE_CODE, PRS_DL_STATUS_CODE,
+    PRS_SPEEDING_CODE, PRS_CONDITION_CODE_1,
+    PRS_LE_SUSPECTS_ALCOHOL, PRS_ALCOHOL_TEST_STATUS_CODE,
+    PRS_LE_SUSPECTS_DRUG, PRS_DRUG_TEST_STATUS_CODE,
+    PRS_TRANSPORT_SOURCE_CODE, PRS_MEDICAL_FACILITY, PRS_INJURY_AREA_CODE,
+    PRS_CREATED_BY, PRS_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @c3, @v3_1, 'Ethan Coulombe',
+    2001, 7, 3, 2, 1, 3,
+    1, 1, 7, 8, 1, 0,
+    5, 'NH', 'NH623411', 5, 1, 1, 6,
+    4, 0, 1, 0, 1, 0,
+    2, 'Memorial Hospital North Conway', 8,
+    'seed_script', 'IMPORT'
+);
+SET @p003_d1 = LAST_INSERT_ID();
+
+-- Passengers for TEST-003 (Chloe Lambert front-right; Owen Fournier rear-left, partially ejected)
+INSERT INTO PERSON_TBL (
+    PRS_CRASH_ID, PRS_VEHICLE_ID, PRS_PERSON_NAME,
+    PRS_DOB_YEAR, PRS_DOB_MONTH, PRS_DOB_DAY, PRS_SEX_CODE,
+    PRS_PERSON_TYPE_CODE, PRS_INJURY_STATUS_CODE,
+    PRS_VEHICLE_UNIT_NUMBER, PRS_SEATING_ROW_CODE, PRS_SEATING_SEAT_CODE,
+    PRS_RESTRAINT_CODE, PRS_RESTRAINT_IMPROPER_FLG, PRS_EJECTION_CODE,
+    PRS_LE_SUSPECTS_ALCOHOL, PRS_LE_SUSPECTS_DRUG, PRS_TRANSPORT_SOURCE_CODE,
+    PRS_MEDICAL_FACILITY, PRS_INJURY_AREA_CODE,
+    PRS_CREATED_BY, PRS_LAST_UPDATED_ACTIVITY_CODE
+) VALUES
+(   @c3, @v3_1, 'Chloe Lambert', 2003, 1, 19, 1, 2, 3,
+    1, 1, 9, 8, 1, 0, 1, 1, 2,
+    'Memorial Hospital North Conway', 4, 'seed_script', 'IMPORT'),
+(   @c3, @v3_1, 'Owen Fournier',  2005, 5, 27, 2, 2, 3,
+    1, 2, 7, 8, 2, 1, 1, 1, 2,
+    'Memorial Hospital North Conway', 1, 'seed_script', 'IMPORT');
+
+-- ---------------------------------------------------------------------------
+-- TEST-004 — US-302 head-on, Crawford Notch (1 fatality + 1 serious + drunk driver)
+-- ---------------------------------------------------------------------------
+
+-- Driver, Unit 1 (Chevy Silverado) — David Paquette, FATAL
+INSERT INTO PERSON_TBL (
+    PRS_CRASH_ID, PRS_VEHICLE_ID, PRS_PERSON_NAME,
+    PRS_DOB_YEAR, PRS_DOB_MONTH, PRS_DOB_DAY, PRS_SEX_CODE,
+    PRS_PERSON_TYPE_CODE, PRS_INJURY_STATUS_CODE,
+    PRS_VEHICLE_UNIT_NUMBER, PRS_SEATING_ROW_CODE, PRS_SEATING_SEAT_CODE,
+    PRS_RESTRAINT_CODE, PRS_RESTRAINT_IMPROPER_FLG, PRS_EJECTION_CODE,
+    PRS_DL_JURISDICTION_TYPE, PRS_DL_JURISDICTION_CODE,
+    PRS_DL_NUMBER, PRS_DL_CLASS_CODE, PRS_DL_IS_CDL_FLG,
+    PRS_DL_STATUS_TYPE_CODE, PRS_DL_STATUS_CODE,
+    PRS_SPEEDING_CODE, PRS_CONDITION_CODE_1,
+    PRS_LE_SUSPECTS_ALCOHOL, PRS_ALCOHOL_TEST_STATUS_CODE,
+    PRS_LE_SUSPECTS_DRUG, PRS_DRUG_TEST_STATUS_CODE,
+    PRS_TRANSPORT_SOURCE_CODE, PRS_MEDICAL_FACILITY, PRS_INJURY_AREA_CODE,
+    PRS_CREATED_BY, PRS_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @c4, @v4_1, 'David Paquette',
+    1976, 12, 5, 2, 1, 1,
+    1, 1, 7, 8, 1, 0,
+    5, 'NH', 'NH445290', 5, 1, 1, 6,
+    1, 0, 1, 0, 1, 0,
+    2, 'Memorial Hospital North Conway', 1,
+    'seed_script', 'IMPORT'
+);
+SET @p004_d1_fatal = LAST_INSERT_ID();
+
+-- Driver, Unit 2 (Mazda CX-5) — Tyler Boudreau, no injury, DUI (BAC 0.14)
+INSERT INTO PERSON_TBL (
+    PRS_CRASH_ID, PRS_VEHICLE_ID, PRS_PERSON_NAME,
+    PRS_DOB_YEAR, PRS_DOB_MONTH, PRS_DOB_DAY, PRS_SEX_CODE,
+    PRS_PERSON_TYPE_CODE, PRS_INJURY_STATUS_CODE,
+    PRS_VEHICLE_UNIT_NUMBER, PRS_SEATING_ROW_CODE, PRS_SEATING_SEAT_CODE,
+    PRS_RESTRAINT_CODE, PRS_RESTRAINT_IMPROPER_FLG, PRS_EJECTION_CODE,
+    PRS_DL_JURISDICTION_TYPE, PRS_DL_JURISDICTION_CODE,
+    PRS_DL_NUMBER, PRS_DL_CLASS_CODE, PRS_DL_IS_CDL_FLG,
+    PRS_DL_STATUS_TYPE_CODE, PRS_DL_STATUS_CODE,
+    PRS_SPEEDING_CODE, PRS_CONDITION_CODE_1,
+    PRS_LE_SUSPECTS_ALCOHOL, PRS_ALCOHOL_TEST_STATUS_CODE, PRS_ALCOHOL_TEST_TYPE_CODE, PRS_ALCOHOL_BAC_RESULT,
+    PRS_LE_SUSPECTS_DRUG, PRS_DRUG_TEST_STATUS_CODE,
+    PRS_TRANSPORT_SOURCE_CODE,
+    PRS_CREATED_BY, PRS_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @c4, @v4_2, 'Tyler Boudreau',
+    1992, 3, 28, 2, 1, 5,
+    2, 1, 7, 8, 1, 0,
+    5, 'NH', 'NH338812', 5, 1, 1, 6,
+    1, 5, 2, 1, 2, '140',
+    1, 0,
+    3,
+    'seed_script', 'IMPORT'
+);
+SET @p004_d2 = LAST_INSERT_ID();
+
+-- Passenger, Unit 1 (Chevy Silverado) — Patricia Paquette, serious injury
+INSERT INTO PERSON_TBL (
+    PRS_CRASH_ID, PRS_VEHICLE_ID, PRS_PERSON_NAME,
+    PRS_DOB_YEAR, PRS_DOB_MONTH, PRS_DOB_DAY, PRS_SEX_CODE,
+    PRS_PERSON_TYPE_CODE, PRS_INJURY_STATUS_CODE,
+    PRS_VEHICLE_UNIT_NUMBER, PRS_SEATING_ROW_CODE, PRS_SEATING_SEAT_CODE,
+    PRS_RESTRAINT_CODE, PRS_RESTRAINT_IMPROPER_FLG, PRS_EJECTION_CODE,
+    PRS_LE_SUSPECTS_ALCOHOL, PRS_LE_SUSPECTS_DRUG, PRS_TRANSPORT_SOURCE_CODE,
+    PRS_MEDICAL_FACILITY, PRS_INJURY_AREA_CODE,
+    PRS_CREATED_BY, PRS_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @c4, @v4_1, 'Patricia Paquette',
+    1979, 8, 14, 1, 2, 2,
+    1, 1, 9, 8, 1, 0,
+    1, 1, 2, 'Memorial Hospital North Conway', 5,
+    'seed_script', 'IMPORT'
+);
+
+-- ---------------------------------------------------------------------------
+-- TEST-005 — PDO rear-end, US-3 Everett Turnpike near Nashua
+-- ---------------------------------------------------------------------------
+
+-- Driver, Unit 1 (Jeep Grand Cherokee) — Kevin Thibodeau, no injury
+INSERT INTO PERSON_TBL (
+    PRS_CRASH_ID, PRS_VEHICLE_ID, PRS_PERSON_NAME,
+    PRS_DOB_YEAR, PRS_DOB_MONTH, PRS_DOB_DAY, PRS_SEX_CODE,
+    PRS_PERSON_TYPE_CODE, PRS_INJURY_STATUS_CODE,
+    PRS_VEHICLE_UNIT_NUMBER, PRS_SEATING_ROW_CODE, PRS_SEATING_SEAT_CODE,
+    PRS_RESTRAINT_CODE, PRS_RESTRAINT_IMPROPER_FLG, PRS_EJECTION_CODE,
+    PRS_DL_JURISDICTION_TYPE, PRS_DL_JURISDICTION_CODE,
+    PRS_DL_NUMBER, PRS_DL_CLASS_CODE, PRS_DL_IS_CDL_FLG,
+    PRS_DL_STATUS_TYPE_CODE, PRS_DL_STATUS_CODE,
+    PRS_SPEEDING_CODE, PRS_CONDITION_CODE_1,
+    PRS_LE_SUSPECTS_ALCOHOL, PRS_ALCOHOL_TEST_STATUS_CODE,
+    PRS_LE_SUSPECTS_DRUG, PRS_DRUG_TEST_STATUS_CODE, PRS_TRANSPORT_SOURCE_CODE,
+    PRS_CREATED_BY, PRS_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @c5, @v5_1, 'Kevin Thibodeau',
+    1985, 9, 16, 2, 1, 5,
+    1, 1, 7, 8, 1, 0,
+    5, 'NH', 'NH561089', 5, 1, 1, 6,
+    1, 0, 1, 0, 1, 0, 0,
+    'seed_script', 'IMPORT'
+);
+SET @p005_d1 = LAST_INSERT_ID();
+
+-- Driver, Unit 2 (Nissan Altima) — Amanda Rousseau, no injury, following too closely
+INSERT INTO PERSON_TBL (
+    PRS_CRASH_ID, PRS_VEHICLE_ID, PRS_PERSON_NAME,
+    PRS_DOB_YEAR, PRS_DOB_MONTH, PRS_DOB_DAY, PRS_SEX_CODE,
+    PRS_PERSON_TYPE_CODE, PRS_INJURY_STATUS_CODE,
+    PRS_VEHICLE_UNIT_NUMBER, PRS_SEATING_ROW_CODE, PRS_SEATING_SEAT_CODE,
+    PRS_RESTRAINT_CODE, PRS_RESTRAINT_IMPROPER_FLG, PRS_EJECTION_CODE,
+    PRS_DL_JURISDICTION_TYPE, PRS_DL_JURISDICTION_CODE,
+    PRS_DL_NUMBER, PRS_DL_CLASS_CODE, PRS_DL_IS_CDL_FLG,
+    PRS_DL_STATUS_TYPE_CODE, PRS_DL_STATUS_CODE,
+    PRS_SPEEDING_CODE, PRS_CONDITION_CODE_1,
+    PRS_LE_SUSPECTS_ALCOHOL, PRS_ALCOHOL_TEST_STATUS_CODE,
+    PRS_LE_SUSPECTS_DRUG, PRS_DRUG_TEST_STATUS_CODE, PRS_TRANSPORT_SOURCE_CODE,
+    PRS_CREATED_BY, PRS_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @c5, @v5_2, 'Amanda Rousseau',
+    1993, 4, 22, 1, 1, 5,
+    2, 1, 7, 8, 1, 0,
+    5, 'NH', 'NH429673', 5, 1, 1, 6,
+    1, 0, 1, 0, 1, 0, 0,
+    'seed_script', 'IMPORT'
+);
+SET @p005_d2 = LAST_INSERT_ID();
+
+-- ---------------------------------------------------------------------------
+-- TEST-006 — NH-9 nighttime sideswipe near Concord
+-- ---------------------------------------------------------------------------
+
+-- Driver, Unit 1 (Toyota RAV4) — Jennifer Lapointe, possible injury (victim)
+INSERT INTO PERSON_TBL (
+    PRS_CRASH_ID, PRS_VEHICLE_ID, PRS_PERSON_NAME,
+    PRS_DOB_YEAR, PRS_DOB_MONTH, PRS_DOB_DAY, PRS_SEX_CODE,
+    PRS_PERSON_TYPE_CODE, PRS_INJURY_STATUS_CODE,
+    PRS_VEHICLE_UNIT_NUMBER, PRS_SEATING_ROW_CODE, PRS_SEATING_SEAT_CODE,
+    PRS_RESTRAINT_CODE, PRS_RESTRAINT_IMPROPER_FLG, PRS_EJECTION_CODE,
+    PRS_DL_JURISDICTION_TYPE, PRS_DL_JURISDICTION_CODE,
+    PRS_DL_NUMBER, PRS_DL_CLASS_CODE, PRS_DL_IS_CDL_FLG,
+    PRS_DL_STATUS_TYPE_CODE, PRS_DL_STATUS_CODE,
+    PRS_SPEEDING_CODE, PRS_CONDITION_CODE_1,
+    PRS_LE_SUSPECTS_ALCOHOL, PRS_ALCOHOL_TEST_STATUS_CODE,
+    PRS_LE_SUSPECTS_DRUG, PRS_DRUG_TEST_STATUS_CODE, PRS_TRANSPORT_SOURCE_CODE,
+    PRS_INJURY_AREA_CODE,
+    PRS_CREATED_BY, PRS_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @c6, @v6_1, 'Jennifer Lapointe',
+    1989, 6, 3, 1, 1, 4,
+    1, 1, 7, 8, 1, 0,
+    5, 'NH', 'NH680225', 5, 1, 1, 6,
+    1, 0, 1, 0, 1, 0, 0, 3,
+    'seed_script', 'IMPORT'
+);
+SET @p006_d1 = LAST_INSERT_ID();
+
+-- Driver, Unit 2 (Honda Civic) — Brandon Hebert, no injury, distracted (phone)
+INSERT INTO PERSON_TBL (
+    PRS_CRASH_ID, PRS_VEHICLE_ID, PRS_PERSON_NAME,
+    PRS_DOB_YEAR, PRS_DOB_MONTH, PRS_DOB_DAY, PRS_SEX_CODE,
+    PRS_PERSON_TYPE_CODE, PRS_INJURY_STATUS_CODE,
+    PRS_VEHICLE_UNIT_NUMBER, PRS_SEATING_ROW_CODE, PRS_SEATING_SEAT_CODE,
+    PRS_RESTRAINT_CODE, PRS_RESTRAINT_IMPROPER_FLG, PRS_EJECTION_CODE,
+    PRS_DL_JURISDICTION_TYPE, PRS_DL_JURISDICTION_CODE,
+    PRS_DL_NUMBER, PRS_DL_CLASS_CODE, PRS_DL_IS_CDL_FLG,
+    PRS_DL_STATUS_TYPE_CODE, PRS_DL_STATUS_CODE,
+    PRS_SPEEDING_CODE, PRS_DISTRACTED_ACTION_CODE, PRS_DISTRACTED_SOURCE_CODE, PRS_CONDITION_CODE_1,
+    PRS_LE_SUSPECTS_ALCOHOL, PRS_ALCOHOL_TEST_STATUS_CODE,
+    PRS_LE_SUSPECTS_DRUG, PRS_DRUG_TEST_STATUS_CODE, PRS_TRANSPORT_SOURCE_CODE,
+    PRS_CREATED_BY, PRS_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @c6, @v6_2, 'Brandon Hebert',
+    1996, 11, 20, 2, 1, 5,
+    2, 1, 7, 8, 1, 0,
+    5, 'NH', 'NH571440', 5, 1, 1, 6,
+    1, 2, 2, 0, 1, 0, 1, 0, 0,
+    'seed_script', 'IMPORT'
+);
+SET @p006_d2 = LAST_INSERT_ID();
+
+-- ---------------------------------------------------------------------------
+-- TEST-007 — I-95 work zone crash with pedestrian, Hampton
+-- ---------------------------------------------------------------------------
+
+-- Driver, Unit 1 (Ford F-250) — Gerald Fortin, no injury
+INSERT INTO PERSON_TBL (
+    PRS_CRASH_ID, PRS_VEHICLE_ID, PRS_PERSON_NAME,
+    PRS_DOB_YEAR, PRS_DOB_MONTH, PRS_DOB_DAY, PRS_SEX_CODE,
+    PRS_PERSON_TYPE_CODE, PRS_INJURY_STATUS_CODE,
+    PRS_VEHICLE_UNIT_NUMBER, PRS_SEATING_ROW_CODE, PRS_SEATING_SEAT_CODE,
+    PRS_RESTRAINT_CODE, PRS_RESTRAINT_IMPROPER_FLG, PRS_EJECTION_CODE,
+    PRS_DL_JURISDICTION_TYPE, PRS_DL_JURISDICTION_CODE,
+    PRS_DL_NUMBER, PRS_DL_CLASS_CODE, PRS_DL_IS_CDL_FLG,
+    PRS_DL_STATUS_TYPE_CODE, PRS_DL_STATUS_CODE,
+    PRS_SPEEDING_CODE, PRS_CONDITION_CODE_1,
+    PRS_LE_SUSPECTS_ALCOHOL, PRS_ALCOHOL_TEST_STATUS_CODE,
+    PRS_LE_SUSPECTS_DRUG, PRS_DRUG_TEST_STATUS_CODE, PRS_TRANSPORT_SOURCE_CODE,
+    PRS_CREATED_BY, PRS_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @c7, @v7_1, 'Gerald Fortin',
+    1969, 4, 8, 2, 1, 5,
+    1, 1, 7, 8, 1, 0,
+    5, 'NH', 'NH731882', 5, 1, 1, 6,
+    1, 0, 1, 0, 1, 0, 0,
+    'seed_script', 'IMPORT'
+);
+SET @p007_d1 = LAST_INSERT_ID();
+
+-- Driver, Unit 2 (Subaru Legacy) — Melissa Roy, no injury
+INSERT INTO PERSON_TBL (
+    PRS_CRASH_ID, PRS_VEHICLE_ID, PRS_PERSON_NAME,
+    PRS_DOB_YEAR, PRS_DOB_MONTH, PRS_DOB_DAY, PRS_SEX_CODE,
+    PRS_PERSON_TYPE_CODE, PRS_INJURY_STATUS_CODE,
+    PRS_VEHICLE_UNIT_NUMBER, PRS_SEATING_ROW_CODE, PRS_SEATING_SEAT_CODE,
+    PRS_RESTRAINT_CODE, PRS_RESTRAINT_IMPROPER_FLG, PRS_EJECTION_CODE,
+    PRS_DL_JURISDICTION_TYPE, PRS_DL_JURISDICTION_CODE,
+    PRS_DL_NUMBER, PRS_DL_CLASS_CODE, PRS_DL_IS_CDL_FLG,
+    PRS_DL_STATUS_TYPE_CODE, PRS_DL_STATUS_CODE,
+    PRS_SPEEDING_CODE, PRS_CONDITION_CODE_1,
+    PRS_LE_SUSPECTS_ALCOHOL, PRS_ALCOHOL_TEST_STATUS_CODE,
+    PRS_LE_SUSPECTS_DRUG, PRS_DRUG_TEST_STATUS_CODE, PRS_TRANSPORT_SOURCE_CODE,
+    PRS_CREATED_BY, PRS_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @c7, @v7_2, 'Melissa Roy',
+    1995, 9, 14, 1, 1, 5,
+    2, 1, 7, 8, 1, 0,
+    5, 'NH', 'NH483260', 5, 1, 1, 6,
+    1, 0, 1, 0, 1, 0, 0,
+    'seed_script', 'IMPORT'
+);
+SET @p007_d2 = LAST_INSERT_ID();
+
+-- Passenger, Unit 1 (Ford F-250) — Raymond Blais, no injury
+INSERT INTO PERSON_TBL (
+    PRS_CRASH_ID, PRS_VEHICLE_ID, PRS_PERSON_NAME,
+    PRS_DOB_YEAR, PRS_DOB_MONTH, PRS_DOB_DAY, PRS_SEX_CODE,
+    PRS_PERSON_TYPE_CODE, PRS_INJURY_STATUS_CODE,
+    PRS_VEHICLE_UNIT_NUMBER, PRS_SEATING_ROW_CODE, PRS_SEATING_SEAT_CODE,
+    PRS_RESTRAINT_CODE, PRS_RESTRAINT_IMPROPER_FLG, PRS_EJECTION_CODE,
+    PRS_LE_SUSPECTS_ALCOHOL, PRS_LE_SUSPECTS_DRUG, PRS_TRANSPORT_SOURCE_CODE,
+    PRS_CREATED_BY, PRS_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @c7, @v7_1, 'Raymond Blais',
+    1974, 2, 22, 2, 2, 5,
+    1, 1, 9, 8, 1, 0, 1, 1, 0,
+    'seed_script', 'IMPORT'
+);
+
+-- Non-motorist — Dennis Gagne, construction worker, serious injury, struck by Unit 1
+INSERT INTO PERSON_TBL (
+    PRS_CRASH_ID, PRS_VEHICLE_ID, PRS_PERSON_NAME,
+    PRS_DOB_YEAR, PRS_DOB_MONTH, PRS_DOB_DAY, PRS_SEX_CODE,
+    PRS_PERSON_TYPE_CODE, PRS_INCIDENT_RESPONDER_CODE, PRS_INJURY_STATUS_CODE,
+    PRS_VEHICLE_UNIT_NUMBER, PRS_SEATING_ROW_CODE, PRS_SEATING_SEAT_CODE,
+    PRS_RESTRAINT_CODE, PRS_EJECTION_CODE,
+    PRS_DL_JURISDICTION_TYPE,
+    PRS_LE_SUSPECTS_ALCOHOL, PRS_ALCOHOL_TEST_STATUS_CODE,
+    PRS_LE_SUSPECTS_DRUG, PRS_DRUG_TEST_STATUS_CODE,
+    PRS_TRANSPORT_SOURCE_CODE, PRS_MEDICAL_FACILITY, PRS_INJURY_AREA_CODE,
+    PRS_CREATED_BY, PRS_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @c7, NULL, 'Dennis Gagne',
+    1980, 7, 31, 2,
+    6, 6, 2,
+    98, 98, 98,
+    97, 0,
+    97,
+    1, 0, 1, 0,
+    1, 'Portsmouth Regional Hospital', 5,
+    'seed_script', 'IMPORT'
+);
+SET @p007_nm = LAST_INSERT_ID();
+
+-- ---------------------------------------------------------------------------
+-- TEST-008 — NH-11 3-vehicle chain, Laconia, snow + ice
+-- ---------------------------------------------------------------------------
+
+-- Driver, Unit 1 (Dodge Ram) — Brian Champagne, no injury
+INSERT INTO PERSON_TBL (
+    PRS_CRASH_ID, PRS_VEHICLE_ID, PRS_PERSON_NAME,
+    PRS_DOB_YEAR, PRS_DOB_MONTH, PRS_DOB_DAY, PRS_SEX_CODE,
+    PRS_PERSON_TYPE_CODE, PRS_INJURY_STATUS_CODE,
+    PRS_VEHICLE_UNIT_NUMBER, PRS_SEATING_ROW_CODE, PRS_SEATING_SEAT_CODE,
+    PRS_RESTRAINT_CODE, PRS_RESTRAINT_IMPROPER_FLG, PRS_EJECTION_CODE,
+    PRS_DL_JURISDICTION_TYPE, PRS_DL_JURISDICTION_CODE,
+    PRS_DL_NUMBER, PRS_DL_CLASS_CODE, PRS_DL_IS_CDL_FLG,
+    PRS_DL_STATUS_TYPE_CODE, PRS_DL_STATUS_CODE,
+    PRS_SPEEDING_CODE, PRS_CONDITION_CODE_1,
+    PRS_LE_SUSPECTS_ALCOHOL, PRS_ALCOHOL_TEST_STATUS_CODE,
+    PRS_LE_SUSPECTS_DRUG, PRS_DRUG_TEST_STATUS_CODE, PRS_TRANSPORT_SOURCE_CODE,
+    PRS_CREATED_BY, PRS_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @c8, @v8_1, 'Brian Champagne',
+    1977, 6, 19, 2, 1, 5,
+    1, 1, 7, 8, 1, 0,
+    5, 'NH', 'NH824156', 5, 1, 1, 6,
+    1, 0, 1, 0, 1, 0, 0,
+    'seed_script', 'IMPORT'
+);
+SET @p008_d1 = LAST_INSERT_ID();
+
+-- Driver, Unit 2 (Hyundai Elantra) — Kyle Gauthier, minor injury, too fast for conditions
+INSERT INTO PERSON_TBL (
+    PRS_CRASH_ID, PRS_VEHICLE_ID, PRS_PERSON_NAME,
+    PRS_DOB_YEAR, PRS_DOB_MONTH, PRS_DOB_DAY, PRS_SEX_CODE,
+    PRS_PERSON_TYPE_CODE, PRS_INJURY_STATUS_CODE,
+    PRS_VEHICLE_UNIT_NUMBER, PRS_SEATING_ROW_CODE, PRS_SEATING_SEAT_CODE,
+    PRS_RESTRAINT_CODE, PRS_RESTRAINT_IMPROPER_FLG, PRS_EJECTION_CODE,
+    PRS_DL_JURISDICTION_TYPE, PRS_DL_JURISDICTION_CODE,
+    PRS_DL_NUMBER, PRS_DL_CLASS_CODE, PRS_DL_IS_CDL_FLG,
+    PRS_DL_STATUS_TYPE_CODE, PRS_DL_STATUS_CODE,
+    PRS_SPEEDING_CODE, PRS_CONDITION_CODE_1,
+    PRS_LE_SUSPECTS_ALCOHOL, PRS_ALCOHOL_TEST_STATUS_CODE,
+    PRS_LE_SUSPECTS_DRUG, PRS_DRUG_TEST_STATUS_CODE,
+    PRS_TRANSPORT_SOURCE_CODE, PRS_MEDICAL_FACILITY, PRS_INJURY_AREA_CODE,
+    PRS_CREATED_BY, PRS_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @c8, @v8_2, 'Kyle Gauthier',
+    2002, 11, 7, 2, 1, 3,
+    2, 1, 7, 8, 1, 0,
+    5, 'NH', 'NH912347', 5, 1, 1, 6,
+    4, 0, 1, 0, 1, 0,
+    2, 'Lakes Region General Hospital, Laconia', 3,
+    'seed_script', 'IMPORT'
+);
+SET @p008_d2 = LAST_INSERT_ID();
+
+-- Driver, Unit 3 (Kia Sportage) — Arthur Leblanc, no injury, too fast for conditions
+INSERT INTO PERSON_TBL (
+    PRS_CRASH_ID, PRS_VEHICLE_ID, PRS_PERSON_NAME,
+    PRS_DOB_YEAR, PRS_DOB_MONTH, PRS_DOB_DAY, PRS_SEX_CODE,
+    PRS_PERSON_TYPE_CODE, PRS_INJURY_STATUS_CODE,
+    PRS_VEHICLE_UNIT_NUMBER, PRS_SEATING_ROW_CODE, PRS_SEATING_SEAT_CODE,
+    PRS_RESTRAINT_CODE, PRS_RESTRAINT_IMPROPER_FLG, PRS_EJECTION_CODE,
+    PRS_DL_JURISDICTION_TYPE, PRS_DL_JURISDICTION_CODE,
+    PRS_DL_NUMBER, PRS_DL_CLASS_CODE, PRS_DL_IS_CDL_FLG,
+    PRS_DL_STATUS_TYPE_CODE, PRS_DL_STATUS_CODE,
+    PRS_SPEEDING_CODE, PRS_CONDITION_CODE_1,
+    PRS_LE_SUSPECTS_ALCOHOL, PRS_ALCOHOL_TEST_STATUS_CODE,
+    PRS_LE_SUSPECTS_DRUG, PRS_DRUG_TEST_STATUS_CODE, PRS_TRANSPORT_SOURCE_CODE,
+    PRS_CREATED_BY, PRS_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @c8, @v8_3, 'Arthur Leblanc',
+    1966, 2, 14, 2, 1, 5,
+    3, 1, 7, 8, 1, 0,
+    5, 'NH', 'NH763081', 5, 1, 1, 6,
+    4, 0, 1, 0, 1, 0, 0,
+    'seed_script', 'IMPORT'
+);
+SET @p008_d3 = LAST_INSERT_ID();
+
+-- Passengers for TEST-008
+INSERT INTO PERSON_TBL (
+    PRS_CRASH_ID, PRS_VEHICLE_ID, PRS_PERSON_NAME,
+    PRS_DOB_YEAR, PRS_DOB_MONTH, PRS_DOB_DAY, PRS_SEX_CODE,
+    PRS_PERSON_TYPE_CODE, PRS_INJURY_STATUS_CODE,
+    PRS_VEHICLE_UNIT_NUMBER, PRS_SEATING_ROW_CODE, PRS_SEATING_SEAT_CODE,
+    PRS_RESTRAINT_CODE, PRS_RESTRAINT_IMPROPER_FLG, PRS_EJECTION_CODE,
+    PRS_LE_SUSPECTS_ALCOHOL, PRS_LE_SUSPECTS_DRUG, PRS_TRANSPORT_SOURCE_CODE,
+    PRS_MEDICAL_FACILITY, PRS_INJURY_AREA_CODE,
+    PRS_CREATED_BY, PRS_LAST_UPDATED_ACTIVITY_CODE
+) VALUES
+(   @c8, @v8_1, 'Carol Champagne', 1979, 3, 25, 1, 2, 3,
+    1, 1, 9, 8, 1, 0, 1, 1, 2,
+    'Lakes Region General Hospital, Laconia', 6, 'seed_script', 'IMPORT'),
+(   @c8, @v8_2, 'Emma Gauthier',   2003, 8, 3,  1, 2, 5,
+    2, 1, 9, 8, 1, 0, 1, 1, 0, NULL, NULL, 'seed_script', 'IMPORT');
+
+-- ===========================================================================
+-- SECTION 12 — DRIVER ACTIONS (P14)
+-- PDA_ACTION_CODE: 0=None 3=Failed to Keep Lane 5=Followed Too Closely
+--   9=Operated Inattentively 10=Recklessly 12=Ran Off Roadway
+--   13=Ran Red Light 15=Swerved/Overcorrected 16=Wrong Side/Wrong Way
+-- ===========================================================================
+
+INSERT INTO PERSON_DRIVER_ACTION_TBL (PDA_PERSON_ID, PDA_CRASH_ID, PDA_SEQUENCE_NUM, PDA_ACTION_CODE, PDA_CREATED_BY, PDA_LAST_UPDATED_ACTIVITY_CODE) VALUES
+-- TEST-001 Unit 1 (Jason Reyes): inattentive — fell asleep
+(@p001_d1, @c1, 1, 9, 'seed_script', 'IMPORT'),
+-- TEST-002 Unit 2 (Ashley Moreau): ran red light
+(@p002_d2, @c2, 1, 13, 'seed_script', 'IMPORT'),
+-- TEST-003 Unit 1 (Ethan Coulombe): ran off roadway + overcorrected
+(@p003_d1, @c3, 1, 12, 'seed_script', 'IMPORT'),
+(@p003_d1, @c3, 2, 15, 'seed_script', 'IMPORT'),
+-- TEST-004 Unit 2 (Tyler Boudreau): wrong way + reckless (DUI)
+(@p004_d2, @c4, 1, 16, 'seed_script', 'IMPORT'),
+(@p004_d2, @c4, 2, 10, 'seed_script', 'IMPORT'),
+-- TEST-005 Unit 2 (Amanda Rousseau): followed too closely
+(@p005_d2, @c5, 1, 5, 'seed_script', 'IMPORT'),
+-- TEST-006 Unit 2 (Brandon Hebert): failed to keep in proper lane (phone distracted)
+(@p006_d2, @c6, 1, 3, 'seed_script', 'IMPORT'),
+-- TEST-007 Unit 1 (Gerald Fortin): no contributing action (pedestrian fault)
+(@p007_d1, @c7, 1, 0, 'seed_script', 'IMPORT'),
+-- TEST-008 Unit 2 (Kyle Gauthier): followed too closely in snow
+(@p008_d2, @c8, 1, 5, 'seed_script', 'IMPORT'),
+-- TEST-008 Unit 3 (Arthur Leblanc): followed too closely in snow
+(@p008_d3, @c8, 1, 5, 'seed_script', 'IMPORT');
+
+-- ===========================================================================
+-- SECTION 13 — FATAL SECTIONS (F1-F3)
+-- FSC_AVOIDANCE_MANEUVER_CODE: 9=No Avoidance Maneuver
+-- FSC_ALCOHOL_TEST_TYPE_CODE: 0=Test Not Given
+-- FSC_ALCOHOL_TEST_RESULT: 996=Test Not Given
+-- ===========================================================================
+
+-- TEST-001: Robert Tremblay (Unit 2 driver) — no evasive action possible, test not given
+INSERT INTO FATAL_SECTION_TBL (
+    FSC_PERSON_ID, FSC_CRASH_ID,
+    FSC_AVOIDANCE_MANEUVER_CODE,
+    FSC_ALCOHOL_TEST_TYPE_CODE, FSC_ALCOHOL_TEST_RESULT,
+    FSC_DRUG_TEST_TYPE_CODE, FSC_DRUG_TEST_RESULT,
+    FSC_CREATED_BY, FSC_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @p001_d2_fatal, @c1, 9, 0, '996', 0, 0,
+    'seed_script', 'IMPORT'
+);
+
+-- TEST-004: David Paquette (Unit 1 driver) — no evasive action, head-on at 02:15 AM
+INSERT INTO FATAL_SECTION_TBL (
+    FSC_PERSON_ID, FSC_CRASH_ID,
+    FSC_AVOIDANCE_MANEUVER_CODE,
+    FSC_ALCOHOL_TEST_TYPE_CODE, FSC_ALCOHOL_TEST_RESULT,
+    FSC_DRUG_TEST_TYPE_CODE, FSC_DRUG_TEST_RESULT,
+    FSC_CREATED_BY, FSC_LAST_UPDATED_ACTIVITY_CODE
+) VALUES (
+    @p004_d1_fatal, @c4, 9, 0, '996', 0, 0,
     'seed_script', 'IMPORT'
 );
 
 -- ===========================================================================
--- WEATHER CONDITIONS
+-- SECTION 14 — NON-MOTORIST (NM1-NM6)
+-- NMT_ACTION_CIRC_CODE: 8=Working in Trafficway
+-- NMT_LOCATION_AT_CRASH_CODE: 7=Travel Lane Other
+-- NMT_INITIAL_CONTACT_POINT: 12=Front of non-motorist
 -- ===========================================================================
 
--- TEST-003: Rain (code 3) + Fog (code 5) — White Mountains night conditions
-INSERT INTO CRASH_WEATHER_CONDITION_TBL (
-    CWC_CRASH_ID, CWC_SEQUENCE_NUM, CWC_WEATHER_CODE,
-    CWC_CREATED_BY, CWC_LAST_UPDATED_ACTIVITY_CODE
-) VALUES
-(
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-003'),
-    1, 3, 'seed_script', 'IMPORT'
-),
-(
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-003'),
-    2, 5, 'seed_script', 'IMPORT'
-);
-
--- TEST-008: Snow (code 4) + Blowing Snow (code 7) — Lake Winnipesaukee region winter
-INSERT INTO CRASH_WEATHER_CONDITION_TBL (
-    CWC_CRASH_ID, CWC_SEQUENCE_NUM, CWC_WEATHER_CODE,
-    CWC_CREATED_BY, CWC_LAST_UPDATED_ACTIVITY_CODE
-) VALUES
-(
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-008'),
-    1, 4, 'seed_script', 'IMPORT'
-),
-(
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-008'),
-    2, 7, 'seed_script', 'IMPORT'
-);
-
--- Clear / cloudy weather for TEST-001 and TEST-002
-INSERT INTO CRASH_WEATHER_CONDITION_TBL (
-    CWC_CRASH_ID, CWC_SEQUENCE_NUM, CWC_WEATHER_CODE,
-    CWC_CREATED_BY, CWC_LAST_UPDATED_ACTIVITY_CODE
-) VALUES
-(
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-001'),
-    1, 1, 'seed_script', 'IMPORT'    -- Clear
-),
-(
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-002'),
-    1, 2, 'seed_script', 'IMPORT'    -- Cloudy
-);
-
--- ===========================================================================
--- VEHICLE SEQUENCE EVENTS
--- ===========================================================================
-
--- TEST-001 Unit 1 (Honda Accord): collided with Unit 2 from behind
-INSERT INTO VEHICLE_SEQUENCE_EVENT_TBL (
-    VSE_VEHICLE_ID, VSE_CRASH_ID, VSE_SEQUENCE_NUM, VSE_EVENT_CODE,
-    VSE_CREATED_BY, VSE_LAST_UPDATED_ACTIVITY_CODE
+-- TEST-007: Dennis Gagne — construction worker struck by Unit 1 (Ford F-250)
+INSERT INTO NON_MOTORIST_TBL (
+    NMT_PERSON_ID, NMT_CRASH_ID,
+    NMT_STRIKING_VEHICLE_UNIT,
+    NMT_ACTION_CIRC_CODE, NMT_ORIGIN_DESTINATION_CODE,
+    NMT_CONTRIBUTING_ACTION_1,
+    NMT_LOCATION_AT_CRASH_CODE,
+    NMT_INITIAL_CONTACT_POINT,
+    NMT_CREATED_BY, NMT_LAST_UPDATED_ACTIVITY_CODE
 ) VALUES (
-    (SELECT VEH_VEHICLE_ID FROM VEHICLE_TBL
-     WHERE VEH_CRASH_ID = (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-001')
-       AND VEH_UNIT_NUMBER = 1),
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-001'),
-    1, 29, 'seed_script', 'IMPORT'
-);
-
--- TEST-001 Unit 2 (Toyota Camry): struck from behind, then hit guardrail (event 38)
-INSERT INTO VEHICLE_SEQUENCE_EVENT_TBL (
-    VSE_VEHICLE_ID, VSE_CRASH_ID, VSE_SEQUENCE_NUM, VSE_EVENT_CODE,
-    VSE_CREATED_BY, VSE_LAST_UPDATED_ACTIVITY_CODE
-) VALUES
-(
-    (SELECT VEH_VEHICLE_ID FROM VEHICLE_TBL
-     WHERE VEH_CRASH_ID = (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-001')
-       AND VEH_UNIT_NUMBER = 2),
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-001'),
-    1, 29, 'seed_script', 'IMPORT'
-),
-(
-    (SELECT VEH_VEHICLE_ID FROM VEHICLE_TBL
-     WHERE VEH_CRASH_ID = (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-001')
-       AND VEH_UNIT_NUMBER = 2),
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-001'),
-    2, 34, 'seed_script', 'IMPORT'    -- event 34 = guardrail
-);
-
--- TEST-003 Unit 1 (Subaru Outback): lost control on wet mountain curve, rolled over
-INSERT INTO VEHICLE_SEQUENCE_EVENT_TBL (
-    VSE_VEHICLE_ID, VSE_CRASH_ID, VSE_SEQUENCE_NUM, VSE_EVENT_CODE,
-    VSE_CREATED_BY, VSE_LAST_UPDATED_ACTIVITY_CODE
-) VALUES
-(
-    (SELECT VEH_VEHICLE_ID FROM VEHICLE_TBL
-     WHERE VEH_CRASH_ID = (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-003')
-       AND VEH_UNIT_NUMBER = 1),
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-003'),
-    1, 6, 'seed_script', 'IMPORT'    -- event 6 = ran off road
-),
-(
-    (SELECT VEH_VEHICLE_ID FROM VEHICLE_TBL
-     WHERE VEH_CRASH_ID = (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-003')
-       AND VEH_UNIT_NUMBER = 1),
-    (SELECT CRS_CRASH_ID FROM CRASH_TBL WHERE CRS_CRASH_IDENTIFIER = 'TEST-003'),
-    2, 11, 'seed_script', 'IMPORT'    -- event 11 = rollover
+    @p007_nm, @c7,
+    1,
+    8, 97,
+    0,
+    7,
+    12,
+    'seed_script', 'IMPORT'
 );
 
 -- ===========================================================================
--- SURFACE CONDITIONS
+-- VERIFICATION QUERIES (uncomment to run after seeding)
 -- ===========================================================================
-
--- TEST-008: Ice (code 4) — NH-11 Laconia February morning
-INSERT INTO CRASH_SURFACE_CONDITION_TBL (
-    CSC_CRASH_ID, CSC_SEQUENCE_NUM, CSC_SURFACE_CODE,
-    CSC_CREATED_BY, CSC_LAST_UPDATED_ACTIVITY_CODE
-)
-SELECT CRS_CRASH_ID, 1, 4, 'seed_script', 'IMPORT'
-FROM CRASH_TBL
-WHERE CRS_CRASH_IDENTIFIER = 'TEST-008';
-
--- TEST-003: Wet (code 2) — NH-16 Conway after rain
-INSERT INTO CRASH_SURFACE_CONDITION_TBL (
-    CSC_CRASH_ID, CSC_SEQUENCE_NUM, CSC_SURFACE_CODE,
-    CSC_CREATED_BY, CSC_LAST_UPDATED_ACTIVITY_CODE
-)
-SELECT CRS_CRASH_ID, 1, 2, 'seed_script', 'IMPORT'
-FROM CRASH_TBL
-WHERE CRS_CRASH_IDENTIFIER = 'TEST-003';
-
--- ===========================================================================
--- VERIFICATION QUERIES (run these after the script to confirm)
--- ===========================================================================
--- SELECT CRS_CRASH_IDENTIFIER, CRS_CRASH_DATE, CRS_COUNTY_NAME, CRS_CITY_PLACE_NAME,
---        CRS_CRASH_SEVERITY_CODE, CRS_NUM_MOTOR_VEHICLES, CRS_NUM_FATALITIES
--- FROM CRASH_TBL
--- WHERE CRS_CRASH_IDENTIFIER LIKE 'TEST-%'
--- ORDER BY CRS_CRASH_DATE;
---
--- SELECT c.CRS_CRASH_IDENTIFIER, COUNT(v.VEH_VEHICLE_ID) AS vehicle_count
+-- SELECT c.CRS_CRASH_IDENTIFIER, c.CRS_CRASH_DATE, c.CRS_COUNTY_NAME,
+--        c.CRS_CRASH_SEVERITY_CODE, c.CRS_NUM_MOTOR_VEHICLES,
+--        c.CRS_NUM_MOTORISTS, c.CRS_NUM_NON_MOTORISTS, c.CRS_NUM_FATALITIES,
+--        COUNT(DISTINCT v.VEH_VEHICLE_ID) AS vehicles,
+--        COUNT(DISTINCT p.PRS_PERSON_ID)  AS persons,
+--        COUNT(DISTINCT r.RWY_ROADWAY_ID) AS roadway
 -- FROM CRASH_TBL c
 -- LEFT JOIN VEHICLE_TBL v ON v.VEH_CRASH_ID = c.CRS_CRASH_ID
+-- LEFT JOIN PERSON_TBL  p ON p.PRS_CRASH_ID  = c.CRS_CRASH_ID
+-- LEFT JOIN ROADWAY_TBL r ON r.RWY_CRASH_ID  = c.CRS_CRASH_ID
 -- WHERE c.CRS_CRASH_IDENTIFIER LIKE 'TEST-%'
--- GROUP BY c.CRS_CRASH_IDENTIFIER;
+-- GROUP BY c.CRS_CRASH_ID ORDER BY c.CRS_CRASH_DATE;

@@ -267,7 +267,7 @@ The script is **idempotent** — it deletes any existing `TEST-*` records (casca
 | TEST-007 | 2025-01-08 | Rockingham (Hampton) | Work zone, pedestrian involved, I-95 | Serious Injury | 2 |
 | TEST-008 | 2025-02-03 | Belknap (Laconia) | 3-vehicle chain, snow + ice, NH-11 | Minor Injury | 3 |
 
-Child data included: 10 vehicles, 4 roadway records, 6 weather conditions, 2 surface conditions, 5 vehicle sequence events.
+Child data included per crash: 13 vehicles, 8 roadway records, 10 weather conditions, 9 surface conditions, 11 vehicle sequence events, 22 vehicle damage areas, 4 traffic controls, 26 persons (drivers, passengers, 1 pedestrian), 11 driver actions, 2 fatal sections, 1 non-motorist record.
 
 ### How to run
 
