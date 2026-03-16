@@ -258,14 +258,14 @@ The script is **idempotent** — it deletes any existing `TEST-*` records (casca
 
 | Case # | Date | County | Scenario | Severity | Vehicles |
 |---|---|---|---|---|---|
-| TEST-001 | 2024-07-15 | Wayne (Detroit) | Fatal rear-end, I-94 | Fatal (1) | 2 |
-| TEST-002 | 2024-08-22 | Oakland (Troy) | Angle collision, signalized intersection | Serious Injury | 2 |
-| TEST-003 | 2024-09-10 | Washtenaw (Ann Arbor) | Single vehicle rollover, rain + fog | Minor Injury | 1 |
-| TEST-004 | 2024-10-05 | Macomb (Sterling Heights) | Head-on, dark road | Fatal (1) | 2 |
-| TEST-005 | 2024-11-12 | Wayne (Detroit) | PDO rear-end, I-696 | PDO | 2 |
-| TEST-006 | 2024-11-28 | Wayne (Dearborn) | Sideswipe, nighttime | Possible Injury | 2 |
-| TEST-007 | 2025-01-08 | Ingham (Lansing) | Work zone, pedestrian involved | Serious Injury | 2 |
-| TEST-008 | 2025-02-03 | Kent (Grand Rapids) | 3-vehicle chain, snow + ice | Minor Injury | 3 |
+| TEST-001 | 2024-07-15 | Hillsborough (Manchester) | Fatal rear-end, I-93 | Fatal (1) | 2 |
+| TEST-002 | 2024-08-22 | Rockingham (Portsmouth) | Angle collision, signalized intersection | Serious Injury | 2 |
+| TEST-003 | 2024-09-10 | Carroll (Conway) | Single vehicle rollover, rain + fog | Minor Injury | 1 |
+| TEST-004 | 2024-10-05 | Carroll (Hart's Location) | Head-on, dark road, Crawford Notch | Fatal (1) | 2 |
+| TEST-005 | 2024-11-12 | Hillsborough (Nashua) | PDO rear-end, US-3 Turnpike | PDO | 2 |
+| TEST-006 | 2024-11-28 | Merrimack (Concord) | Sideswipe, nighttime, NH-9 | Possible Injury | 2 |
+| TEST-007 | 2025-01-08 | Rockingham (Hampton) | Work zone, pedestrian involved, I-95 | Serious Injury | 2 |
+| TEST-008 | 2025-02-03 | Belknap (Laconia) | 3-vehicle chain, snow + ice, NH-11 | Minor Injury | 3 |
 
 Child data included: 10 vehicles, 4 roadway records, 6 weather conditions, 2 surface conditions, 5 vehicle sequence events.
 
