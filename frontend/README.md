@@ -30,10 +30,12 @@ frontend/
             ├── app.routes.ts               ← route table (lazy-loaded)
             ├── core/
             │   ├── models/
-            │   │   └── auth.models.ts      ← TS interfaces mirroring auth-service DTOs
+            │   │   ├── auth.models.ts      ← TS interfaces mirroring auth-service DTOs
+            │   │   └── crash.models.ts     ← CrashSummary, CrashFilter, Page<T>
             │   ├── services/
             │   │   ├── firebase-auth.service.ts  ← Firebase v10 modular SDK wrapper
-            │   │   └── auth.service.ts           ← session manager, JWT, auto-refresh
+            │   │   ├── auth.service.ts           ← session manager, JWT, auto-refresh
+            │   │   └── crash.service.ts          ← GET /crashes with filter/pagination
             │   ├── interceptors/
             │   │   └── auth.interceptor.ts       ← Bearer token + 401 retry
             │   └── guards/
@@ -43,11 +45,20 @@ frontend/
             │       └── alert/
             │           └── alert.component.ts    ← accessible alert/status banner
             └── features/
-                └── auth/
-                    └── login/
-                        ├── login.component.ts    ← Google SSO + email/password logic
-                        ├── login.component.html  ← split-panel, fully annotated ADA
-                        └── login.component.scss  ← muted palette, contrast documented
+                ├── auth/
+                │   └── login/
+                │       ├── login.component.ts    ← Google SSO + email/password logic
+                │       ├── login.component.html  ← split-panel, fully annotated ADA
+                │       └── login.component.scss  ← muted palette, contrast documented
+                ├── shell/
+                │   ├── shell.component.ts        ← authenticated layout host
+                │   ├── shell.component.html      ← responsive nav + collapsible sidebar
+                │   └── shell.component.scss      ← layout, role badge, mobile breakpoints
+                └── crashes/
+                    └── crash-list/
+                        ├── crash-list.component.ts    ← filter/page/sort + URL sync
+                        ├── crash-list.component.html  ← table, filters, pagination controls
+                        └── crash-list.component.scss  ← table styling, skeleton shimmer
 ```
 
 ---
@@ -154,9 +165,12 @@ User
 | Path | Component | Guard | Role |
 |---|---|---|---|
 | `/login` | `LoginComponent` | — | Public |
-| `/` | — | — | Redirects to `/dashboard` |
-| `/dashboard` | *(placeholder)* | `authGuard` | Authenticated |
-| `**` | — | — | Redirects to `/login` |
+| `/` | — | — | Redirects to `/crashes` |
+| `/crashes` | `CrashListComponent` | `authGuard` | Authenticated |
+| `/dashboard` | `ComingSoonComponent` | `authGuard` | Authenticated |
+| `/reports` | `ComingSoonComponent` | `authGuard` | Authenticated |
+| `/admin/users` | `ComingSoonComponent` | `authGuard` | Authenticated |
+| `**` | — | — | Redirects to `/crashes` |
 
 The `authGuard` redirects unauthenticated users to `/login?returnUrl=<attempted-path>`. After a successful login the user is sent back to the originally requested URL.
 
@@ -213,16 +227,16 @@ All colour values are defined as CSS custom properties in `src/styles.scss`:
 
 ## Sprint Plan
 
-| Sprint | Frontend Scope |
-|---|---|
-| **Sprint 1** ✅ | Routing scaffold, core services, login page (Google SSO + email/password), end-to-end auth verified |
-| **Sprint 2** | Authenticated shell (nav + sidebar), dashboard screen |
-| **Sprint 3** | Crash list with filters and pagination |
-| **Sprint 4** | Multi-step crash entry form (C1–C27 MMUCC fields) |
-| **Sprint 5** | Crash detail view (tabbed: overview, vehicles, roadway, audit log) |
-| **Sprint 6** | Vehicle entry modal (V1–V24), roadway upsert form |
-| **Sprint 7** | Admin: user management, role assignment |
-| **Sprint 8** | Reports, CSV export, analytics charts |
+| Sprint | Frontend Scope | Status |
+|---|---|---|
+| **Sprint 1** | Routing scaffold, core services, login page (Google SSO + email/password), end-to-end auth verified | ✅ Complete |
+| **Sprint 2** | Authenticated shell (responsive nav + collapsible sidebar, role-aware links, logout) | ✅ Complete |
+| **Sprint 3** | Crash list with date/county filters, sort, pagination, URL state sync, skeleton shimmer | ✅ Complete |
+| **Sprint 4** | Multi-step crash entry form (C1–C27 MMUCC fields) | 🔲 Not started |
+| **Sprint 5** | Crash detail view (tabbed: overview, vehicles, roadway, audit log) | 🔲 Not started |
+| **Sprint 6** | Vehicle entry modal (V1–V24), roadway upsert form | 🔲 Not started |
+| **Sprint 7** | Admin: user management, role assignment | 🔲 Not started |
+| **Sprint 8** | Reports, CSV export, analytics charts | 🔲 Not started |
 
 ### Sprint 1 — Completed
 
@@ -234,3 +248,24 @@ All colour values are defined as CSS custom properties in `src/styles.scss`:
 - [x] Login page — ADA/WCAG 2.1 AA compliant, Google SSO + email/password, muted color scheme
 - [x] Dev proxy configured (`/auth` → `:8081`, `/crashes` → `:8082`)
 - [x] End-to-end authentication verified: Google sign-in → Firebase ID token → auth-service JWT → crash-service requests authorized
+
+### Sprint 2 — Completed
+
+- [x] `ShellComponent` — authenticated layout host wrapping all protected routes
+- [x] Responsive sidebar — collapsible on mobile (< 1024 px), always-open on desktop
+- [x] Top navigation bar — app title, sidebar toggle button, user display name + role badge, logout
+- [x] Role-aware nav links — Reports hidden from `DATA_ENTRY`; Admin section visible to `ADMIN` only
+- [x] Active link highlighting via `RouterLinkActive`
+- [x] `OnPush` + Angular signals throughout; `HostListener` for window resize
+
+### Sprint 3 — Completed
+
+- [x] `CrashListComponent` — paginated table of crash records from `GET /crashes`
+- [x] `CrashService` — typed `HttpClient` wrapper with `HttpParams` filter builder
+- [x] `crash.models.ts` — `CrashSummary`, `CrashFilter`, `Page<T>` interfaces mirroring crash-service DTOs
+- [x] Filter panel — date range (from/to) and county inputs; Apply / Clear buttons
+- [x] Sort toggle on crash date column (asc/desc)
+- [x] Page size selector (10 / 20 / 50); previous/next pagination controls
+- [x] "Showing X–Y of Z records" label driven by computed signals
+- [x] URL query-param sync — filter + page + sort state survives browser back/forward and bookmarks
+- [x] Skeleton shimmer rows shown during load; `AlertComponent` shown on fetch error
