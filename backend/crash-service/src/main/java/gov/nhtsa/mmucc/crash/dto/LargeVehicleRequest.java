@@ -1,0 +1,46 @@
+package gov.nhtsa.mmucc.crash.dto;
+
+import java.util.List;
+
+/** Request body for PUT /vehicles/{id}/large-vehicle */
+public record LargeVehicleRequest(
+        Integer cmvLicenseStatusCode,
+        Integer cdlComplianceCode,
+        String trailer1Plate,
+        String trailer2Plate,
+        String trailer3Plate,
+        String trailer1Vin,
+        String trailer2Vin,
+        String trailer3Vin,
+        String trailer1Make,
+        String trailer2Make,
+        String trailer3Make,
+        String trailer1Model,
+        String trailer2Model,
+        String trailer3Model,
+        Integer trailer1Year,
+        Integer trailer2Year,
+        Integer trailer3Year,
+        Integer carrierIdTypeCode,
+        String carrierCountryState,
+        String carrierIdNumber,
+        String carrierName,
+        String carrierStreet1,
+        String carrierStreet2,
+        String carrierCity,
+        String carrierState,
+        String carrierZip,
+        String carrierCountry,
+        Integer carrierTypeCode,
+        Integer vehicleConfigCode,
+        Integer vehiclePermittedCode,
+        Integer cargoBodyTypeCode,
+        String hmId,
+        String hmClass,
+        Integer hmReleasedCode,
+        Integer axlesTractor,
+        Integer axlesTrailer1,
+        Integer axlesTrailer2,
+        Integer axlesTrailer3,
+        List<ChildCodeDto> specialSizing
+) {}

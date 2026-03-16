@@ -1,0 +1,89 @@
+package gov.nhtsa.mmucc.crash.dto;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+public record PersonResponse(
+        Long personId,
+        Long crashId,
+        Long vehicleId,
+        // P1
+        String personName,
+        // P2
+        Integer dobYear,
+        Integer dobMonth,
+        Integer dobDay,
+        Integer ageYears,
+        // P3
+        Integer sexCode,
+        // P4
+        Integer personTypeCode,
+        Integer incidentResponderCode,
+        // P5
+        Integer injuryStatusCode,
+        // P6
+        Integer vehicleUnitNumber,
+        // P7
+        Integer seatingRowCode,
+        Integer seatingSeatCode,
+        // P8
+        Integer restraintCode,
+        Integer restraintImproperFlg,
+        // P9 - multi-value
+        List<ChildCodeDto> airbags,
+        // P10
+        Integer ejectionCode,
+        // P11
+        Integer dlJurisdictionType,
+        String dlJurisdictionCode,
+        // P12
+        String dlNumber,
+        Integer dlClassCode,
+        Integer dlIsCdlFlg,
+        Integer dlEndorsementCode,
+        // P13
+        Integer speedingCode,
+        // P14 - multi-value
+        List<ChildCodeDto> driverActions,
+        // P15
+        String violationCode1,
+        String violationCode2,
+        // P16
+        List<ChildCodeDto> dlRestrictions,
+        Integer dlAlcoholInterlockFlg,
+        // P17
+        Integer dlStatusTypeCode,
+        Integer dlStatusCode,
+        // P18
+        Integer distractedActionCode,
+        Integer distractedSourceCode,
+        // P19
+        Integer conditionCode1,
+        Integer conditionCode2,
+        // P20
+        Integer leSuspectsAlcohol,
+        // P21
+        Integer alcoholTestStatusCode,
+        Integer alcoholTestTypeCode,
+        String alcoholBacResult,
+        // P22
+        Integer leSuspectsDrug,
+        // P23
+        Integer drugTestStatusCode,
+        Integer drugTestTypeCode,
+        List<PersonDrugTestDto> drugTestResults,
+        // P24
+        Integer transportSourceCode,
+        String emsAgencyId,
+        String emsRunNumber,
+        String medicalFacility,
+        // P25
+        Integer injuryAreaCode,
+        // P26
+        String injuryDiagnosis,
+        // P27
+        Integer injurySeverityCode,
+        // Audit
+        LocalDateTime createdDt,
+        LocalDateTime modifiedDt
+) {}

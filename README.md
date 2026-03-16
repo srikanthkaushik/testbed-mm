@@ -23,7 +23,7 @@ MMUCC is a voluntary national guideline that defines a minimum set of 115 data e
 
 ## Project Status
 
-> **Phase: Backend Sprints 1–2 Complete — Frontend Sprint 1 Complete**
+> **Phase: Backend Sprints 1–3 Complete — Frontend Sprint 1 Complete**
 
 - [x] MMUCC v5 specification analysis
 - [x] MySQL 8.0 schema — 31 tables covering all 115 MMUCC data elements
@@ -31,7 +31,7 @@ MMUCC is a voluntary national guideline that defines a minimum set of 115 data e
 - [x] Spring Boot microservices — auth-service (Sprint 1) and crash-service (Sprint 2) complete
   - [x] auth-service — Firebase SSO, JWT + HttpOnly refresh-token rotation, user CRUD, RBAC (`ADMIN` / `DATA_ENTRY` / `ANALYST` / `VIEWER`)
   - [x] crash-service — full CRUD for crashes, vehicles, roadway, and all 6 multi-value child tables; Flyway migrations; Testcontainers integration tests
-  - [ ] crash-service — Person (P1–P27) and conditional sections (Fatal, Non-Motorist, Large Vehicle) — Sprint 3
+  - [x] crash-service — Person (P1–P27), Fatal Section, Non-Motorist, Large Vehicle/HazMat, Vehicle Automation; 28 integration tests passing
   - [ ] reference-service, audit enhancements, MMUCC validation rules — Sprint 4
   - [ ] report-service, CSV/Excel export — Sprint 5
 - [x] Angular frontend — Sprint 1 complete

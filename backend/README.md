@@ -105,10 +105,10 @@ See [CRASH.md](CRASH.md) for full implementation reference, module structure, AP
 |---|---|---|
 | **Sprint 1** | auth-service — Firebase login, JWT, refresh-token rotation, user CRUD, roles, audit logging, Testcontainers integration tests | ✅ Complete |
 | **Sprint 2** | crash-service — crash CRUD + vehicle CRUD + roadway upsert + all 6 multi-value child tables (weather, surface, CCR, TCD, damage area, sequence-of-events), Flyway schema, Testcontainers integration tests | ✅ Complete |
-| **Sprint 3** | crash-service — person (P1–P27): `PERSON_TBL` + `PERSON_AIRBAG_TBL`, `PERSON_DRIVER_ACTION_TBL`, `PERSON_DL_RESTRICTION_TBL`, `PERSON_DRUG_TEST_RESULT_TBL`; conditional sections (`FATAL_SECTION_TBL`, `NON_MOTORIST_TBL`, `LARGE_VEHICLE_TBL`) | 🔲 Not started |
+| **Sprint 3** | crash-service — person (P1–P27): `PERSON_TBL` + `PERSON_AIRBAG_TBL`, `PERSON_DRIVER_ACTION_TBL`, `PERSON_DL_RESTRICTION_TBL`, `PERSON_DRUG_TEST_RESULT_TBL`; conditional sections (`FATAL_SECTION_TBL`, `NON_MOTORIST_TBL`, `LARGE_VEHICLE_TBL`); vehicle automation (`VEHICLE_AUTOMATION_TBL`) | ✅ Complete |
 | **Sprint 4** | Audit logging enhancements, MMUCC validation rules, reference-service (lookup codes API) | 🔲 Not started |
 | **Sprint 5** | report-service, CSV/Excel export | 🔲 Not started |
 
-> **Note:** Roadway and all crash/vehicle child tables were completed in Sprint 2, ahead of the original Sprint 3 schedule. Sprint 3 scope has been narrowed to Person and conditional section entities only.
+> **Note:** Roadway and all crash/vehicle child tables were completed in Sprint 2, ahead of the original Sprint 3 schedule. Sprint 3 also included Vehicle Automation (DV1) ahead of schedule.
 
-This delivers a working end-to-end flow (create crash → add vehicle → add person) by Sprint 3, which is the earliest point where Angular development can meaningfully begin in parallel.
+The full create crash → add vehicle → add person flow is now working end-to-end, unblocking Angular Sprint 2+ development.
