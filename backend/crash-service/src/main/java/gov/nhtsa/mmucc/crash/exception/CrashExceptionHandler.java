@@ -1,17 +1,18 @@
 package gov.nhtsa.mmucc.crash.exception;
 
-import gov.nhtsa.mmucc.crash.dto.FieldError;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.List;
 import java.util.Map;
 
+/**
+ * Crash-service-specific exception handlers.
+ * General handlers (400/401/403/404/500) are provided by common GlobalExceptionHandler.
+ */
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class CrashExceptionHandler {
 
     /** MMUCC business-rule failures → 422 Unprocessable Entity */
     @ExceptionHandler(ValidationException.class)
@@ -21,19 +22,6 @@ public class GlobalExceptionHandler {
                         "status",  422,
                         "error",   "Validation Failed",
                         "errors",  ex.getErrors()));
-    }
-
-    /** Bean Validation (@Valid) failures → 400 Bad Request */
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> handleBeanValidation(MethodArgumentNotValidException ex) {
-        List<FieldError> errors = ex.getBindingResult().getFieldErrors().stream()
-                .map(fe -> new FieldError(fe.getField(), fe.getDefaultMessage()))
-                .toList();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of(
-                        "status",  400,
-                        "error",   "Bad Request",
-                        "errors",  errors));
     }
 
     /** JPA entity not found → 404 */
