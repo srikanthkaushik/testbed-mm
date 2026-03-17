@@ -404,6 +404,9 @@
                   </div>
                   <p class="person-card__subtitle">
                     {{ label(p.personTypeCode, PERSON_TYPE) }}
+                    @if (p.incidentResponderCode != null && p.incidentResponderCode !== 1) {
+                      <span class="badge badge--info">{{ label(p.incidentResponderCode, INCIDENT_RESPONDER) }}</span>
+                    }
                     &nbsp;·&nbsp;
                     {{ personGroupLabel(p) }}
                     &nbsp;·&nbsp;
@@ -440,13 +443,33 @@
                     </dl>
                   </div>
 
-                  <!-- Alcohol / Drug -->
+                  <!-- Airbags -->
+                  @if (p.airbags.length) {
+                    <div class="field-section">
+                      <h3 class="field-section__title">Airbags</h3>
+                      <ul class="code-list">
+                        @for (ab of p.airbags; track ab.sequenceNum) {
+                          <li>{{ label(ab.code, AIRBAG) }}</li>
+                        }
+                      </ul>
+                    </div>
+                  }
+
+                  <!-- Alcohol & Drug -->
                   <div class="field-section">
                     <h3 class="field-section__title">Alcohol &amp; Drug</h3>
                     <dl class="field-list">
                       <div class="field-list__row">
                         <dt>LE Suspects Alcohol</dt>
                         <dd>{{ label(p.leSuspectsAlcohol, YES_NO) }}</dd>
+                      </div>
+                      <div class="field-list__row">
+                        <dt>Alcohol Test Status</dt>
+                        <dd>{{ label(p.alcoholTestStatusCode, ALCOHOL_TEST_STATUS) }}</dd>
+                      </div>
+                      <div class="field-list__row">
+                        <dt>Alcohol Test Type</dt>
+                        <dd>{{ label(p.alcoholTestTypeCode, ALCOHOL_TEST_TYPE) }}</dd>
                       </div>
                       <div class="field-list__row">
                         <dt>BAC Result</dt>
@@ -456,10 +479,30 @@
                         <dt>LE Suspects Drug</dt>
                         <dd>{{ label(p.leSuspectsDrug, YES_NO) }}</dd>
                       </div>
+                      <div class="field-list__row">
+                        <dt>Drug Test Status</dt>
+                        <dd>{{ label(p.drugTestStatusCode, DRUG_TEST_STATUS) }}</dd>
+                      </div>
+                      <div class="field-list__row">
+                        <dt>Drug Test Type</dt>
+                        <dd>{{ label(p.drugTestTypeCode, DRUG_TEST_TYPE) }}</dd>
+                      </div>
                     </dl>
                   </div>
 
-                  <!-- Driver (speeding, violations) -->
+                  <!-- Drug Test Results -->
+                  @if (p.drugTestResults.length) {
+                    <div class="field-section">
+                      <h3 class="field-section__title">Drug Test Results</h3>
+                      <ul class="code-list">
+                        @for (dr of p.drugTestResults; track dr.sequenceNum) {
+                          <li>{{ label(dr.resultCode, DRUG_TEST_RESULT) }}</li>
+                        }
+                      </ul>
+                    </div>
+                  }
+
+                  <!-- Driver (speeding, violations, distracted, condition) -->
                   @if (p.personTypeCode === 1) {
                     <div class="field-section">
                       <h3 class="field-section__title">Driver</h3>
@@ -468,6 +511,24 @@
                           <dt>Speeding</dt>
                           <dd>{{ label(p.speedingCode, SPEEDING) }}</dd>
                         </div>
+                        <div class="field-list__row">
+                          <dt>Distracted Action</dt>
+                          <dd>{{ label(p.distractedActionCode, DISTRACTED_ACTION) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>Distracted Source</dt>
+                          <dd>{{ label(p.distractedSourceCode, DISTRACTED_SOURCE) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>Condition 1</dt>
+                          <dd>{{ label(p.conditionCode1, DRIVER_CONDITION) }}</dd>
+                        </div>
+                        @if (p.conditionCode2 != null) {
+                          <div class="field-list__row">
+                            <dt>Condition 2</dt>
+                            <dd>{{ label(p.conditionCode2, DRIVER_CONDITION) }}</dd>
+                          </div>
+                        }
                         @if (p.violationCode1) {
                           <div class="field-list__row">
                             <dt>Violation 1</dt>
@@ -482,6 +543,61 @@
                         }
                       </dl>
                     </div>
+
+                    <!-- Driver License -->
+                    <div class="field-section">
+                      <h3 class="field-section__title">Driver License</h3>
+                      <dl class="field-list">
+                        <div class="field-list__row">
+                          <dt>Jurisdiction Type</dt>
+                          <dd>{{ label(p.dlJurisdictionType, DL_JURISDICTION_TYPE) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>Jurisdiction</dt>
+                          <dd>{{ nullOr(p.dlJurisdictionCode) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>License Number</dt>
+                          <dd>{{ nullOr(p.dlNumber) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>Class</dt>
+                          <dd>{{ label(p.dlClassCode, DL_CLASS) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>CDL</dt>
+                          <dd>{{ label(p.dlIsCdlFlg, YES_NO) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>Endorsement</dt>
+                          <dd>{{ label(p.dlEndorsementCode, DL_ENDORSEMENT) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>Alcohol Interlock</dt>
+                          <dd>{{ label(p.dlAlcoholInterlockFlg, YES_NO) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>Status Type</dt>
+                          <dd>{{ label(p.dlStatusTypeCode, DL_STATUS_TYPE) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>Status Detail</dt>
+                          <dd>{{ label(p.dlStatusCode, DL_STATUS) }}</dd>
+                        </div>
+                      </dl>
+                    </div>
+
+                    <!-- DL Restrictions -->
+                    @if (p.dlRestrictions.length) {
+                      <div class="field-section">
+                        <h3 class="field-section__title">DL Restrictions</h3>
+                        <ul class="code-list">
+                          @for (r of p.dlRestrictions; track r.sequenceNum) {
+                            <li>{{ label(r.code, DL_RESTRICTION) }}</li>
+                          }
+                        </ul>
+                      </div>
+                    }
                   }
 
                   <!-- Driver Actions (if any) -->
@@ -516,6 +632,14 @@
                         <div class="field-list__row">
                           <dt>Medical Facility</dt>
                           <dd>{{ nullOr(p.medicalFacility) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>Injury Area</dt>
+                          <dd>{{ label(p.injuryAreaCode, INJURY_AREA) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>Injury Severity (Agency)</dt>
+                          <dd>{{ label(p.injurySeverityCode, INJURY_SEVERITY) }}</dd>
                         </div>
                         @if (p.injuryDiagnosis) {
                           <div class="field-list__row">

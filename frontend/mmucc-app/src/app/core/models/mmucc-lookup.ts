@@ -623,3 +623,221 @@ export const BICYCLE_SIGNED_ROUTE: Record<number, string> = {
   4: 'No Signed Bicycle Route',
   9: 'Unknown',
 };
+
+// P4 SF2 – Incident Responder Type
+export const INCIDENT_RESPONDER: Record<number, string> = {
+  1: 'Not an Incident Responder',
+  2: 'Fire Fighter',
+  3: 'Law Enforcement Officer',
+  4: 'EMS Personnel',
+  5: 'Other',
+  9: 'Unknown',
+};
+
+// P9 – Airbag Deployed (location/status)
+export const AIRBAG: Record<number, string> = {
+  1:  'Frontal — Deployed',
+  2:  'Side — Deployed',
+  3:  'Curtain — Deployed',
+  4:  'Knee / Leg — Deployed',
+  5:  'Air Belt — Deployed',
+  6:  'Other — Deployed',
+  7:  'Frontal — Not Deployed',
+  8:  'Side — Not Deployed',
+  9:  'No Airbag Present',
+  10: 'Deployed — Unknown Location',
+  11: 'Not Deployed',
+  99: 'Unknown',
+};
+
+// P11 – Driver License Jurisdiction Type
+export const DL_JURISDICTION_TYPE: Record<number, string> = {
+  1: 'U.S. State',
+  2: 'Canadian Province / Territory',
+  3: 'Mexico',
+  4: 'Other Country',
+  5: 'U.S. Military',
+  6: 'U.S. Federal Government',
+  7: 'Not Licensed',
+  9: 'Unknown',
+};
+
+// P12 – Driver License Class
+export const DL_CLASS: Record<number, string> = {
+  1: 'Class A — CDL',
+  2: 'Class B — CDL',
+  3: 'Class C — CDL',
+  4: 'Class D — Non-Commercial',
+  5: 'Motorcycle Only',
+  6: 'Other',
+  9: 'Unknown',
+};
+
+// P12 – Driver License Endorsement
+export const DL_ENDORSEMENT: Record<number, string> = {
+  1: 'H — Hazardous Materials',
+  2: 'N — Tank Vehicles',
+  3: 'P — Passenger',
+  4: 'S — School Bus',
+  5: 'T — Double / Triple Trailers',
+  6: 'X — Hazmat + Tank',
+  7: 'None',
+  8: 'Other',
+  9: 'Unknown',
+};
+
+// P16 – Driver License Restriction
+export const DL_RESTRICTION: Record<number, string> = {
+  1: 'Corrective Lenses Required',
+  2: 'Vehicle Without Air Brakes Only',
+  3: 'CDL Intrastate Only',
+  4: 'Restricted to Daylight Only',
+  5: 'Limited to Vehicles Not Requiring CDL',
+  6: 'Other Restriction',
+  9: 'Unknown',
+};
+
+// P17 SF1 – Driver License Status Type
+export const DL_STATUS_TYPE: Record<number, string> = {
+  1: 'Valid',
+  2: 'Suspended',
+  3: 'Revoked',
+  4: 'Cancelled / Denied',
+  5: 'Expired',
+  6: 'No License',
+  9: 'Unknown',
+};
+
+// P17 SF2 – Driver License Status Detail
+export const DL_STATUS: Record<number, string> = {
+  1: 'Under Suspension — Moving Violation',
+  2: 'Under Suspension — DUI/DWI',
+  3: 'Under Suspension — Other',
+  4: 'Under Revocation',
+  5: 'Under Cancellation / Denial',
+  6: 'Expired License',
+  7: 'No License — Never Licensed',
+  9: 'Unknown',
+};
+
+// P18 SF1 – Distracted Action
+export const DISTRACTED_ACTION: Record<number, string> = {
+  1: 'Not Distracted',
+  2: 'Looked But Did Not See',
+  3: 'Distracted by Other Occupant',
+  4: 'Outside Person, Object, or Event',
+  5: 'Use of Electronic Communication Device',
+  6: 'Use of Other Technology Device',
+  7: 'Other Distraction Inside Vehicle',
+  8: 'Inattentive',
+  9: 'Unknown',
+};
+
+// P18 SF2 – Distracted Source
+export const DISTRACTED_SOURCE: Record<number, string> = {
+  1:  'Cell Phone — Talking',
+  2:  'Cell Phone — Texting / Email',
+  3:  'Navigation Device',
+  4:  'Radio / CD / MP3',
+  5:  'In-Vehicle Technology (Other)',
+  6:  'Other Electronic Device',
+  7:  'Passenger',
+  8:  'Animal in Vehicle',
+  9:  'Personal Hygiene',
+  10: 'Food / Drink',
+  11: 'External Distraction',
+  12: 'Other',
+  99: 'Unknown',
+};
+
+// P19 – Driver Condition at Time of Crash
+export const DRIVER_CONDITION: Record<number, string> = {
+  1: 'Apparently Normal',
+  2: 'Physical Impairment',
+  3: 'Emotional (Upset, Depressed, etc.)',
+  4: 'Fell Asleep, Fainted, Fatigued, or Exhausted',
+  5: 'Under Influence of Alcohol / Drugs',
+  6: 'Ill',
+  7: 'Other',
+  9: 'Unknown',
+};
+
+// P21 SF1 – Alcohol Test Status
+export const ALCOHOL_TEST_STATUS: Record<number, string> = {
+  1: 'Test Given',
+  2: 'Test Refused',
+  3: 'No Test Given',
+  4: 'Test Given — Results Unknown',
+  9: 'Unknown',
+};
+
+// P21 SF2 – Alcohol Test Type
+export const ALCOHOL_TEST_TYPE: Record<number, string> = {
+  1: 'Blood',
+  2: 'Breath',
+  3: 'Urine',
+  4: 'Other',
+  9: 'Unknown',
+};
+
+// P23 SF1 – Drug Test Status
+export const DRUG_TEST_STATUS: Record<number, string> = {
+  1: 'Test Given',
+  2: 'Test Refused',
+  3: 'No Test Given',
+  4: 'Test Given — Results Unknown',
+  9: 'Unknown',
+};
+
+// P23 SF2 – Drug Test Type
+export const DRUG_TEST_TYPE: Record<number, string> = {
+  1: 'Blood',
+  2: 'Urine',
+  3: 'Other',
+  9: 'Unknown',
+};
+
+// P23 SF3 – Drug Test Result (substance detected)
+export const DRUG_TEST_RESULT: Record<number, string> = {
+  1:  'Amphetamines',
+  2:  'Barbiturates',
+  3:  'Benzodiazepines',
+  4:  'Cannabis',
+  5:  'Cocaine',
+  6:  'Hallucinogens',
+  7:  'Heroin / Opiates',
+  8:  'Phencyclidine (PCP)',
+  9:  'Prescription Drugs',
+  10: 'Over-the-Counter Drugs',
+  11: 'Other Drugs',
+  12: 'Not Tested for Drugs',
+  99: 'Unknown',
+};
+
+// P25 – Injury Area (body region)
+export const INJURY_AREA: Record<number, string> = {
+  1:  'Head / Face',
+  2:  'Eye',
+  3:  'Neck',
+  4:  'Chest',
+  5:  'Back',
+  6:  'Shoulder / Upper Arm',
+  7:  'Forearm / Elbow / Hand / Wrist',
+  8:  'Abdomen / Pelvis',
+  9:  'Hip / Upper Leg',
+  10: 'Knee / Lower Leg / Foot / Ankle',
+  11: 'Entire Body',
+  12: 'Other',
+  13: 'No Injury',
+  99: 'Unknown',
+};
+
+// P27 – Injury Severity (agency-reported, older KABCO classification)
+export const INJURY_SEVERITY: Record<number, string> = {
+  1: 'Fatal',
+  2: 'Incapacitating Injury (A)',
+  3: 'Non-Incapacitating Injury (B)',
+  4: 'Possible Injury (C)',
+  5: 'No Injury (O)',
+  9: 'Unknown',
+};

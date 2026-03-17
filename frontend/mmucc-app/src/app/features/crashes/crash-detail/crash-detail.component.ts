@@ -62,6 +62,24 @@ import {
   TRANSPORT_SOURCE,
   BICYCLE_FACILITY,
   BICYCLE_SIGNED_ROUTE,
+  INCIDENT_RESPONDER,
+  AIRBAG,
+  DL_JURISDICTION_TYPE,
+  DL_CLASS,
+  DL_ENDORSEMENT,
+  DL_RESTRICTION,
+  DL_STATUS_TYPE,
+  DL_STATUS,
+  DISTRACTED_ACTION,
+  DISTRACTED_SOURCE,
+  DRIVER_CONDITION,
+  ALCOHOL_TEST_STATUS,
+  ALCOHOL_TEST_TYPE,
+  DRUG_TEST_STATUS,
+  DRUG_TEST_TYPE,
+  DRUG_TEST_RESULT,
+  INJURY_AREA,
+  INJURY_SEVERITY,
 } from '../../../core/models/mmucc-lookup';
 
 export type DetailTab = 'overview' | 'vehicles' | 'persons' | 'roadway' | 'audit';
@@ -127,12 +145,30 @@ export class CrashDetailComponent implements OnInit {
   readonly SEATING_SEAT    = SEATING_SEAT;
   readonly RESTRAINT       = RESTRAINT;
   readonly EJECTION        = EJECTION;
-  readonly SPEEDING           = SPEEDING;
-  readonly DRIVER_ACTION      = DRIVER_ACTION;
-  readonly ROUTE_DIRECTION    = ROUTE_DIRECTION;
-  readonly TRANSPORT_SOURCE   = TRANSPORT_SOURCE;
-  readonly BICYCLE_FACILITY   = BICYCLE_FACILITY;
+  readonly SPEEDING             = SPEEDING;
+  readonly DRIVER_ACTION        = DRIVER_ACTION;
+  readonly ROUTE_DIRECTION      = ROUTE_DIRECTION;
+  readonly TRANSPORT_SOURCE     = TRANSPORT_SOURCE;
+  readonly BICYCLE_FACILITY     = BICYCLE_FACILITY;
   readonly BICYCLE_SIGNED_ROUTE = BICYCLE_SIGNED_ROUTE;
+  readonly INCIDENT_RESPONDER   = INCIDENT_RESPONDER;
+  readonly AIRBAG               = AIRBAG;
+  readonly DL_JURISDICTION_TYPE = DL_JURISDICTION_TYPE;
+  readonly DL_CLASS             = DL_CLASS;
+  readonly DL_ENDORSEMENT       = DL_ENDORSEMENT;
+  readonly DL_RESTRICTION       = DL_RESTRICTION;
+  readonly DL_STATUS_TYPE       = DL_STATUS_TYPE;
+  readonly DL_STATUS            = DL_STATUS;
+  readonly DISTRACTED_ACTION    = DISTRACTED_ACTION;
+  readonly DISTRACTED_SOURCE    = DISTRACTED_SOURCE;
+  readonly DRIVER_CONDITION     = DRIVER_CONDITION;
+  readonly ALCOHOL_TEST_STATUS  = ALCOHOL_TEST_STATUS;
+  readonly ALCOHOL_TEST_TYPE    = ALCOHOL_TEST_TYPE;
+  readonly DRUG_TEST_STATUS     = DRUG_TEST_STATUS;
+  readonly DRUG_TEST_TYPE       = DRUG_TEST_TYPE;
+  readonly DRUG_TEST_RESULT     = DRUG_TEST_RESULT;
+  readonly INJURY_AREA          = INJURY_AREA;
+  readonly INJURY_SEVERITY      = INJURY_SEVERITY;
 
   readonly tabs: { id: DetailTab; label: string }[] = [
     { id: 'overview', label: 'Overview' },
