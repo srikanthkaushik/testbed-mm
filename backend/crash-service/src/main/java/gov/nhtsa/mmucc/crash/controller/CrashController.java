@@ -2,6 +2,7 @@ package gov.nhtsa.mmucc.crash.controller;
 
 import gov.nhtsa.mmucc.common.security.UserPrincipal;
 import gov.nhtsa.mmucc.crash.dto.*;
+import gov.nhtsa.mmucc.crash.service.AuditLogService;
 import gov.nhtsa.mmucc.crash.service.CrashService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -20,9 +22,11 @@ import org.springframework.web.bind.annotation.*;
 public class CrashController {
 
     private final CrashService crashService;
+    private final AuditLogService auditLogService;
 
-    public CrashController(CrashService crashService) {
+    public CrashController(CrashService crashService, AuditLogService auditLogService) {
         this.crashService = crashService;
+        this.auditLogService = auditLogService;
     }
 
     @GetMapping
@@ -35,6 +39,12 @@ public class CrashController {
     @Operation(summary = "Get full crash detail by ID")
     public CrashDetailResponse getCrash(@PathVariable Long id) {
         return crashService.getCrash(id);
+    }
+
+    @GetMapping("/{id}/audit")
+    @Operation(summary = "Get audit log for a crash in chronological order")
+    public List<AuditLogEntryResponse> getAuditLog(@PathVariable Long id) {
+        return auditLogService.getAuditLog(id);
     }
 
     @PostMapping

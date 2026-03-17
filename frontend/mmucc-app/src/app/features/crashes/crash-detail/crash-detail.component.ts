@@ -12,7 +12,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { switchMap, tap, catchError } from 'rxjs/operators';
 import { EMPTY, of } from 'rxjs';
 import { CrashService } from '../../../core/services/crash.service';
-import { CrashDetail, VehicleDetail, PersonDetail, TrafficControl } from '../../../core/models/crash.models';
+import { AuditLogEntry, CrashDetail, VehicleDetail, PersonDetail, TrafficControl } from '../../../core/models/crash.models';
 import { AlertComponent } from '../../../shared/components/alert/alert.component';
 import {
   MANNER_COLLISION,
@@ -101,6 +101,8 @@ export class CrashDetailComponent implements OnInit {
   readonly errorMessage = signal<string>('');
   readonly crash = signal<CrashDetail | null>(null);
   readonly activeTab = signal<DetailTab>('overview');
+  readonly auditLog = signal<AuditLogEntry[]>([]);
+  readonly auditLoading = signal<boolean>(false);
 
   // ── Lookup maps exposed for template use ───────────────────────────────────
   readonly MANNER_COLLISION        = MANNER_COLLISION;
@@ -218,6 +220,24 @@ export class CrashDetailComponent implements OnInit {
 
   setTab(tab: DetailTab): void {
     this.activeTab.set(tab);
+    if (tab === 'audit' && this.auditLog().length === 0 && !this.auditLoading()) {
+      this.loadAuditLog();
+    }
+  }
+
+  private loadAuditLog(): void {
+    const id = this.crashId();
+    if (!id) return;
+    this.auditLoading.set(true);
+    this.crashService.getAuditLog(id)
+      .pipe(
+        catchError(() => of([])),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(entries => {
+        this.auditLog.set(entries);
+        this.auditLoading.set(false);
+      });
   }
 
   // ── Formatting helpers ─────────────────────────────────────────────────────
@@ -330,6 +350,21 @@ export class CrashDetailComponent implements OnInit {
       5: 'badge--neutral',
     };
     return code != null ? (map[code] ?? 'badge--neutral') : 'badge--neutral';
+  }
+
+  auditActionClass(action: string): string {
+    const map: Record<string, string> = {
+      CREATE: 'badge--success',
+      UPDATE: 'badge--info',
+      DELETE: 'badge--danger',
+    };
+    return map[action] ?? 'badge--neutral';
+  }
+
+  prettyJson(raw: string | null): string {
+    if (!raw) return '';
+    try { return JSON.stringify(JSON.parse(raw), null, 2); }
+    catch { return raw; }
   }
 
   personGroupLabel(p: PersonDetail): string {

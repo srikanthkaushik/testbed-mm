@@ -742,18 +742,69 @@
           aria-labelledby="tab-audit"
           class="tab-panel"
         >
-          <div class="field-grid">
+          <!-- Record metadata -->
+          <div class="field-grid" style="margin-bottom: var(--space-6)">
             <div class="field-section">
-              <h2 class="field-section__title">Record History</h2>
+              <h2 class="field-section__title">Record Metadata</h2>
               <dl class="field-list">
+                <div class="field-list__row"><dt>Crash ID</dt><dd class="detail__id">{{ crash()!.crashId }}</dd></div>
                 <div class="field-list__row"><dt>Created By</dt><dd>{{ nullOr(crash()!.createdBy) }}</dd></div>
                 <div class="field-list__row"><dt>Created At</dt><dd>{{ formatDateTime(crash()!.createdDt) }}</dd></div>
                 <div class="field-list__row"><dt>Last Modified By</dt><dd>{{ nullOr(crash()!.modifiedBy) }}</dd></div>
                 <div class="field-list__row"><dt>Last Modified At</dt><dd>{{ formatDateTime(crash()!.modifiedDt) }}</dd></div>
-                <div class="field-list__row"><dt>Crash ID</dt><dd class="detail__id">{{ crash()!.crashId }}</dd></div>
               </dl>
             </div>
           </div>
+
+          <!-- Change timeline -->
+          <h2 class="audit-timeline__heading">Change History</h2>
+
+          @if (auditLoading()) {
+            <div class="detail__loading" role="status" aria-live="polite">
+              <span class="spinner" aria-hidden="true"></span>
+              <span class="sr-only">Loading audit log…</span>
+            </div>
+          } @else if (auditLog().length === 0) {
+            <p class="empty-note">No audit entries found for this crash.</p>
+          } @else {
+            <ol class="audit-timeline" aria-label="Change history">
+              @for (entry of auditLog(); track entry.auditId) {
+                <li class="audit-entry">
+                  <div class="audit-entry__meta">
+                    <span class="badge" [class]="auditActionClass(entry.actionCode)">{{ entry.actionCode }}</span>
+                    <span class="audit-entry__table">{{ entry.tableName }}</span>
+                    @if (entry.recordId != null) {
+                      <span class="audit-entry__record">#{{ entry.recordId }}</span>
+                    }
+                    <span class="audit-entry__actor">{{ entry.username }}</span>
+                    <time class="audit-entry__time" [attr.datetime]="entry.timestamp">
+                      {{ formatDateTime(entry.timestamp) }}
+                    </time>
+                  </div>
+
+                  @if (entry.oldValue || entry.newValue) {
+                    <details class="audit-entry__diff">
+                      <summary>View snapshot</summary>
+                      <div class="audit-entry__diff-grid">
+                        @if (entry.oldValue) {
+                          <div>
+                            <p class="audit-entry__diff-label">Before</p>
+                            <pre class="audit-entry__json">{{ prettyJson(entry.oldValue) }}</pre>
+                          </div>
+                        }
+                        @if (entry.newValue) {
+                          <div>
+                            <p class="audit-entry__diff-label">After</p>
+                            <pre class="audit-entry__json">{{ prettyJson(entry.newValue) }}</pre>
+                          </div>
+                        }
+                      </div>
+                    </details>
+                  }
+                </li>
+              }
+            </ol>
+          }
         </div>
       }
 

@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { CrashDetail, CrashFilter, CrashSummary, Page } from '../models/crash.models';
+import { AuditLogEntry, CrashDetail, CrashFilter, CrashSummary, Page } from '../models/crash.models';
 
 @Injectable({ providedIn: 'root' })
 export class CrashService {
@@ -25,5 +25,9 @@ export class CrashService {
 
   getCrash(id: number): Observable<CrashDetail> {
     return this.http.get<CrashDetail>(`${this.baseUrl}/${id}`);
+  }
+
+  getAuditLog(id: number): Observable<AuditLogEntry[]> {
+    return this.http.get<AuditLogEntry[]>(`${this.baseUrl}/${id}/audit`);
   }
 }

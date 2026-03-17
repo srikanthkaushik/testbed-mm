@@ -9,6 +9,7 @@ import gov.nhtsa.mmucc.crash.mapper.FatalSectionMapper;
 import gov.nhtsa.mmucc.crash.mapper.NonMotoristMapper;
 import gov.nhtsa.mmucc.crash.mapper.PersonMapper;
 import gov.nhtsa.mmucc.crash.repository.*;
+import gov.nhtsa.mmucc.crash.validation.MmuccValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ public class PersonService {
     private final NonMotoristMapper nonMotoristMapper;
     private final VehicleService vehicleService;
     private final AuditLogService auditLogService;
+    private final MmuccValidator validator;
 
     public PersonService(PersonRepository personRepo,
                          PersonAirbagRepository airbagRepo,
@@ -44,7 +46,8 @@ public class PersonService {
                          FatalSectionMapper fatalSectionMapper,
                          NonMotoristMapper nonMotoristMapper,
                          VehicleService vehicleService,
-                         AuditLogService auditLogService) {
+                         AuditLogService auditLogService,
+                         MmuccValidator validator) {
         this.personRepo = personRepo;
         this.airbagRepo = airbagRepo;
         this.driverActionRepo = driverActionRepo;
@@ -58,6 +61,7 @@ public class PersonService {
         this.nonMotoristMapper = nonMotoristMapper;
         this.vehicleService = vehicleService;
         this.auditLogService = auditLogService;
+        this.validator = validator;
     }
 
     // -----------------------------------------------------------------------
@@ -66,6 +70,7 @@ public class PersonService {
 
     @Transactional
     public PersonResponse createPerson(Long crashId, Long vehicleId, PersonRequest request, UserPrincipal actor) {
+        validator.validatePerson(request);
         vehicleService.findOrThrow(crashId, vehicleId);
 
         Person person = personMapper.toEntity(request);
@@ -108,6 +113,7 @@ public class PersonService {
     @Transactional
     public PersonResponse updatePerson(Long crashId, Long vehicleId, Long personId,
                                        PersonRequest request, UserPrincipal actor) {
+        validator.validatePerson(request);
         Person person = findOrThrow(crashId, vehicleId, personId);
         PersonResponse before = toPersonResponse(person);
 

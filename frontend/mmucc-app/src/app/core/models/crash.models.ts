@@ -226,6 +226,18 @@ export interface RoadwayDetail {
   modifiedDt: string | null;
 }
 
+/** One entry in the crash audit log returned by GET /crashes/{id}/audit. */
+export interface AuditLogEntry {
+  auditId:    number;
+  actionCode: string;          // CREATE | UPDATE | DELETE
+  tableName:  string;
+  recordId:   number | null;
+  username:   string;
+  timestamp:  string;          // ISO-8601 datetime
+  oldValue:   string | null;   // JSON snapshot before change
+  newValue:   string | null;   // JSON snapshot after change
+}
+
 /**
  * Full crash aggregate returned by GET /crashes/{id}.
  * Field names match CrashDetailResponse from crash-service exactly.

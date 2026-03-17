@@ -2,6 +2,7 @@ package gov.nhtsa.mmucc.crash.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gov.nhtsa.mmucc.crash.dto.AuditLogEntryResponse;
 import gov.nhtsa.mmucc.crash.entity.CrashAuditLog;
 import gov.nhtsa.mmucc.crash.repository.CrashAuditLogRepository;
 import gov.nhtsa.mmucc.common.audit.AuditFields;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class AuditLogService {
@@ -58,6 +60,22 @@ public class AuditLogService {
         entry.setAudit(audit);
 
         repository.save(entry);
+    }
+
+    /** Returns all audit entries for a crash in chronological order. */
+    @Transactional(readOnly = true)
+    public List<AuditLogEntryResponse> getAuditLog(Long crashId) {
+        return repository.findByCrashIdOrdered(crashId.intValue()).stream()
+                .map(e -> new AuditLogEntryResponse(
+                        e.getAuditId(),
+                        e.getActionCode(),
+                        e.getTableName(),
+                        e.getRecordId() != null ? e.getRecordId().longValue() : null,
+                        e.getUsername(),
+                        e.getAudit().getCreatedDt(),
+                        e.getOldValue(),
+                        e.getNewValue()))
+                .toList();
     }
 
     private String toJson(Object obj) {

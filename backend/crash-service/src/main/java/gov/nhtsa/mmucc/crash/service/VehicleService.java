@@ -7,6 +7,7 @@ import gov.nhtsa.mmucc.crash.dto.*;
 import gov.nhtsa.mmucc.crash.entity.*;
 import gov.nhtsa.mmucc.crash.mapper.VehicleMapper;
 import gov.nhtsa.mmucc.crash.repository.*;
+import gov.nhtsa.mmucc.crash.validation.MmuccValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ public class VehicleService {
     private final VehicleMapper vehicleMapper;
     private final CrashService crashService;
     private final AuditLogService auditLogService;
+    private final MmuccValidator validator;
 
     public VehicleService(VehicleRepository vehicleRepo,
                           VehicleTrafficControlRepository trafficControlRepo,
@@ -30,7 +32,8 @@ public class VehicleService {
                           VehicleSequenceEventRepository sequenceEventRepo,
                           VehicleMapper vehicleMapper,
                           CrashService crashService,
-                          AuditLogService auditLogService) {
+                          AuditLogService auditLogService,
+                          MmuccValidator validator) {
         this.vehicleRepo = vehicleRepo;
         this.trafficControlRepo = trafficControlRepo;
         this.damageAreaRepo = damageAreaRepo;
@@ -38,6 +41,7 @@ public class VehicleService {
         this.vehicleMapper = vehicleMapper;
         this.crashService = crashService;
         this.auditLogService = auditLogService;
+        this.validator = validator;
     }
 
     // -----------------------------------------------------------------------
@@ -46,6 +50,7 @@ public class VehicleService {
 
     @Transactional
     public VehicleResponse createVehicle(Long crashId, VehicleRequest request, UserPrincipal actor) {
+        validator.validateVehicle(request);
         // Verify crash exists
         crashService.findOrThrow(crashId);
 
@@ -87,6 +92,7 @@ public class VehicleService {
     @Transactional
     public VehicleResponse updateVehicle(Long crashId, Long vehicleId,
                                          VehicleRequest request, UserPrincipal actor) {
+        validator.validateVehicle(request);
         Vehicle vehicle = findOrThrow(crashId, vehicleId);
         VehicleResponse before = crashService.toVehicleResponse(vehicle);
 

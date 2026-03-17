@@ -7,6 +7,7 @@ import gov.nhtsa.mmucc.crash.dto.*;
 import gov.nhtsa.mmucc.crash.entity.*;
 import gov.nhtsa.mmucc.crash.mapper.CrashMapper;
 import gov.nhtsa.mmucc.crash.repository.*;
+import gov.nhtsa.mmucc.crash.validation.MmuccValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -35,6 +36,7 @@ public class CrashService {
     private final PersonDrugTestResultRepository drugTestRepo;
     private final CrashMapper crashMapper;
     private final AuditLogService auditLogService;
+    private final MmuccValidator validator;
 
     public CrashService(CrashRepository crashRepo,
                         CrashWeatherConditionRepository weatherRepo,
@@ -51,7 +53,8 @@ public class CrashService {
                         PersonDlRestrictionRepository dlRestrictionRepo,
                         PersonDrugTestResultRepository drugTestRepo,
                         CrashMapper crashMapper,
-                        AuditLogService auditLogService) {
+                        AuditLogService auditLogService,
+                        MmuccValidator validator) {
         this.crashRepo = crashRepo;
         this.weatherRepo = weatherRepo;
         this.surfaceRepo = surfaceRepo;
@@ -68,6 +71,7 @@ public class CrashService {
         this.drugTestRepo = drugTestRepo;
         this.crashMapper = crashMapper;
         this.auditLogService = auditLogService;
+        this.validator = validator;
     }
 
     // -----------------------------------------------------------------------
@@ -76,6 +80,7 @@ public class CrashService {
 
     @Transactional
     public CrashDetailResponse createCrash(CrashRequest request, UserPrincipal actor) {
+        validator.validateCrash(request);
         Crash crash = crashMapper.toEntity(request);
         setCreatedAudit(crash.getAudit(), actor.getUsername());
         crash = crashRepo.save(crash);
@@ -114,6 +119,7 @@ public class CrashService {
 
     @Transactional
     public CrashDetailResponse updateCrash(Long id, CrashRequest request, UserPrincipal actor) {
+        validator.validateCrash(request);
         Crash crash = findOrThrow(id);
         CrashDetailResponse before = buildDetailResponse(crash);
 
