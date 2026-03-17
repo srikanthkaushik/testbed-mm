@@ -31,7 +31,8 @@ frontend/
             ├── core/
             │   ├── models/
             │   │   ├── auth.models.ts      ← TS interfaces mirroring auth-service DTOs
-            │   │   └── crash.models.ts     ← CrashSummary, CrashFilter, Page<T>
+            │   │   ├── crash.models.ts     ← CrashSummary, CrashFilter, CrashDetail, VehicleDetail, PersonDetail, Page<T>
+            │   │   └── mmucc-lookup.ts     ← 35 Record<number,string> maps for all MMUCC coded fields
             │   ├── services/
             │   │   ├── firebase-auth.service.ts  ← Firebase v10 modular SDK wrapper
             │   │   ├── auth.service.ts           ← session manager, JWT, auto-refresh
@@ -61,8 +62,8 @@ frontend/
                     │   └── crash-list.component.scss  ← table styling, skeleton shimmer
                     └── crash-detail/
                         ├── crash-detail.component.ts    ← tabbed detail, signals, formatters
-                        ├── crash-detail.component.html  ← 4-tab layout with stats strip
-                        └── crash-detail.component.scss  ← field grid, vehicle cards, tab bar
+                        ├── crash-detail.component.html  ← 5-tab layout with stats strip
+                        └── crash-detail.component.scss  ← field grid, vehicle/person cards, tab bar
 ```
 
 ---
@@ -238,7 +239,7 @@ All colour values are defined as CSS custom properties in `src/styles.scss`:
 | **Sprint 2** | Authenticated shell (responsive nav + collapsible sidebar, role-aware links, logout) | ✅ Complete |
 | **Sprint 3** | Crash list with date/county filters, sort, pagination, URL state sync, skeleton shimmer | ✅ Complete |
 | **Sprint 4** | Multi-step crash entry form (C1–C27 MMUCC fields) | 🔲 Not started |
-| **Sprint 5** | Crash detail view (tabbed: overview, vehicles, roadway, audit log) | ✅ Complete |
+| **Sprint 5** | Crash detail view (tabbed: overview, vehicles, persons, roadway, audit log) | ✅ Complete |
 | **Sprint 6** | Vehicle entry modal (V1–V24), roadway upsert form | 🔲 Not started |
 | **Sprint 7** | Admin: user management, role assignment | 🔲 Not started |
 | **Sprint 8** | Reports, CSV export, analytics charts | 🔲 Not started |
@@ -283,9 +284,11 @@ All colour values are defined as CSS custom properties in `src/styles.scss`:
 - [x] Stats strip — fatalities, injured, vehicles, persons counts from the detail response
 - [x] **Overview tab** — identification, location (lat/lng, county, city, route), collision conditions (weather codes, surface codes, light, manner), junction/work zone fields
 - [x] **Vehicles tab** — card per vehicle: unit number, make/model/year, speed limit, maneuver, damage extent/contact, tow status, sequence-of-events list, damage areas list
+- [x] **Persons tab** — card per person (P1–P27): injury badge, demographics, seating/safety, driver license, alcohol/drug test results, medical transport; fatal injuries highlighted with red left border; fatality/injury summary strip
 - [x] **Roadway tab** — functional class, NHS membership, AADT, lane width, grade, curve radius, pavement markings, lighting
 - [x] **Audit tab** — created by/at, last modified by/at, crash ID
 - [x] Back link to crash list; spinner during load; `AlertComponent` on fetch error
-- [x] `CrashDetail`, `VehicleDetail`, `RoadwayDetail`, `ChildCode`, `TrafficControl` TypeScript interfaces added to `crash.models.ts`
+- [x] `CrashDetail`, `VehicleDetail`, `RoadwayDetail`, `PersonDetail`, `PersonDrugTest`, `ChildCode`, `TrafficControl` TypeScript interfaces added to `crash.models.ts`
+- [x] `mmucc-lookup.ts` — 35 `Record<number, string>` lookup maps covering all MMUCC coded fields; all coded values across detail view rendered as "N — Description"
 - [x] `CrashService.getCrash(id)` — typed `GET /crashes/{id}`
 - [x] View button in crash list enabled; rows now navigate directly to detail on click

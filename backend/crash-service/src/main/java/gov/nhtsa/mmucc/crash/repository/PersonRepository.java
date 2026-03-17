@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PersonRepository extends JpaRepository<Person, Long> {
+    List<Person> findByCrashIdOrderByVehicleUnitNumberAscPersonIdAsc(Long crashId);
     List<Person> findByVehicleIdOrderByPersonId(Long vehicleId);
     Optional<Person> findByPersonIdAndVehicleId(Long personId, Long vehicleId);
     Optional<Person> findByPersonIdAndCrashId(Long personId, Long crashId);

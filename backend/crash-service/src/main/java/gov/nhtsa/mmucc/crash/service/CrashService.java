@@ -28,6 +28,11 @@ public class CrashService {
     private final VehicleTrafficControlRepository trafficControlRepo;
     private final VehicleDamageAreaRepository damageAreaRepo;
     private final VehicleSequenceEventRepository sequenceEventRepo;
+    private final PersonRepository personRepo;
+    private final PersonAirbagRepository airbagRepo;
+    private final PersonDriverActionRepository driverActionRepo;
+    private final PersonDlRestrictionRepository dlRestrictionRepo;
+    private final PersonDrugTestResultRepository drugTestRepo;
     private final CrashMapper crashMapper;
     private final AuditLogService auditLogService;
 
@@ -40,6 +45,11 @@ public class CrashService {
                         VehicleTrafficControlRepository trafficControlRepo,
                         VehicleDamageAreaRepository damageAreaRepo,
                         VehicleSequenceEventRepository sequenceEventRepo,
+                        PersonRepository personRepo,
+                        PersonAirbagRepository airbagRepo,
+                        PersonDriverActionRepository driverActionRepo,
+                        PersonDlRestrictionRepository dlRestrictionRepo,
+                        PersonDrugTestResultRepository drugTestRepo,
                         CrashMapper crashMapper,
                         AuditLogService auditLogService) {
         this.crashRepo = crashRepo;
@@ -51,6 +61,11 @@ public class CrashService {
         this.trafficControlRepo = trafficControlRepo;
         this.damageAreaRepo = damageAreaRepo;
         this.sequenceEventRepo = sequenceEventRepo;
+        this.personRepo = personRepo;
+        this.airbagRepo = airbagRepo;
+        this.driverActionRepo = driverActionRepo;
+        this.dlRestrictionRepo = dlRestrictionRepo;
+        this.drugTestRepo = drugTestRepo;
         this.crashMapper = crashMapper;
         this.auditLogService = auditLogService;
     }
@@ -152,6 +167,9 @@ public class CrashService {
         List<VehicleResponse> vehicles = vehicleRepo.findByCrashIdOrderByUnitNumber(id).stream()
                 .map(this::toVehicleResponse).toList();
 
+        List<PersonResponse> persons = personRepo.findByCrashIdOrderByVehicleUnitNumberAscPersonIdAsc(id).stream()
+                .map(this::toPersonResponse).toList();
+
         return new CrashDetailResponse(
                 c.getCrashId(), c.getCrashIdentifier(), c.getCrashTypeCode(),
                 c.getFirstHarmfulEventCode(), c.getCrashDate(), c.getCrashTime(),
@@ -169,7 +187,7 @@ public class CrashService {
                 c.getNumNonMotorists(), c.getNumNonFatallyInjured(), c.getNumFatalities(),
                 c.getAlcoholInvolvementCode(), c.getDrugInvolvementCode(), c.getDayOfWeekCode(),
                 weather, surface, contributing,
-                roadway, vehicles,
+                roadway, vehicles, persons,
                 c.getAudit().getCreatedBy(), c.getAudit().getCreatedDt(),
                 c.getAudit().getModifiedBy(), c.getAudit().getModifiedDt()
         );
@@ -247,6 +265,42 @@ public class CrashService {
                 v.getHitAndRunCode(), v.getTowedCode(), v.getContributingCircCode(),
                 tcs, da, se,
                 v.getAudit().getCreatedDt(), v.getAudit().getModifiedDt()
+        );
+    }
+
+    PersonResponse toPersonResponse(Person p) {
+        Long pid = p.getPersonId();
+        List<ChildCodeDto> airbags = airbagRepo.findByPersonIdOrderBySequenceNum(pid)
+                .stream().map(e -> new ChildCodeDto(e.getSequenceNum(), e.getAirbagCode())).toList();
+        List<ChildCodeDto> driverActions = driverActionRepo.findByPersonIdOrderBySequenceNum(pid)
+                .stream().map(e -> new ChildCodeDto(e.getSequenceNum(), e.getActionCode())).toList();
+        List<ChildCodeDto> dlRestrictions = dlRestrictionRepo.findByPersonIdOrderBySequenceNum(pid)
+                .stream().map(e -> new ChildCodeDto(e.getSequenceNum(), e.getRestrictionCode())).toList();
+        List<PersonDrugTestDto> drugTests = drugTestRepo.findByPersonIdOrderBySequenceNum(pid)
+                .stream().map(e -> new PersonDrugTestDto(e.getSequenceNum(), e.getResultCode())).toList();
+        return new PersonResponse(
+                p.getPersonId(), p.getCrashId(), p.getVehicleId(),
+                p.getPersonName(),
+                p.getDobYear(), p.getDobMonth(), p.getDobDay(), p.getAgeYears(),
+                p.getSexCode(), p.getPersonTypeCode(), p.getIncidentResponderCode(),
+                p.getInjuryStatusCode(), p.getVehicleUnitNumber(),
+                p.getSeatingRowCode(), p.getSeatingSeatCode(),
+                p.getRestraintCode(), p.getRestraintImproperFlg(),
+                airbags, p.getEjectionCode(),
+                p.getDlJurisdictionType(), p.getDlJurisdictionCode(),
+                p.getDlNumber(), p.getDlClassCode(), p.getDlIsCdlFlg(), p.getDlEndorsementCode(),
+                p.getSpeedingCode(), driverActions,
+                p.getViolationCode1(), p.getViolationCode2(),
+                dlRestrictions, p.getDlAlcoholInterlockFlg(),
+                p.getDlStatusTypeCode(), p.getDlStatusCode(),
+                p.getDistractedActionCode(), p.getDistractedSourceCode(),
+                p.getConditionCode1(), p.getConditionCode2(),
+                p.getLeSuspectsAlcohol(), p.getAlcoholTestStatusCode(),
+                p.getAlcoholTestTypeCode(), p.getAlcoholBacResult(),
+                p.getLeSuspectsDrug(), p.getDrugTestStatusCode(), p.getDrugTestTypeCode(), drugTests,
+                p.getTransportSourceCode(), p.getEmsAgencyId(), p.getEmsRunNumber(), p.getMedicalFacility(),
+                p.getInjuryAreaCode(), p.getInjuryDiagnosis(), p.getInjurySeverityCode(),
+                p.getAudit().getCreatedDt(), p.getAudit().getModifiedDt()
         );
     }
 

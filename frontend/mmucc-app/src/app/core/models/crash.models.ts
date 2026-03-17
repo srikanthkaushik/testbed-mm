@@ -100,6 +100,96 @@ export interface VehicleDetail {
   modifiedDt: string | null;
 }
 
+/** Person drug test result entry (P23 SF3). */
+export interface PersonDrugTest {
+  sequenceNum: number;
+  resultCode: number;
+}
+
+/** Person record nested inside CrashDetail (P1–P27). */
+export interface PersonDetail {
+  personId: number;
+  crashId: number;
+  vehicleId: number | null;
+  // P1
+  personName: string | null;
+  // P2
+  dobYear: number | null;
+  dobMonth: number | null;
+  dobDay: number | null;
+  ageYears: number | null;
+  // P3
+  sexCode: number | null;
+  // P4
+  personTypeCode: number | null;
+  incidentResponderCode: number | null;
+  // P5
+  injuryStatusCode: number | null;
+  // P6
+  vehicleUnitNumber: number | null;
+  // P7
+  seatingRowCode: number | null;
+  seatingSeatCode: number | null;
+  // P8
+  restraintCode: number | null;
+  restraintImproperFlg: number | null;
+  // P9
+  airbags: ChildCode[];
+  // P10
+  ejectionCode: number | null;
+  // P11–P17 (driver license)
+  dlJurisdictionType: number | null;
+  dlJurisdictionCode: string | null;
+  dlNumber: string | null;
+  dlClassCode: number | null;
+  dlIsCdlFlg: number | null;
+  dlEndorsementCode: number | null;
+  // P13
+  speedingCode: number | null;
+  // P14
+  driverActions: ChildCode[];
+  // P15
+  violationCode1: string | null;
+  violationCode2: string | null;
+  // P16
+  dlRestrictions: ChildCode[];
+  dlAlcoholInterlockFlg: number | null;
+  // P17
+  dlStatusTypeCode: number | null;
+  dlStatusCode: number | null;
+  // P18
+  distractedActionCode: number | null;
+  distractedSourceCode: number | null;
+  // P19
+  conditionCode1: number | null;
+  conditionCode2: number | null;
+  // P20
+  leSuspectsAlcohol: number | null;
+  // P21
+  alcoholTestStatusCode: number | null;
+  alcoholTestTypeCode: number | null;
+  alcoholBacResult: string | null;
+  // P22
+  leSuspectsDrug: number | null;
+  // P23
+  drugTestStatusCode: number | null;
+  drugTestTypeCode: number | null;
+  drugTestResults: PersonDrugTest[];
+  // P24
+  transportSourceCode: number | null;
+  emsAgencyId: string | null;
+  emsRunNumber: string | null;
+  medicalFacility: string | null;
+  // P25
+  injuryAreaCode: number | null;
+  // P26
+  injuryDiagnosis: string | null;
+  // P27
+  injurySeverityCode: number | null;
+  createdDt: string | null;
+  modifiedDt: string | null;
+}
+
 /** Roadway record nested inside CrashDetail. */
 export interface RoadwayDetail {
   roadwayId: number;
@@ -187,6 +277,7 @@ export interface CrashDetail {
   contributingCircumstances: ChildCode[];
   roadway: RoadwayDetail | null;
   vehicles: VehicleDetail[];
+  persons: PersonDetail[];
   createdBy: string | null;
   createdDt: string | null;
   modifiedBy: string | null;

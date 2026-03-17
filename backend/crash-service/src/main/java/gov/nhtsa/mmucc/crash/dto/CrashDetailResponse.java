@@ -58,6 +58,7 @@ public record CrashDetailResponse(
         // Related entities
         RoadwayResponse roadway,
         List<VehicleResponse> vehicles,
+        List<PersonResponse> persons,
 
         // Audit
         String createdBy,

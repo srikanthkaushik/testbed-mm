@@ -245,6 +245,60 @@
   gap: var(--space-1);
 }
 
+// ── Person cards ─────────────────────────────────────────────────────────────
+
+.persons-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+  flex-wrap: wrap;
+}
+
+.persons-summary__total {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.person-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  margin-bottom: var(--space-5);
+
+  &:last-child { margin-bottom: 0; }
+
+  &--fatal {
+    border-left: 4px solid var(--color-error);
+  }
+}
+
+.person-card__header {
+  margin-bottom: var(--space-4);
+}
+
+.person-card__title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-1);
+}
+
+.person-card__title {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.person-card__subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
 // ── Empty note ───────────────────────────────────────────────────────────────
 
 .empty-note {

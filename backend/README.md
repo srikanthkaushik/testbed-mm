@@ -45,7 +45,7 @@ The core MMUCC data service running on port **8082**. Covers crash records (C1�
 ```
 GET    /crashes                          → paged list (filters: dateFrom, dateTo, severity, county)
 POST   /crashes                          → create crash (ADMIN, DATA_ENTRY)
-GET    /crashes/{id}                     → full detail — crash + all children
+GET    /crashes/{id}                     → full detail — crash + vehicles + persons (P1–P27) + roadway
 PUT    /crashes/{id}                     → replace crash (ADMIN, DATA_ENTRY)
 DELETE /crashes/{id}                     → delete + cascade (ADMIN)
 

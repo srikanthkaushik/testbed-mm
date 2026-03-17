@@ -38,10 +38,10 @@ MMUCC is a voluntary national guideline that defines a minimum set of 115 data e
   - [x] Login page — ADA/WCAG 2.1 AA compliant, Google SSO + email/password
   - [x] Authenticated shell — responsive nav, collapsible sidebar, role-aware links
   - [x] Crash list — filters, sort, pagination, URL state sync, skeleton shimmer
-  - [x] Crash detail — tabbed view (Overview, Vehicles, Roadway, Audit), stats strip
+  - [x] Crash detail — tabbed view (Overview, Vehicles, Persons, Roadway, Audit), stats strip; all coded fields display "N — Description" via mmucc-lookup.ts
   - [ ] Crash entry form, vehicle form, admin, reports — Sprint 4+
 - [x] Authentication and authorization — JWT in-memory, HttpOnly refresh cookie, RBAC enforced at controller level
-- [x] Test data seed script — 8 realistic crash records with vehicles, roadway, weather/surface conditions
+- [x] Test data seed script — 8 realistic crash records with vehicles, roadway, weather/surface conditions, persons (including fatal section and non-motorist records)
 - [ ] Reporting and data export
 
 ---

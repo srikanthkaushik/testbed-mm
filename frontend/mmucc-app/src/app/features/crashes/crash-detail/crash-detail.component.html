@@ -139,39 +139,27 @@
               <dl class="field-list">
                 <div class="field-list__row">
                   <dt>Manner of Collision</dt>
-                  <dd>{{ nullOr(crash()!.mannerCollisionCode) }}</dd>
+                  <dd>{{ label(crash()!.mannerCollisionCode, MANNER_COLLISION) }}</dd>
                 </div>
                 <div class="field-list__row">
                   <dt>Light Condition</dt>
-                  <dd>{{ nullOr(crash()!.lightConditionCode) }}</dd>
+                  <dd>{{ label(crash()!.lightConditionCode, LIGHT_CONDITION) }}</dd>
                 </div>
                 <div class="field-list__row">
                   <dt>Weather</dt>
-                  <dd>
-                    @if (crash()!.weatherConditions.length) {
-                      {{ formatCodes(crash()!.weatherConditions) }}
-                    } @else {
-                      —
-                    }
-                  </dd>
+                  <dd>{{ labelList(crash()!.weatherConditions, WEATHER_CONDITION) }}</dd>
                 </div>
                 <div class="field-list__row">
                   <dt>Surface Condition</dt>
-                  <dd>
-                    @if (crash()!.surfaceConditions.length) {
-                      {{ formatCodes(crash()!.surfaceConditions) }}
-                    } @else {
-                      —
-                    }
-                  </dd>
+                  <dd>{{ labelList(crash()!.surfaceConditions, SURFACE_CONDITION) }}</dd>
                 </div>
                 <div class="field-list__row">
                   <dt>Alcohol Involvement</dt>
-                  <dd>{{ nullOr(crash()!.alcoholInvolvementCode) }}</dd>
+                  <dd>{{ label(crash()!.alcoholInvolvementCode, INVOLVEMENT) }}</dd>
                 </div>
                 <div class="field-list__row">
                   <dt>Drug Involvement</dt>
-                  <dd>{{ nullOr(crash()!.drugInvolvementCode) }}</dd>
+                  <dd>{{ label(crash()!.drugInvolvementCode, INVOLVEMENT) }}</dd>
                 </div>
               </dl>
             </div>
@@ -181,15 +169,15 @@
               <dl class="field-list">
                 <div class="field-list__row">
                   <dt>Junction Type</dt>
-                  <dd>{{ nullOr(crash()!.junctionInterchangeFlg) }}</dd>
+                  <dd>{{ label(crash()!.junctionInterchangeFlg, JUNCTION_TYPE) }}</dd>
                 </div>
                 <div class="field-list__row">
                   <dt>School Bus Related</dt>
-                  <dd>{{ crash()!.schoolBusRelatedCode === 1 ? 'Yes' : crash()!.schoolBusRelatedCode === 2 ? 'No' : '—' }}</dd>
+                  <dd>{{ label(crash()!.schoolBusRelatedCode, YES_NO) }}</dd>
                 </div>
                 <div class="field-list__row">
                   <dt>Work Zone Related</dt>
-                  <dd>{{ crash()!.workZoneRelatedCode === 1 ? 'Yes' : crash()!.workZoneRelatedCode === 2 ? 'No' : '—' }}</dd>
+                  <dd>{{ label(crash()!.workZoneRelatedCode, YES_NO) }}</dd>
                 </div>
               </dl>
             </div>
@@ -223,18 +211,18 @@
                       <div class="field-list__row"><dt>License Plate</dt><dd>{{ nullOr(v.licensePlate) }}</dd></div>
                       <div class="field-list__row"><dt>State</dt><dd>{{ nullOr(v.registrationState) }}</dd></div>
                       <div class="field-list__row"><dt>Reg. Year</dt><dd>{{ nullOr(v.registrationYear) }}</dd></div>
-                      <div class="field-list__row"><dt>Body Type</dt><dd>{{ nullOr(v.bodyTypeCode) }}</dd></div>
+                      <div class="field-list__row"><dt>Body Type</dt><dd>{{ label(v.bodyTypeCode, BODY_TYPE) }}</dd></div>
                     </dl>
                   </div>
 
                   <div class="field-section">
-                    <h3 class="field-section__title">Travel & Damage</h3>
+                    <h3 class="field-section__title">Travel &amp; Damage</h3>
                     <dl class="field-list">
                       <div class="field-list__row"><dt>Speed Limit</dt><dd>{{ v.speedLimitMph != null ? v.speedLimitMph + ' mph' : '—' }}</dd></div>
-                      <div class="field-list__row"><dt>Maneuver</dt><dd>{{ nullOr(v.maneuverCode) }}</dd></div>
-                      <div class="field-list__row"><dt>Damage Extent</dt><dd>{{ nullOr(v.damageExtentCode) }}</dd></div>
-                      <div class="field-list__row"><dt>Hit &amp; Run</dt><dd>{{ v.hitAndRunCode === 1 ? 'Yes' : v.hitAndRunCode === 2 ? 'No' : '—' }}</dd></div>
-                      <div class="field-list__row"><dt>Towed</dt><dd>{{ nullOr(v.towedCode) }}</dd></div>
+                      <div class="field-list__row"><dt>Maneuver</dt><dd>{{ label(v.maneuverCode, MANEUVER) }}</dd></div>
+                      <div class="field-list__row"><dt>Damage Extent</dt><dd>{{ label(v.damageExtentCode, DAMAGE_EXTENT) }}</dd></div>
+                      <div class="field-list__row"><dt>Hit &amp; Run</dt><dd>{{ label(v.hitAndRunCode, YES_NO) }}</dd></div>
+                      <div class="field-list__row"><dt>Towed</dt><dd>{{ label(v.towedCode, TOWED) }}</dd></div>
                       <div class="field-list__row"><dt>Occupants</dt><dd>{{ nullOr(v.totalOccupants) }}</dd></div>
                     </dl>
                   </div>
@@ -244,7 +232,7 @@
                       <h3 class="field-section__title">Sequence of Events</h3>
                       <ol class="code-list">
                         @for (e of v.sequenceEvents; track e.sequenceNum) {
-                          <li>Event {{ e.code }}</li>
+                          <li>{{ label(e.code, HARMFUL_EVENT) }}</li>
                         }
                       </ol>
                     </div>
@@ -255,9 +243,153 @@
                       <h3 class="field-section__title">Damage Areas</h3>
                       <ul class="code-list">
                         @for (d of v.damageAreas; track d.sequenceNum) {
-                          <li>Area {{ d.code }}</li>
+                          <li>{{ label(d.code, DAMAGE_AREA) }}</li>
                         }
                       </ul>
+                    </div>
+                  }
+
+                </div>
+              </div>
+            }
+          }
+        </div>
+      }
+
+      <!-- ── Persons tab ─────────────────────────────────────────────── -->
+      @if (activeTab() === 'persons') {
+        <div
+          id="panel-persons"
+          role="tabpanel"
+          aria-labelledby="tab-persons"
+          class="tab-panel"
+        >
+          @if (crash()!.persons.length === 0) {
+            <p class="empty-note">No persons recorded for this crash.</p>
+          } @else {
+            <!-- Summary strip: fatalities + injured counts -->
+            <div class="persons-summary">
+              @if ((crash()!.numFatalities ?? 0) > 0) {
+                <span class="badge badge--danger">
+                  {{ crash()!.numFatalities }} {{ crash()!.numFatalities === 1 ? 'Fatality' : 'Fatalities' }}
+                </span>
+              }
+              @if ((crash()!.numNonFatallyInjured ?? 0) > 0) {
+                <span class="badge badge--warning">
+                  {{ crash()!.numNonFatallyInjured }} Injured
+                </span>
+              }
+              <span class="persons-summary__total">
+                {{ crash()!.persons.length }} person{{ crash()!.persons.length === 1 ? '' : 's' }} total
+              </span>
+            </div>
+
+            <!-- Person cards -->
+            @for (p of crash()!.persons; track p.personId) {
+              <div class="person-card" [class.person-card--fatal]="p.injuryStatusCode === 1">
+
+                <!-- Card header -->
+                <div class="person-card__header">
+                  <div class="person-card__title-row">
+                    <h2 class="person-card__title">
+                      {{ personLabel(p) }}
+                    </h2>
+                    @if (p.injuryStatusCode != null) {
+                      <span class="badge" [class]="injuryBadgeClass(p.injuryStatusCode)"
+                            [attr.aria-label]="'Injury status: ' + label(p.injuryStatusCode, INJURY_STATUS)">
+                        {{ label(p.injuryStatusCode, INJURY_STATUS) }}
+                      </span>
+                    }
+                  </div>
+                  <p class="person-card__subtitle">
+                    {{ label(p.personTypeCode, PERSON_TYPE) }}
+                    &nbsp;·&nbsp;
+                    {{ personGroupLabel(p) }}
+                    &nbsp;·&nbsp;
+                    {{ label(p.sexCode, SEX_CODE) }}, {{ formatAge(p) }}
+                  </p>
+                </div>
+
+                <div class="field-grid">
+
+                  <!-- Seating & Safety -->
+                  <div class="field-section">
+                    <h3 class="field-section__title">Seating &amp; Safety</h3>
+                    <dl class="field-list">
+                      <div class="field-list__row">
+                        <dt>Seating Position</dt>
+                        <dd>
+                          @if (p.seatingRowCode != null || p.seatingSeatCode != null) {
+                            {{ label(p.seatingRowCode, SEATING_ROW) }} / {{ label(p.seatingSeatCode, SEATING_SEAT) }}
+                          } @else { — }
+                        </dd>
+                      </div>
+                      <div class="field-list__row">
+                        <dt>Restraint</dt>
+                        <dd>{{ label(p.restraintCode, RESTRAINT) }}</dd>
+                      </div>
+                      <div class="field-list__row">
+                        <dt>Ejection</dt>
+                        <dd>{{ label(p.ejectionCode, EJECTION) }}</dd>
+                      </div>
+                    </dl>
+                  </div>
+
+                  <!-- Alcohol / Drug -->
+                  <div class="field-section">
+                    <h3 class="field-section__title">Alcohol &amp; Drug</h3>
+                    <dl class="field-list">
+                      <div class="field-list__row">
+                        <dt>LE Suspects Alcohol</dt>
+                        <dd>{{ label(p.leSuspectsAlcohol, YES_NO) }}</dd>
+                      </div>
+                      <div class="field-list__row">
+                        <dt>BAC Result</dt>
+                        <dd>{{ nullOr(p.alcoholBacResult) }}</dd>
+                      </div>
+                      <div class="field-list__row">
+                        <dt>LE Suspects Drug</dt>
+                        <dd>{{ label(p.leSuspectsDrug, YES_NO) }}</dd>
+                      </div>
+                    </dl>
+                  </div>
+
+                  <!-- Driver Actions (if any) -->
+                  @if (p.driverActions.length) {
+                    <div class="field-section">
+                      <h3 class="field-section__title">Driver Actions</h3>
+                      <ul class="code-list">
+                        @for (a of p.driverActions; track a.sequenceNum) {
+                          <li>{{ label(a.code, DRIVER_ACTION) }}</li>
+                        }
+                      </ul>
+                    </div>
+                  }
+
+                  <!-- Medical -->
+                  @if (p.injuryStatusCode != null && p.injuryStatusCode <= 3) {
+                    <div class="field-section">
+                      <h3 class="field-section__title">Medical</h3>
+                      <dl class="field-list">
+                        <div class="field-list__row">
+                          <dt>Transport</dt>
+                          <dd>{{ nullOr(p.transportSourceCode) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>EMS Agency</dt>
+                          <dd>{{ nullOr(p.emsAgencyId) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>Medical Facility</dt>
+                          <dd>{{ nullOr(p.medicalFacility) }}</dd>
+                        </div>
+                        @if (p.injuryDiagnosis) {
+                          <div class="field-list__row">
+                            <dt>Diagnosis</dt>
+                            <dd>{{ p.injuryDiagnosis }}</dd>
+                          </div>
+                        }
+                      </dl>
                     </div>
                   }
 
@@ -284,9 +416,9 @@
               <div class="field-section">
                 <h2 class="field-section__title">Classification</h2>
                 <dl class="field-list">
-                  <div class="field-list__row"><dt>Functional Class</dt><dd>{{ nullOr(crash()!.roadway!.functionalClassCode) }}</dd></div>
-                  <div class="field-list__row"><dt>National Highway System</dt><dd>{{ crash()!.roadway!.nationalHwySysCode === 1 ? 'Yes' : crash()!.roadway!.nationalHwySysCode === 2 ? 'No' : '—' }}</dd></div>
-                  <div class="field-list__row"><dt>Access Control</dt><dd>{{ nullOr(crash()!.roadway!.accessControlCode) }}</dd></div>
+                  <div class="field-list__row"><dt>Functional Class</dt><dd>{{ label(crash()!.roadway!.functionalClassCode, FUNCTIONAL_CLASS) }}</dd></div>
+                  <div class="field-list__row"><dt>National Highway System</dt><dd>{{ label(crash()!.roadway!.nationalHwySysCode, YES_NO) }}</dd></div>
+                  <div class="field-list__row"><dt>Access Control</dt><dd>{{ label(crash()!.roadway!.accessControlCode, ACCESS_CONTROL) }}</dd></div>
                 </dl>
               </div>
 
@@ -313,9 +445,9 @@
               <div class="field-section">
                 <h2 class="field-section__title">Markings &amp; Lighting</h2>
                 <dl class="field-list">
-                  <div class="field-list__row"><dt>Roadway Lighting</dt><dd>{{ nullOr(crash()!.roadway!.roadwayLightingCode) }}</dd></div>
-                  <div class="field-list__row"><dt>Centerline Pavement Marking</dt><dd>{{ nullOr(crash()!.roadway!.pavementCenterlineCode) }}</dd></div>
-                  <div class="field-list__row"><dt>Edgeline Pavement Marking</dt><dd>{{ nullOr(crash()!.roadway!.pavementEdgelineCode) }}</dd></div>
+                  <div class="field-list__row"><dt>Roadway Lighting</dt><dd>{{ label(crash()!.roadway!.roadwayLightingCode, ROADWAY_LIGHTING) }}</dd></div>
+                  <div class="field-list__row"><dt>Centerline Pavement Marking</dt><dd>{{ label(crash()!.roadway!.pavementCenterlineCode, PAVEMENT_CENTERLINE) }}</dd></div>
+                  <div class="field-list__row"><dt>Edgeline Pavement Marking</dt><dd>{{ label(crash()!.roadway!.pavementEdgelineCode, PAVEMENT_EDGELINE) }}</dd></div>
                 </dl>
               </div>
 
