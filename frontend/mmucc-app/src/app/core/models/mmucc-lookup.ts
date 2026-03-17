@@ -583,3 +583,43 @@ export const ROUTE_TYPE: Record<number, string> = {
   8:  'Other',
   99: 'Unknown',
 };
+
+// C5 – Route Direction
+export const ROUTE_DIRECTION: Record<number, string> = {
+  1: 'North',
+  2: 'South',
+  3: 'East',
+  4: 'West',
+  9: 'Not Applicable / Unknown',
+};
+
+// P24 – Source of Transport to Medical Facility
+export const TRANSPORT_SOURCE: Record<number, string> = {
+  1: 'EMS Air',
+  2: 'EMS Ground',
+  3: 'Law Enforcement',
+  4: 'Private / Personal Vehicle',
+  5: 'Walked / Left on Own',
+  6: 'Other',
+  9: 'Unknown',
+};
+
+// R15 – Bicycle Facility Type
+export const BICYCLE_FACILITY: Record<number, string> = {
+  1: 'Bike Lane',
+  2: 'Shared Use Path / Trail',
+  3: 'Paved Shoulder',
+  4: 'Wide Curb Lane',
+  5: 'Signed Shared Roadway / Bicycle Boulevard',
+  6: 'No Bicycle Facility',
+  9: 'Unknown',
+};
+
+// R15 – Bicycle Signed Route
+export const BICYCLE_SIGNED_ROUTE: Record<number, string> = {
+  1: 'U.S. Bicycle Route System',
+  2: 'State Signed Bicycle Route',
+  3: 'Local Signed Bicycle Route',
+  4: 'No Signed Bicycle Route',
+  9: 'Unknown',
+};

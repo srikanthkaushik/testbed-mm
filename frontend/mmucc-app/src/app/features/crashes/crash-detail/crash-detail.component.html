@@ -101,6 +101,18 @@
                   <dt>Day of Week</dt>
                   <dd>{{ dayLabel(crash()!.dayOfWeekCode) }}</dd>
                 </div>
+                <div class="field-list__row">
+                  <dt>Crash Type</dt>
+                  <dd>{{ label(crash()!.crashTypeCode, CRASH_TYPE) }}</dd>
+                </div>
+                <div class="field-list__row">
+                  <dt>First Harmful Event</dt>
+                  <dd>{{ label(crash()!.firstHarmfulEventCode, HARMFUL_EVENT) }}</dd>
+                </div>
+                <div class="field-list__row">
+                  <dt>Location of First Harmful Event</dt>
+                  <dd>{{ label(crash()!.locFirstHarmfulEvent, LOC_FIRST_HARMFUL_EVENT) }}</dd>
+                </div>
               </dl>
             </div>
 
@@ -130,6 +142,18 @@
                 <div class="field-list__row">
                   <dt>Route ID</dt>
                   <dd>{{ nullOr(crash()!.routeId) }}</dd>
+                </div>
+                <div class="field-list__row">
+                  <dt>Route Type</dt>
+                  <dd>{{ label(crash()!.routeTypeCode, ROUTE_TYPE) }}</dd>
+                </div>
+                <div class="field-list__row">
+                  <dt>Route Direction</dt>
+                  <dd>{{ label(crash()!.routeDirectionCode, ROUTE_DIRECTION) }}</dd>
+                </div>
+                <div class="field-list__row">
+                  <dt>Distance from Ref. Point</dt>
+                  <dd>{{ crash()!.distanceFromRefMiles != null ? crash()!.distanceFromRefMiles + ' mi' : '—' }}</dd>
                 </div>
               </dl>
             </div>
@@ -165,22 +189,71 @@
             </div>
 
             <div class="field-section">
-              <h2 class="field-section__title">Junction / Work Zone</h2>
+              <h2 class="field-section__title">Junction &amp; Intersection</h2>
               <dl class="field-list">
                 <div class="field-list__row">
+                  <dt>Junction / Interchange Related</dt>
+                  <dd>{{ label(crash()!.junctionInterchangeFlg, YES_NO) }}</dd>
+                </div>
+                <div class="field-list__row">
                   <dt>Junction Type</dt>
-                  <dd>{{ label(crash()!.junctionInterchangeFlg, JUNCTION_TYPE) }}</dd>
+                  <dd>{{ label(crash()!.junctionLocationCode, JUNCTION_TYPE) }}</dd>
+                </div>
+                <div class="field-list__row">
+                  <dt>Intersection Geometry</dt>
+                  <dd>{{ label(crash()!.intersectionGeometryCode, INTERSECTION_GEOMETRY) }}</dd>
+                </div>
+                <div class="field-list__row">
+                  <dt>Intersection Traffic Control</dt>
+                  <dd>{{ label(crash()!.intersectionTrafficCtl, INTERSECTION_TRAFFIC_CTL) }}</dd>
+                </div>
+                <div class="field-list__row">
+                  <dt>Intersection Approaches</dt>
+                  <dd>{{ nullOr(crash()!.intersectionApproaches) }}</dd>
                 </div>
                 <div class="field-list__row">
                   <dt>School Bus Related</dt>
                   <dd>{{ label(crash()!.schoolBusRelatedCode, YES_NO) }}</dd>
                 </div>
+              </dl>
+            </div>
+
+            <div class="field-section">
+              <h2 class="field-section__title">Work Zone</h2>
+              <dl class="field-list">
                 <div class="field-list__row">
                   <dt>Work Zone Related</dt>
                   <dd>{{ label(crash()!.workZoneRelatedCode, YES_NO) }}</dd>
                 </div>
+                <div class="field-list__row">
+                  <dt>Work Zone Location</dt>
+                  <dd>{{ label(crash()!.workZoneLocationCode, WORK_ZONE_LOCATION) }}</dd>
+                </div>
+                <div class="field-list__row">
+                  <dt>Work Zone Type</dt>
+                  <dd>{{ label(crash()!.workZoneTypeCode, WORK_ZONE_TYPE) }}</dd>
+                </div>
+                <div class="field-list__row">
+                  <dt>Workers Present</dt>
+                  <dd>{{ label(crash()!.workZoneWorkersCode, YES_NO) }}</dd>
+                </div>
+                <div class="field-list__row">
+                  <dt>Law Enforcement in Work Zone</dt>
+                  <dd>{{ label(crash()!.workZoneLawEnfCode, YES_NO) }}</dd>
+                </div>
               </dl>
             </div>
+
+            @if (crash()!.contributingCircumstances.length) {
+              <div class="field-section">
+                <h2 class="field-section__title">Contributing Circumstances</h2>
+                <ul class="code-list">
+                  @for (c of crash()!.contributingCircumstances; track c.sequenceNum) {
+                    <li>{{ label(c.code, CONTRIBUTING_CIRC) }}</li>
+                  }
+                </ul>
+              </div>
+            }
 
           </div>
         </div>
@@ -207,6 +280,7 @@
                   <div class="field-section">
                     <h3 class="field-section__title">Identification</h3>
                     <dl class="field-list">
+                      <div class="field-list__row"><dt>Unit Type</dt><dd>{{ label(v.unitTypeCode, UNIT_TYPE) }}</dd></div>
                       <div class="field-list__row"><dt>VIN</dt><dd>{{ nullOr(v.vin) }}</dd></div>
                       <div class="field-list__row"><dt>License Plate</dt><dd>{{ nullOr(v.licensePlate) }}</dd></div>
                       <div class="field-list__row"><dt>State</dt><dd>{{ nullOr(v.registrationState) }}</dd></div>
@@ -219,13 +293,40 @@
                     <h3 class="field-section__title">Travel &amp; Damage</h3>
                     <dl class="field-list">
                       <div class="field-list__row"><dt>Speed Limit</dt><dd>{{ v.speedLimitMph != null ? v.speedLimitMph + ' mph' : '—' }}</dd></div>
+                      <div class="field-list__row"><dt>Direction of Travel</dt><dd>{{ label(v.directionOfTravelCode, DIRECTION_OF_TRAVEL) }}</dd></div>
                       <div class="field-list__row"><dt>Maneuver</dt><dd>{{ label(v.maneuverCode, MANEUVER) }}</dd></div>
+                      <div class="field-list__row"><dt>Most Harmful Event</dt><dd>{{ label(v.mostHarmfulEventCode, HARMFUL_EVENT) }}</dd></div>
+                      <div class="field-list__row"><dt>Initial Contact Point</dt><dd>{{ label(v.damageInitialContact, DAMAGE_AREA) }}</dd></div>
                       <div class="field-list__row"><dt>Damage Extent</dt><dd>{{ label(v.damageExtentCode, DAMAGE_EXTENT) }}</dd></div>
                       <div class="field-list__row"><dt>Hit &amp; Run</dt><dd>{{ label(v.hitAndRunCode, YES_NO) }}</dd></div>
                       <div class="field-list__row"><dt>Towed</dt><dd>{{ label(v.towedCode, TOWED) }}</dd></div>
                       <div class="field-list__row"><dt>Occupants</dt><dd>{{ nullOr(v.totalOccupants) }}</dd></div>
+                      <div class="field-list__row"><dt>Contributing Circumstances</dt><dd>{{ label(v.contributingCircCode, CONTRIBUTING_CIRC) }}</dd></div>
                     </dl>
                   </div>
+
+                  <div class="field-section">
+                    <h3 class="field-section__title">Trafficway</h3>
+                    <dl class="field-list">
+                      <div class="field-list__row"><dt>Travel Direction</dt><dd>{{ label(v.trafficwayTravelDirCode, TRAFFICWAY_TRAVEL_DIR) }}</dd></div>
+                      <div class="field-list__row"><dt>Divided Highway</dt><dd>{{ label(v.trafficwayDividedCode, TRAFFICWAY_DIVIDED) }}</dd></div>
+                      <div class="field-list__row"><dt>Through Lanes</dt><dd>{{ nullOr(v.totalThroughLanes) }}</dd></div>
+                      <div class="field-list__row"><dt>Auxiliary Lanes</dt><dd>{{ nullOr(v.totalAuxiliaryLanes) }}</dd></div>
+                      <div class="field-list__row"><dt>Roadway Alignment</dt><dd>{{ label(v.roadwayAlignmentCode, ROADWAY_ALIGNMENT) }}</dd></div>
+                      <div class="field-list__row"><dt>Roadway Grade</dt><dd>{{ label(v.roadwayGradeCode, ROADWAY_GRADE) }}</dd></div>
+                    </dl>
+                  </div>
+
+                  @if (v.trafficControls.length) {
+                    <div class="field-section">
+                      <h3 class="field-section__title">Traffic Controls</h3>
+                      <ul class="code-list">
+                        @for (tc of v.trafficControls; track tc.sequenceNum) {
+                          <li>{{ label(tc.trafficControlCode, TRAFFIC_CONTROL) }}</li>
+                        }
+                      </ul>
+                    </div>
+                  }
 
                   @if (v.sequenceEvents.length) {
                     <div class="field-section">
@@ -329,6 +430,10 @@
                         <dd>{{ label(p.restraintCode, RESTRAINT) }}</dd>
                       </div>
                       <div class="field-list__row">
+                        <dt>Restraint Improper Use</dt>
+                        <dd>{{ label(p.restraintImproperFlg, YES_NO) }}</dd>
+                      </div>
+                      <div class="field-list__row">
                         <dt>Ejection</dt>
                         <dd>{{ label(p.ejectionCode, EJECTION) }}</dd>
                       </div>
@@ -354,6 +459,31 @@
                     </dl>
                   </div>
 
+                  <!-- Driver (speeding, violations) -->
+                  @if (p.personTypeCode === 1) {
+                    <div class="field-section">
+                      <h3 class="field-section__title">Driver</h3>
+                      <dl class="field-list">
+                        <div class="field-list__row">
+                          <dt>Speeding</dt>
+                          <dd>{{ label(p.speedingCode, SPEEDING) }}</dd>
+                        </div>
+                        @if (p.violationCode1) {
+                          <div class="field-list__row">
+                            <dt>Violation 1</dt>
+                            <dd>{{ p.violationCode1 }}</dd>
+                          </div>
+                        }
+                        @if (p.violationCode2) {
+                          <div class="field-list__row">
+                            <dt>Violation 2</dt>
+                            <dd>{{ p.violationCode2 }}</dd>
+                          </div>
+                        }
+                      </dl>
+                    </div>
+                  }
+
                   <!-- Driver Actions (if any) -->
                   @if (p.driverActions.length) {
                     <div class="field-section">
@@ -372,12 +502,16 @@
                       <h3 class="field-section__title">Medical</h3>
                       <dl class="field-list">
                         <div class="field-list__row">
-                          <dt>Transport</dt>
-                          <dd>{{ nullOr(p.transportSourceCode) }}</dd>
+                          <dt>Transport Source</dt>
+                          <dd>{{ label(p.transportSourceCode, TRANSPORT_SOURCE) }}</dd>
                         </div>
                         <div class="field-list__row">
                           <dt>EMS Agency</dt>
                           <dd>{{ nullOr(p.emsAgencyId) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>EMS Run Number</dt>
+                          <dd>{{ nullOr(p.emsRunNumber) }}</dd>
                         </div>
                         <div class="field-list__row">
                           <dt>Medical Facility</dt>
@@ -426,10 +560,18 @@
                 <h2 class="field-section__title">Geometry</h2>
                 <dl class="field-list">
                   <div class="field-list__row"><dt>Lane Width</dt><dd>{{ crash()!.roadway!.laneWidthFt != null ? crash()!.roadway!.laneWidthFt + ' ft' : '—' }}</dd></div>
+                  <div class="field-list__row"><dt>Left Shoulder Width</dt><dd>{{ crash()!.roadway!.leftShoulderWidthFt != null ? crash()!.roadway!.leftShoulderWidthFt + ' ft' : '—' }}</dd></div>
+                  <div class="field-list__row"><dt>Right Shoulder Width</dt><dd>{{ crash()!.roadway!.rightShoulderWidthFt != null ? crash()!.roadway!.rightShoulderWidthFt + ' ft' : '—' }}</dd></div>
                   <div class="field-list__row"><dt>Median Width</dt><dd>{{ crash()!.roadway!.medianWidthFt != null ? crash()!.roadway!.medianWidthFt + ' ft' : '—' }}</dd></div>
-                  <div class="field-list__row"><dt>Grade %</dt><dd>{{ crash()!.roadway!.gradePercent != null ? crash()!.roadway!.gradePercent + '%' : '—' }}</dd></div>
-                  <div class="field-list__row"><dt>Curve Radius</dt><dd>{{ crash()!.roadway!.curveRadiusFt != null ? crash()!.roadway!.curveRadiusFt + ' ft' : '—' }}</dd></div>
                   <div class="field-list__row"><dt>Mainline Lanes</dt><dd>{{ nullOr(crash()!.roadway!.mainlineLanesCount) }}</dd></div>
+                  <div class="field-list__row"><dt>Cross-Street Lanes</dt><dd>{{ nullOr(crash()!.roadway!.crossStreetLanesCount) }}</dd></div>
+                  <div class="field-list__row"><dt>Grade %</dt><dd>{{ crash()!.roadway!.gradePercent != null ? crash()!.roadway!.gradePercent + '%' : '—' }}</dd></div>
+                  <div class="field-list__row"><dt>Grade Direction</dt><dd>{{ nullOr(crash()!.roadway!.gradeDirection) }}</dd></div>
+                  <div class="field-list__row"><dt>Curve Radius</dt><dd>{{ crash()!.roadway!.curveRadiusFt != null ? crash()!.roadway!.curveRadiusFt + ' ft' : '—' }}</dd></div>
+                  <div class="field-list__row"><dt>Curve Length</dt><dd>{{ crash()!.roadway!.curveLengthFt != null ? crash()!.roadway!.curveLengthFt + ' ft' : '—' }}</dd></div>
+                  <div class="field-list__row"><dt>Curve Superelevation</dt><dd>{{ crash()!.roadway!.curveSuperelevationPct != null ? crash()!.roadway!.curveSuperelevationPct + '%' : '—' }}</dd></div>
+                  <div class="field-list__row"><dt>Bridge Structure ID</dt><dd>{{ nullOr(crash()!.roadway!.bridgeStructureId) }}</dd></div>
+                  <div class="field-list__row"><dt>Railway Crossing ID</dt><dd>{{ nullOr(crash()!.roadway!.railwayCrossingId) }}</dd></div>
                 </dl>
               </div>
 
@@ -439,6 +581,9 @@
                   <div class="field-list__row"><dt>AADT Year</dt><dd>{{ nullOr(crash()!.roadway!.aadtYear) }}</dd></div>
                   <div class="field-list__row"><dt>AADT Value</dt><dd>{{ nullOr(crash()!.roadway!.aadtValue) }}</dd></div>
                   <div class="field-list__row"><dt>Truck %</dt><dd>{{ nullOr(crash()!.roadway!.aadtTruckMeasure) }}</dd></div>
+                  <div class="field-list__row"><dt>Motorcycle %</dt><dd>{{ nullOr(crash()!.roadway!.aadtMotorcycleMeasure) }}</dd></div>
+                  <div class="field-list__row"><dt>Entering Vehicles Year</dt><dd>{{ nullOr(crash()!.roadway!.enteringVehiclesYear) }}</dd></div>
+                  <div class="field-list__row"><dt>Entering Vehicles AADT</dt><dd>{{ nullOr(crash()!.roadway!.enteringVehiclesAadt) }}</dd></div>
                 </dl>
               </div>
 
@@ -446,8 +591,17 @@
                 <h2 class="field-section__title">Markings &amp; Lighting</h2>
                 <dl class="field-list">
                   <div class="field-list__row"><dt>Roadway Lighting</dt><dd>{{ label(crash()!.roadway!.roadwayLightingCode, ROADWAY_LIGHTING) }}</dd></div>
-                  <div class="field-list__row"><dt>Centerline Pavement Marking</dt><dd>{{ label(crash()!.roadway!.pavementCenterlineCode, PAVEMENT_CENTERLINE) }}</dd></div>
-                  <div class="field-list__row"><dt>Edgeline Pavement Marking</dt><dd>{{ label(crash()!.roadway!.pavementEdgelineCode, PAVEMENT_EDGELINE) }}</dd></div>
+                  <div class="field-list__row"><dt>Centerline Marking</dt><dd>{{ label(crash()!.roadway!.pavementCenterlineCode, PAVEMENT_CENTERLINE) }}</dd></div>
+                  <div class="field-list__row"><dt>Edgeline Marking</dt><dd>{{ label(crash()!.roadway!.pavementEdgelineCode, PAVEMENT_EDGELINE) }}</dd></div>
+                  <div class="field-list__row"><dt>Lane Line Marking</dt><dd>{{ label(crash()!.roadway!.pavementLaneLineCode, PAVEMENT_LANE_LINE) }}</dd></div>
+                </dl>
+              </div>
+
+              <div class="field-section">
+                <h2 class="field-section__title">Bicycle</h2>
+                <dl class="field-list">
+                  <div class="field-list__row"><dt>Bicycle Facility</dt><dd>{{ label(crash()!.roadway!.bicycleFacilityCode, BICYCLE_FACILITY) }}</dd></div>
+                  <div class="field-list__row"><dt>Bicycle Signed Route</dt><dd>{{ label(crash()!.roadway!.bicycleSignedRouteCode, BICYCLE_SIGNED_ROUTE) }}</dd></div>
                 </dl>
               </div>
 

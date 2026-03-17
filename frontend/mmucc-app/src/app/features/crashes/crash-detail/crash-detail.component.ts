@@ -58,6 +58,10 @@ import {
   EJECTION,
   SPEEDING,
   DRIVER_ACTION,
+  ROUTE_DIRECTION,
+  TRANSPORT_SOURCE,
+  BICYCLE_FACILITY,
+  BICYCLE_SIGNED_ROUTE,
 } from '../../../core/models/mmucc-lookup';
 
 export type DetailTab = 'overview' | 'vehicles' | 'persons' | 'roadway' | 'audit';
@@ -123,8 +127,12 @@ export class CrashDetailComponent implements OnInit {
   readonly SEATING_SEAT    = SEATING_SEAT;
   readonly RESTRAINT       = RESTRAINT;
   readonly EJECTION        = EJECTION;
-  readonly SPEEDING        = SPEEDING;
-  readonly DRIVER_ACTION   = DRIVER_ACTION;
+  readonly SPEEDING           = SPEEDING;
+  readonly DRIVER_ACTION      = DRIVER_ACTION;
+  readonly ROUTE_DIRECTION    = ROUTE_DIRECTION;
+  readonly TRANSPORT_SOURCE   = TRANSPORT_SOURCE;
+  readonly BICYCLE_FACILITY   = BICYCLE_FACILITY;
+  readonly BICYCLE_SIGNED_ROUTE = BICYCLE_SIGNED_ROUTE;
 
   readonly tabs: { id: DetailTab; label: string }[] = [
     { id: 'overview', label: 'Overview' },
