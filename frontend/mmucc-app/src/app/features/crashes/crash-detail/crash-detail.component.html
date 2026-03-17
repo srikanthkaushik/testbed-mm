@@ -267,14 +267,32 @@
           aria-labelledby="tab-vehicles"
           class="tab-panel"
         >
+          <div class="tab-panel__actions">
+            <a
+              [routerLink]="['/crashes', crash()!.crashId, 'vehicles', 'new']"
+              class="btn btn--primary btn--sm"
+            >
+              + Add Vehicle
+            </a>
+          </div>
+
           @if (crash()!.vehicles.length === 0) {
             <p class="empty-note">No vehicles recorded for this crash.</p>
           } @else {
             @for (v of crash()!.vehicles; track v.vehicleId) {
               <div class="vehicle-card">
-                <h2 class="vehicle-card__title">
-                  Unit {{ v.unitNumber ?? '?' }} — {{ vehicleLabel(v) }}
-                </h2>
+                <div class="vehicle-card__header">
+                  <h2 class="vehicle-card__title">
+                    Unit {{ v.unitNumber ?? '?' }} — {{ vehicleLabel(v) }}
+                  </h2>
+                  <a
+                    [routerLink]="['/crashes', crash()!.crashId, 'vehicles', v.vehicleId, 'edit']"
+                    class="btn btn--sm btn--outline"
+                    [attr.aria-label]="'Edit vehicle unit ' + (v.unitNumber ?? v.vehicleId)"
+                  >
+                    Edit
+                  </a>
+                </div>
                 <div class="field-grid">
 
                   <div class="field-section">

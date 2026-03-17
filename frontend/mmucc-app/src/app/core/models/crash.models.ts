@@ -344,6 +344,94 @@ export interface VehicleAutomation {
   modifiedDt: string | null;
 }
 
+/** Request body for POST /crashes/{id}/vehicles and PUT /crashes/{id}/vehicles/{vid}. */
+export interface VehicleRequest {
+  vin:                     string | null;
+  unitTypeCode:            number | null;
+  unitNumber:              number | null;
+  registrationState:       string | null;
+  registrationYear:        number | null;
+  licensePlate:            string | null;
+  make:                    string | null;
+  modelYear:               number | null;
+  model:                   string | null;
+  bodyTypeCode:            number | null;
+  trailingUnitsCount:      number | null;
+  vehicleSizeCode:         number | null;
+  hmPlacardFlg:            number | null;
+  totalOccupants:          number | null;
+  specialFunctionCode:     number | null;
+  emergencyUseCode:        number | null;
+  speedLimitMph:           number | null;
+  directionOfTravelCode:   number | null;
+  trafficwayTravelDirCode: number | null;
+  trafficwayDividedCode:   number | null;
+  trafficwayBarrierCode:   number | null;
+  trafficwayHovHotCode:    number | null;
+  trafficwayHovCrashFlg:   number | null;
+  totalThroughLanes:       number | null;
+  totalAuxiliaryLanes:     number | null;
+  roadwayAlignmentCode:    number | null;
+  roadwayGradeCode:        number | null;
+  maneuverCode:            number | null;
+  damageInitialContact:    number | null;
+  damageExtentCode:        number | null;
+  mostHarmfulEventCode:    number | null;
+  hitAndRunCode:           number | null;
+  towedCode:               number | null;
+  contributingCircCode:    number | null;
+  trafficControls:  { sequenceNum: number; tcdTypeCode: number; tcdInoperativeCode: number | null }[];
+  damageAreas:      { sequenceNum: number; code: number }[];
+  sequenceEvents:   { sequenceNum: number; code: number }[];
+}
+
+/** Request body for POST /crashes and PUT /crashes/{id}. */
+export interface CrashRequest {
+  crashIdentifier:          string | null;
+  crashTypeCode:            number | null;
+  firstHarmfulEventCode:    number | null;
+  crashDate:                string;           // YYYY-MM-DD, required
+  crashTime:                string | null;    // HH:mm
+  countyFipsCode:           string | null;
+  countyName:               string | null;
+  cityPlaceCode:            string | null;
+  cityPlaceName:            string | null;
+  routeId:                  string | null;
+  routeTypeCode:            number | null;
+  routeDirectionCode:       number | null;
+  distanceFromRefMiles:     number | null;
+  refPointDirectionCode:    number | null;
+  latitude:                 number | null;
+  longitude:                number | null;
+  locFirstHarmfulEvent:     number | null;
+  mannerCollisionCode:      number | null;
+  sourceOfInfoCode:         number | null;
+  lightConditionCode:       number | null;
+  junctionInterchangeFlg:   number | null;
+  junctionLocationCode:     number | null;
+  intersectionApproaches:   number | null;
+  intersectionGeometryCode: number | null;
+  intersectionTrafficCtl:   number | null;
+  schoolBusRelatedCode:     number | null;
+  workZoneRelatedCode:      number | null;
+  workZoneLocationCode:     number | null;
+  workZoneTypeCode:         number | null;
+  workZoneWorkersCode:      number | null;
+  workZoneLawEnfCode:       number | null;
+  crashSeverityCode:        number | null;
+  numMotorVehicles:         number | null;
+  numMotorists:             number | null;
+  numNonMotorists:          number | null;
+  numNonFatallyInjured:     number | null;
+  numFatalities:            number | null;
+  alcoholInvolvementCode:   number | null;
+  drugInvolvementCode:      number | null;
+  dayOfWeekCode:            number | null;
+  weatherConditions:        { sequenceNum: number; code: number }[];
+  surfaceConditions:        { sequenceNum: number; code: number }[];
+  contributingCircumstances: { sequenceNum: number; code: number }[];
+}
+
 /** One entry in the crash audit log returned by GET /crashes/{id}/audit. */
 export interface AuditLogEntry {
   auditId:    number;

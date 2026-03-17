@@ -49,6 +49,48 @@ export const routes: Routes = [
         title: 'Crashes — MMUCC Crash Reporting',
       },
 
+      // Vehicle form — must be before crashes/:id so the nested segments are matched first
+      {
+        path: 'crashes/:crashId/vehicles/new',
+        loadComponent: () =>
+          import(
+            './features/crashes/vehicle-form/vehicle-form.component'
+          ).then((m) => m.VehicleFormComponent),
+        title: 'Add Vehicle — MMUCC Crash Reporting',
+        canActivate: [authGuard],
+      },
+      {
+        path: 'crashes/:crashId/vehicles/:vehicleId/edit',
+        loadComponent: () =>
+          import(
+            './features/crashes/vehicle-form/vehicle-form.component'
+          ).then((m) => m.VehicleFormComponent),
+        title: 'Edit Vehicle — MMUCC Crash Reporting',
+        canActivate: [authGuard],
+      },
+
+      // Crash create — must be before crashes/:id to avoid "new" matching as an id
+      {
+        path: 'crashes/new',
+        loadComponent: () =>
+          import(
+            './features/crashes/crash-form/crash-form.component'
+          ).then((m) => m.CrashFormComponent),
+        title: 'New Crash — MMUCC Crash Reporting',
+        canActivate: [authGuard],
+      },
+
+      // Crash edit
+      {
+        path: 'crashes/:id/edit',
+        loadComponent: () =>
+          import(
+            './features/crashes/crash-form/crash-form.component'
+          ).then((m) => m.CrashFormComponent),
+        title: 'Edit Crash — MMUCC Crash Reporting',
+        canActivate: [authGuard],
+      },
+
       // Crash detail
       {
         path: 'crashes/:id',

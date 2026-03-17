@@ -1,0 +1,440 @@
+<div class="form-page">
+
+  <!-- ── Back link ────────────────────────────────────────────────────────── -->
+  <a [routerLink]="['/crashes', crashId()]" [fragment]="'vehicles'" class="form__back">
+    &#8592; Back to Crash Detail
+  </a>
+
+  <!-- ── Page header ──────────────────────────────────────────────────────── -->
+  <h1 class="form__title">{{ pageTitle() }}</h1>
+
+  <!-- ── Loading state ────────────────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="form__loading">
+      <span class="spinner" aria-hidden="true"></span>
+      Loading vehicle record…
+    </div>
+  }
+
+  <!-- ── Error alert ───────────────────────────────────────────────────────── -->
+  @if (errorMsg()) {
+    <app-alert [message]="errorMsg()" type="error" />
+  }
+
+  @if (!loading()) {
+    <form
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      novalidate
+      class="crash-form"
+    >
+
+      <!-- ── 1. Identification (V1–V4) ─────────────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Identification (V1–V4)</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="unitTypeCode" class="form-field__label">Unit Type (V1)</label>
+            <select id="unitTypeCode" class="form-field__select" formControlName="unitTypeCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of UNIT_TYPE_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="unitNumber" class="form-field__label">Unit Number (V2)</label>
+            <input id="unitNumber" type="number" class="form-field__input"
+              formControlName="unitNumber" min="1" placeholder="e.g. 1" />
+          </div>
+
+          <div class="form-field">
+            <label for="vin" class="form-field__label">VIN (V3)</label>
+            <input id="vin" type="text" class="form-field__input"
+              formControlName="vin" placeholder="17-character VIN" maxlength="17" autocomplete="off" />
+          </div>
+
+          <div class="form-field">
+            <label for="licensePlate" class="form-field__label">License Plate (V4)</label>
+            <input id="licensePlate" type="text" class="form-field__input"
+              formControlName="licensePlate" autocomplete="off" />
+          </div>
+
+          <div class="form-field">
+            <label for="registrationState" class="form-field__label">Registration State</label>
+            <input id="registrationState" type="text" class="form-field__input"
+              formControlName="registrationState" placeholder="e.g. TN" maxlength="2" autocomplete="off" />
+          </div>
+
+          <div class="form-field">
+            <label for="registrationYear" class="form-field__label">Registration Year</label>
+            <input id="registrationYear" type="number" class="form-field__input"
+              formControlName="registrationYear" min="1900" max="2099" />
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ── 2. Vehicle Description (V5, V8) ───────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Vehicle Description (V5, V8)</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="make" class="form-field__label">Make</label>
+            <input id="make" type="text" class="form-field__input"
+              formControlName="make" placeholder="e.g. Ford" autocomplete="off" />
+          </div>
+
+          <div class="form-field">
+            <label for="model" class="form-field__label">Model</label>
+            <input id="model" type="text" class="form-field__input"
+              formControlName="model" placeholder="e.g. F-150" autocomplete="off" />
+          </div>
+
+          <div class="form-field">
+            <label for="modelYear" class="form-field__label">Model Year</label>
+            <input id="modelYear" type="number" class="form-field__input"
+              formControlName="modelYear" min="1900" max="2099" />
+          </div>
+
+          <div class="form-field">
+            <label for="bodyTypeCode" class="form-field__label">Body Type (V8)</label>
+            <select id="bodyTypeCode" class="form-field__select" formControlName="bodyTypeCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of BODY_TYPE_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ── 3. Classification (V9–V12) ────────────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Classification &amp; Use (V9–V12)</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="vehicleSizeCode" class="form-field__label">Vehicle Size</label>
+            <select id="vehicleSizeCode" class="form-field__select" formControlName="vehicleSizeCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of VEHICLE_SIZE_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="hmPlacardFlg" class="form-field__label">HazMat Placard (V9)</label>
+            <select id="hmPlacardFlg" class="form-field__select" formControlName="hmPlacardFlg">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of HM_PLACARD_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="trailingUnitsCount" class="form-field__label">Trailing Units Count</label>
+            <input id="trailingUnitsCount" type="number" class="form-field__input"
+              formControlName="trailingUnitsCount" min="0" />
+          </div>
+
+          <div class="form-field">
+            <label for="totalOccupants" class="form-field__label">Total Occupants (V10)</label>
+            <input id="totalOccupants" type="number" class="form-field__input"
+              formControlName="totalOccupants" min="0" />
+          </div>
+
+          <div class="form-field">
+            <label for="specialFunctionCode" class="form-field__label">Special Function (V11)</label>
+            <select id="specialFunctionCode" class="form-field__select" formControlName="specialFunctionCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of SPECIAL_FUNCTION_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="emergencyUseCode" class="form-field__label">Emergency Use (V12)</label>
+            <select id="emergencyUseCode" class="form-field__select" formControlName="emergencyUseCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of EMERGENCY_USE_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ── 4. Traffic Controls (V7) ──────────────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Traffic Control Devices (V7) — select all that apply</legend>
+        <div class="checkbox-grid">
+          @for (entry of TRAFFIC_CONTROL_ENTRIES; track entry[0]) {
+            <label class="checkbox-item">
+              <input
+                type="checkbox"
+                class="checkbox-item__input"
+                [checked]="selectedTrafficControls().has(entry[0])"
+                (change)="toggleTrafficControl(entry[0])"
+              />
+              <span class="checkbox-item__label">{{ entry[0] }} — {{ entry[1] }}</span>
+            </label>
+          }
+        </div>
+      </fieldset>
+
+      <!-- ── 5. Pre-Crash / Roadway (V13–V18) ──────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Pre-Crash &amp; Roadway Conditions (V13–V18)</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="speedLimitMph" class="form-field__label">Speed Limit (mph) (V13)</label>
+            <input id="speedLimitMph" type="number" class="form-field__input"
+              formControlName="speedLimitMph" min="1" max="110" />
+          </div>
+
+          <div class="form-field">
+            <label for="directionOfTravelCode" class="form-field__label">Direction of Travel (V13)</label>
+            <select id="directionOfTravelCode" class="form-field__select" formControlName="directionOfTravelCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of DIRECTION_OF_TRAVEL_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="trafficwayTravelDirCode" class="form-field__label">Trafficway Description (V14)</label>
+            <select id="trafficwayTravelDirCode" class="form-field__select" formControlName="trafficwayTravelDirCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of TRAFFICWAY_TRAVEL_DIR_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="trafficwayDividedCode" class="form-field__label">Trafficway Divided (V15)</label>
+            <select id="trafficwayDividedCode" class="form-field__select" formControlName="trafficwayDividedCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of TRAFFICWAY_DIVIDED_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="trafficwayBarrierCode" class="form-field__label">Median Barrier</label>
+            <select id="trafficwayBarrierCode" class="form-field__select" formControlName="trafficwayBarrierCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of TRAFFICWAY_BARRIER_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="trafficwayHovHotCode" class="form-field__label">HOV / HOT Lane</label>
+            <select id="trafficwayHovHotCode" class="form-field__select" formControlName="trafficwayHovHotCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of YES_NO_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="trafficwayHovCrashFlg" class="form-field__label">HOV Crash in Lane</label>
+            <select id="trafficwayHovCrashFlg" class="form-field__select" formControlName="trafficwayHovCrashFlg">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of YES_NO_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="totalThroughLanes" class="form-field__label">Total Through Lanes</label>
+            <input id="totalThroughLanes" type="number" class="form-field__input"
+              formControlName="totalThroughLanes" min="0" />
+          </div>
+
+          <div class="form-field">
+            <label for="totalAuxiliaryLanes" class="form-field__label">Total Auxiliary Lanes</label>
+            <input id="totalAuxiliaryLanes" type="number" class="form-field__input"
+              formControlName="totalAuxiliaryLanes" min="0" />
+          </div>
+
+          <div class="form-field">
+            <label for="roadwayAlignmentCode" class="form-field__label">Roadway Alignment (V16)</label>
+            <select id="roadwayAlignmentCode" class="form-field__select" formControlName="roadwayAlignmentCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of ROADWAY_ALIGNMENT_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="roadwayGradeCode" class="form-field__label">Roadway Grade (V17)</label>
+            <select id="roadwayGradeCode" class="form-field__select" formControlName="roadwayGradeCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of ROADWAY_GRADE_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="maneuverCode" class="form-field__label">Pre-Crash Maneuver (V18)</label>
+            <select id="maneuverCode" class="form-field__select" formControlName="maneuverCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of MANEUVER_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ── 6. Crash Event Sequence (V19–V21) ──────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Crash Event Sequence (V19–V21)</legend>
+
+        <p class="form-section__sub">Sequence of Events (V19) — select all that apply</p>
+        <div class="checkbox-grid">
+          @for (entry of HARMFUL_EVENT_ENTRIES; track entry[0]) {
+            <label class="checkbox-item">
+              <input
+                type="checkbox"
+                class="checkbox-item__input"
+                [checked]="selectedSequenceEvents().has(entry[0])"
+                (change)="toggleSequenceEvent(entry[0])"
+              />
+              <span class="checkbox-item__label">{{ entry[0] }} — {{ entry[1] }}</span>
+            </label>
+          }
+        </div>
+
+        <div class="form-grid" style="margin-top: var(--space-4)">
+          <div class="form-field">
+            <label for="mostHarmfulEventCode" class="form-field__label">Most Harmful Event (V20)</label>
+            <select id="mostHarmfulEventCode" class="form-field__select" formControlName="mostHarmfulEventCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of HARMFUL_EVENT_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- ── 7. Damage (V22–V23) ────────────────────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Damage (V22–V23)</legend>
+
+        <p class="form-section__sub">Areas of Damage (V22) — select all that apply</p>
+        <div class="checkbox-grid">
+          @for (entry of DAMAGE_AREA_ENTRIES; track entry[0]) {
+            <label class="checkbox-item">
+              <input
+                type="checkbox"
+                class="checkbox-item__input"
+                [checked]="selectedDamageAreas().has(entry[0])"
+                (change)="toggleDamageArea(entry[0])"
+              />
+              <span class="checkbox-item__label">{{ entry[0] }} — {{ entry[1] }}</span>
+            </label>
+          }
+        </div>
+
+        <div class="form-grid" style="margin-top: var(--space-4)">
+          <div class="form-field">
+            <label for="damageInitialContact" class="form-field__label">Initial Contact Point (clock position)</label>
+            <select id="damageInitialContact" class="form-field__select" formControlName="damageInitialContact">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of DAMAGE_AREA_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="damageExtentCode" class="form-field__label">Extent of Damage (V23)</label>
+            <select id="damageExtentCode" class="form-field__select" formControlName="damageExtentCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of DAMAGE_EXTENT_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- ── 8. Post-Crash (V24) / Contributing ────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Post-Crash &amp; Contributing (V24)</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="hitAndRunCode" class="form-field__label">Hit and Run (V24)</label>
+            <select id="hitAndRunCode" class="form-field__select" formControlName="hitAndRunCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of HIT_AND_RUN_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="towedCode" class="form-field__label">Vehicle Towed</label>
+            <select id="towedCode" class="form-field__select" formControlName="towedCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of TOWED_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="contributingCircCode" class="form-field__label">Contributing Circumstance (V19)</label>
+            <select id="contributingCircCode" class="form-field__select" formControlName="contributingCircCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of CONTRIBUTING_CIRC_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ── Action bar ─────────────────────────────────────────────────────── -->
+      <div class="form-actions">
+        <button type="button" class="btn btn--ghost" (click)="onCancel()" [disabled]="saving()">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn--primary" [disabled]="saving()" [attr.aria-busy]="saving()">
+          @if (saving()) {
+            <span class="spinner spinner--sm" aria-hidden="true"></span>
+            Saving…
+          } @else {
+            {{ isEditMode() ? 'Save Changes' : 'Add Vehicle' }}
+          }
+        </button>
+      </div>
+
+    </form>
+  }
+
+</div>

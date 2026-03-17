@@ -99,16 +99,34 @@ See [CRASH.md](CRASH.md) for full implementation reference, module structure, AP
 
 ---
 
-## Sprint Plan
+## Backend Sprint Plan
 
 | Sprint | Scope | Status |
 |---|---|---|
 | **Sprint 1** | auth-service — Firebase login, JWT, refresh-token rotation, user CRUD, roles, audit logging, Testcontainers integration tests | ✅ Complete |
 | **Sprint 2** | crash-service — crash CRUD + vehicle CRUD + roadway upsert + all 6 multi-value child tables (weather, surface, CCR, TCD, damage area, sequence-of-events), Flyway schema, Testcontainers integration tests | ✅ Complete |
 | **Sprint 3** | crash-service — person (P1–P27): `PERSON_TBL` + `PERSON_AIRBAG_TBL`, `PERSON_DRIVER_ACTION_TBL`, `PERSON_DL_RESTRICTION_TBL`, `PERSON_DRUG_TEST_RESULT_TBL`; conditional sections (`FATAL_SECTION_TBL`, `NON_MOTORIST_TBL`, `LARGE_VEHICLE_TBL`); vehicle automation (`VEHICLE_AUTOMATION_TBL`) | ✅ Complete |
-| **Sprint 4** | Audit logging enhancements, MMUCC validation rules, reference-service (lookup codes API) | 🔲 Not started |
-| **Sprint 5** | report-service, CSV/Excel export | 🔲 Not started |
+| **Sprint 4** | Audit log timeline enhancements, MMUCC validation rules V-01–V-14 (crash, vehicle, person) | ✅ Complete |
+| **Sprint 5** | reference-service — read-only lookup codes API (`REF_*` / Oracle `LOOKUP_CODE_VALUES_TBL`) | 🔲 Not started |
+| **Sprint 6** | report-service — filtered queries, CSV/Excel export via Apache POI | 🔲 Not started |
 
-> **Note:** Roadway and all crash/vehicle child tables were completed in Sprint 2, ahead of the original Sprint 3 schedule. Sprint 3 also included Vehicle Automation (DV1) ahead of schedule.
+> Roadway and all crash/vehicle child tables were completed in Sprint 2. Sprint 3 included Vehicle Automation (DV1) ahead of schedule. The full create-crash → add-vehicle → add-person flow is working end-to-end.
 
-The full create crash → add vehicle → add person flow is now working end-to-end, unblocking Angular Sprint 2+ development.
+---
+
+## Frontend Sprint Plan
+
+The Angular app is developed in phases that build on the backend sprints above.
+
+| Phase | Scope | Status |
+|---|---|---|
+| **Phase 1** | Login (Firebase SSO + email/password), authenticated shell (nav, sidebar, RBAC-aware links) | ✅ Complete |
+| **Phase 2** | Crash list — filter bar, sort, pagination, URL query-param state, skeleton shimmer | ✅ Complete |
+| **Phase 3** | Crash detail — 5-tab read-only view (Overview, Vehicles, Persons, Roadway, Audit) | ✅ Complete |
+| **Phase 3a** | Crash detail — all 115 MMUCC fields displayed with `N — Description` rendering via `mmucc-lookup.ts`; Fatal, NonMotorist, Large Vehicle, Automation sections | ✅ Complete |
+| **Phase 4** | Crash entry form (C1–C27) — create (`POST /crashes`) and edit (`PUT /crashes/{id}`) modes, reactive form, multi-value checkbox grids, inline validation | ✅ Complete |
+| **Phase 5** | Vehicle entry form (V1–V24) — add/edit vehicle (`POST`/`PUT /crashes/{id}/vehicles`), 8 fieldset sections, traffic control / damage area / sequence event checkbox grids | ✅ Complete |
+| **Phase 6** | Person entry form (P1–P27) — add/edit person, conditional fatal/non-motorist sub-sections | 🔲 Not started |
+| **Phase 7** | Roadway entry form (R1–R16) | 🔲 Not started |
+| **Phase 8** | Dashboard (counts, trends, top counties), delete crash/vehicle/person, admin user management | 🔲 Not started |
+| **Phase 9** | Reports — filtered exports (CSV/PDF) driven by report-service | 🔲 Not started |

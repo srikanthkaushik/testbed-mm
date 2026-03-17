@@ -1,0 +1,531 @@
+<div class="form-page">
+
+  <!-- ── Back link ────────────────────────────────────────────────────────── -->
+  @if (isEditMode()) {
+    <a [routerLink]="['/crashes', crashId()]" class="form__back">
+      &#8592; Back to Crash Detail
+    </a>
+  } @else {
+    <a routerLink="/crashes" class="form__back">
+      &#8592; Back to Crashes
+    </a>
+  }
+
+  <!-- ── Page header ──────────────────────────────────────────────────────── -->
+  <h1 class="form__title">{{ pageTitle() }}</h1>
+
+  <!-- ── Loading state ────────────────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="form__loading">
+      <span class="spinner" aria-hidden="true"></span>
+      Loading crash record…
+    </div>
+  }
+
+  <!-- ── Error alert ───────────────────────────────────────────────────────── -->
+  @if (errorMsg()) {
+    <app-alert [message]="errorMsg()" type="error" />
+  }
+
+  <!-- ── Form ──────────────────────────────────────────────────────────────── -->
+  @if (!loading()) {
+    <form
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      novalidate
+      class="crash-form"
+    >
+
+      <!-- ── 1. Basic Information ──────────────────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Basic Information</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="crashDate" class="form-field__label">
+              Crash Date <span class="form-field__required" aria-hidden="true">*</span>
+            </label>
+            <input
+              id="crashDate"
+              type="date"
+              class="form-field__input"
+              formControlName="crashDate"
+              [class.form-field__input--invalid]="form.controls.crashDate.invalid && form.controls.crashDate.touched"
+              aria-required="true"
+            />
+            @if (form.controls.crashDate.invalid && form.controls.crashDate.touched) {
+              <span class="form-field__error" role="alert">Crash date is required.</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label for="crashTime" class="form-field__label">Crash Time</label>
+            <input
+              id="crashTime"
+              type="time"
+              class="form-field__input"
+              formControlName="crashTime"
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="crashIdentifier" class="form-field__label">Case / Identifier</label>
+            <input
+              id="crashIdentifier"
+              type="text"
+              class="form-field__input"
+              formControlName="crashIdentifier"
+              placeholder="e.g. 2024-TN-00123"
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="dayOfWeekCode" class="form-field__label">Day of Week</label>
+            <select id="dayOfWeekCode" class="form-field__select" formControlName="dayOfWeekCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of DAY_OF_WEEK_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="crashSeverityCode" class="form-field__label">Crash Severity (C3)</label>
+            <select id="crashSeverityCode" class="form-field__select" formControlName="crashSeverityCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of CRASH_SEVERITY_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="sourceOfInfoCode" class="form-field__label">Source of Information (C10)</label>
+            <select id="sourceOfInfoCode" class="form-field__select" formControlName="sourceOfInfoCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of SOURCE_OF_INFO_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ── 2. Location ───────────────────────────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Location</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="countyFipsCode" class="form-field__label">County FIPS Code</label>
+            <input id="countyFipsCode" type="text" class="form-field__input"
+              formControlName="countyFipsCode" placeholder="e.g. 47037" autocomplete="off" />
+          </div>
+
+          <div class="form-field">
+            <label for="countyName" class="form-field__label">County Name</label>
+            <input id="countyName" type="text" class="form-field__input"
+              formControlName="countyName" placeholder="e.g. Davidson" autocomplete="off" />
+          </div>
+
+          <div class="form-field">
+            <label for="cityPlaceCode" class="form-field__label">City/Place Code</label>
+            <input id="cityPlaceCode" type="text" class="form-field__input"
+              formControlName="cityPlaceCode" placeholder="Census place code" autocomplete="off" />
+          </div>
+
+          <div class="form-field">
+            <label for="cityPlaceName" class="form-field__label">City/Place Name</label>
+            <input id="cityPlaceName" type="text" class="form-field__input"
+              formControlName="cityPlaceName" placeholder="e.g. Nashville" autocomplete="off" />
+          </div>
+
+          <div class="form-field">
+            <label for="routeId" class="form-field__label">Route ID (C1)</label>
+            <input id="routeId" type="text" class="form-field__input"
+              formControlName="routeId" placeholder="e.g. I-40" autocomplete="off" />
+          </div>
+
+          <div class="form-field">
+            <label for="routeTypeCode" class="form-field__label">Route Type</label>
+            <select id="routeTypeCode" class="form-field__select" formControlName="routeTypeCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of ROUTE_TYPE_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="routeDirectionCode" class="form-field__label">Route Direction (C5)</label>
+            <select id="routeDirectionCode" class="form-field__select" formControlName="routeDirectionCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of ROUTE_DIRECTION_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="distanceFromRefMiles" class="form-field__label">Distance from Reference (mi)</label>
+            <input id="distanceFromRefMiles" type="number" class="form-field__input"
+              formControlName="distanceFromRefMiles" min="0" step="0.01" />
+          </div>
+
+          <div class="form-field">
+            <label for="refPointDirectionCode" class="form-field__label">Ref. Point Direction</label>
+            <select id="refPointDirectionCode" class="form-field__select" formControlName="refPointDirectionCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of REF_POINT_DIRECTION_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="latitude" class="form-field__label">Latitude (C6)</label>
+            <input id="latitude" type="number" class="form-field__input"
+              formControlName="latitude" placeholder="e.g. 36.165" step="0.000001" />
+          </div>
+
+          <div class="form-field">
+            <label for="longitude" class="form-field__label">Longitude (C6)</label>
+            <input id="longitude" type="number" class="form-field__input"
+              formControlName="longitude" placeholder="e.g. -86.784" step="0.000001" />
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ── 3. Crash Characteristics ─────────────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Crash Characteristics</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="crashTypeCode" class="form-field__label">Crash Type (C2)</label>
+            <select id="crashTypeCode" class="form-field__select" formControlName="crashTypeCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of CRASH_TYPE_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="firstHarmfulEventCode" class="form-field__label">First Harmful Event (C7)</label>
+            <select id="firstHarmfulEventCode" class="form-field__select" formControlName="firstHarmfulEventCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of HARMFUL_EVENT_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="locFirstHarmfulEvent" class="form-field__label">Location of First Harmful Event (C8)</label>
+            <select id="locFirstHarmfulEvent" class="form-field__select" formControlName="locFirstHarmfulEvent">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of LOC_FIRST_HARMFUL_EVENT_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="mannerCollisionCode" class="form-field__label">Manner of Collision (C9)</label>
+            <select id="mannerCollisionCode" class="form-field__select" formControlName="mannerCollisionCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of MANNER_COLLISION_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="lightConditionCode" class="form-field__label">Light Condition (C12)</label>
+            <select id="lightConditionCode" class="form-field__select" formControlName="lightConditionCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of LIGHT_CONDITION_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ── 4. Conditions ─────────────────────────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Conditions</legend>
+
+        <p class="form-section__sub">Weather Conditions (C11) — select all that apply</p>
+        <div class="checkbox-grid">
+          @for (entry of WEATHER_CONDITION_ENTRIES; track entry[0]) {
+            <label class="checkbox-item">
+              <input
+                type="checkbox"
+                class="checkbox-item__input"
+                [checked]="selectedWeather().has(entry[0])"
+                (change)="toggleWeather(entry[0])"
+              />
+              <span class="checkbox-item__label">{{ entry[0] }} — {{ entry[1] }}</span>
+            </label>
+          }
+        </div>
+
+        <p class="form-section__sub">Roadway Surface Conditions (C13) — select all that apply</p>
+        <div class="checkbox-grid">
+          @for (entry of SURFACE_CONDITION_ENTRIES; track entry[0]) {
+            <label class="checkbox-item">
+              <input
+                type="checkbox"
+                class="checkbox-item__input"
+                [checked]="selectedSurface().has(entry[0])"
+                (change)="toggleSurface(entry[0])"
+              />
+              <span class="checkbox-item__label">{{ entry[0] }} — {{ entry[1] }}</span>
+            </label>
+          }
+        </div>
+      </fieldset>
+
+      <!-- ── 5. Junction & Intersection ────────────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Junction &amp; Intersection</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="junctionInterchangeFlg" class="form-field__label">Junction / Interchange Type (C14)</label>
+            <select id="junctionInterchangeFlg" class="form-field__select" formControlName="junctionInterchangeFlg">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of JUNCTION_TYPE_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="junctionLocationCode" class="form-field__label">Junction Location Code</label>
+            <input id="junctionLocationCode" type="number" class="form-field__input"
+              formControlName="junctionLocationCode" min="0" />
+          </div>
+
+          <div class="form-field">
+            <label for="intersectionApproaches" class="form-field__label">Intersection Approaches (C15)</label>
+            <select id="intersectionApproaches" class="form-field__select" formControlName="intersectionApproaches">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of INTERSECTION_APPROACHES_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="intersectionGeometryCode" class="form-field__label">Intersection Geometry (C15)</label>
+            <select id="intersectionGeometryCode" class="form-field__select" formControlName="intersectionGeometryCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of INTERSECTION_GEOMETRY_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="intersectionTrafficCtl" class="form-field__label">Intersection Traffic Control (C15)</label>
+            <select id="intersectionTrafficCtl" class="form-field__select" formControlName="intersectionTrafficCtl">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of INTERSECTION_TRAFFIC_CTL_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ── 6. Work Zone ───────────────────────────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Work Zone</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="workZoneRelatedCode" class="form-field__label">Work Zone Related (C27)</label>
+            <select id="workZoneRelatedCode" class="form-field__select" formControlName="workZoneRelatedCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of YES_NO_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          @if (form.controls.workZoneRelatedCode.value === 1) {
+            <div class="form-field">
+              <label for="workZoneLocationCode" class="form-field__label">Work Zone Location</label>
+              <select id="workZoneLocationCode" class="form-field__select" formControlName="workZoneLocationCode">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of WORK_ZONE_LOCATION_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="workZoneTypeCode" class="form-field__label">Work Zone Type</label>
+              <select id="workZoneTypeCode" class="form-field__select" formControlName="workZoneTypeCode">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of WORK_ZONE_TYPE_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="workZoneWorkersCode" class="form-field__label">Workers Present</label>
+              <select id="workZoneWorkersCode" class="form-field__select" formControlName="workZoneWorkersCode">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of WORK_ZONE_WORKERS_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="workZoneLawEnfCode" class="form-field__label">Law Enforcement Present</label>
+              <select id="workZoneLawEnfCode" class="form-field__select" formControlName="workZoneLawEnfCode">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of WORK_ZONE_LAW_ENF_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+          }
+
+        </div>
+      </fieldset>
+
+      <!-- ── 7. Involvement ─────────────────────────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Involvement</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="alcoholInvolvementCode" class="form-field__label">Alcohol Involvement (C17)</label>
+            <select id="alcoholInvolvementCode" class="form-field__select" formControlName="alcoholInvolvementCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of INVOLVEMENT_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="drugInvolvementCode" class="form-field__label">Drug Involvement (C18)</label>
+            <select id="drugInvolvementCode" class="form-field__select" formControlName="drugInvolvementCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of INVOLVEMENT_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="schoolBusRelatedCode" class="form-field__label">School Bus Related (C25)</label>
+            <select id="schoolBusRelatedCode" class="form-field__select" formControlName="schoolBusRelatedCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of YES_NO_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ── 8. Counts ──────────────────────────────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Counts</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="numMotorVehicles" class="form-field__label">Motor Vehicles (C19)</label>
+            <input id="numMotorVehicles" type="number" class="form-field__input"
+              formControlName="numMotorVehicles" min="0" />
+          </div>
+
+          <div class="form-field">
+            <label for="numMotorists" class="form-field__label">Motorists (C20)</label>
+            <input id="numMotorists" type="number" class="form-field__input"
+              formControlName="numMotorists" min="0" />
+          </div>
+
+          <div class="form-field">
+            <label for="numNonMotorists" class="form-field__label">Non-Motorists (C21)</label>
+            <input id="numNonMotorists" type="number" class="form-field__input"
+              formControlName="numNonMotorists" min="0" />
+          </div>
+
+          <div class="form-field">
+            <label for="numNonFatallyInjured" class="form-field__label">Non-Fatally Injured (C22)</label>
+            <input id="numNonFatallyInjured" type="number" class="form-field__input"
+              formControlName="numNonFatallyInjured" min="0" />
+          </div>
+
+          <div class="form-field">
+            <label for="numFatalities" class="form-field__label">Fatalities (C23)</label>
+            <input id="numFatalities" type="number" class="form-field__input"
+              formControlName="numFatalities" min="0" />
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ── 9. Contributing Circumstances ─────────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Contributing Circumstances (C16) — select all that apply</legend>
+        <div class="checkbox-grid">
+          @for (entry of CONTRIBUTING_CIRC_ENTRIES; track entry[0]) {
+            <label class="checkbox-item">
+              <input
+                type="checkbox"
+                class="checkbox-item__input"
+                [checked]="selectedContrib().has(entry[0])"
+                (change)="toggleContrib(entry[0])"
+              />
+              <span class="checkbox-item__label">{{ entry[0] }} — {{ entry[1] }}</span>
+            </label>
+          }
+        </div>
+      </fieldset>
+
+      <!-- ── Action bar ─────────────────────────────────────────────────────── -->
+      <div class="form-actions">
+        <button
+          type="button"
+          class="btn btn--ghost"
+          (click)="onCancel()"
+          [disabled]="saving()"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="btn btn--primary"
+          [disabled]="saving()"
+          [attr.aria-busy]="saving()"
+        >
+          @if (saving()) {
+            <span class="spinner spinner--sm" aria-hidden="true"></span>
+            Saving…
+          } @else {
+            {{ isEditMode() ? 'Save Changes' : 'Create Crash' }}
+          }
+        </button>
+      </div>
+
+    </form>
+  }
+
+</div>
