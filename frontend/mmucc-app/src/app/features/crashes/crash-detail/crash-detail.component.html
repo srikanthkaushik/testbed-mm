@@ -350,6 +350,132 @@
                     </div>
                   }
 
+                  <!-- LV1–LV11: Large Vehicle / HazMat -->
+                  @if (v.largeVehicle) {
+                    <div class="field-section conditional-section conditional-section--lv">
+                      <h3 class="field-section__title">Large Vehicle / HazMat (LV1–LV11)</h3>
+                      <dl class="field-list">
+                        <div class="field-list__row">
+                          <dt>CMV License Status</dt>
+                          <dd>{{ label(v.largeVehicle.cmvLicenseStatusCode, CMV_LICENSE_STATUS) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>CDL Compliance</dt>
+                          <dd>{{ label(v.largeVehicle.cdlComplianceCode, CDL_COMPLIANCE) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>Carrier ID Type</dt>
+                          <dd>{{ label(v.largeVehicle.carrierIdTypeCode, CARRIER_ID_TYPE) }}</dd>
+                        </div>
+                        @if (v.largeVehicle.carrierIdNumber) {
+                          <div class="field-list__row">
+                            <dt>Carrier ID Number</dt>
+                            <dd>{{ v.largeVehicle.carrierIdNumber }}</dd>
+                          </div>
+                        }
+                        @if (v.largeVehicle.carrierName) {
+                          <div class="field-list__row">
+                            <dt>Carrier Name</dt>
+                            <dd>{{ v.largeVehicle.carrierName }}</dd>
+                          </div>
+                        }
+                        @if (v.largeVehicle.carrierCity || v.largeVehicle.carrierState) {
+                          <div class="field-list__row">
+                            <dt>Carrier City/State</dt>
+                            <dd>{{ v.largeVehicle.carrierCity ?? '' }}{{ v.largeVehicle.carrierCity && v.largeVehicle.carrierState ? ', ' : '' }}{{ v.largeVehicle.carrierState ?? '' }}</dd>
+                          </div>
+                        }
+                        <div class="field-list__row">
+                          <dt>Carrier Type</dt>
+                          <dd>{{ label(v.largeVehicle.carrierTypeCode, CARRIER_TYPE) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>Vehicle Configuration</dt>
+                          <dd>{{ label(v.largeVehicle.vehicleConfigCode, VEHICLE_CONFIG) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>Oversize/Overweight Permit</dt>
+                          <dd>{{ label(v.largeVehicle.vehiclePermittedCode, VEHICLE_PERMITTED) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>Cargo Body Type</dt>
+                          <dd>{{ label(v.largeVehicle.cargoBodyTypeCode, CARGO_BODY_TYPE) }}</dd>
+                        </div>
+                        @if (v.largeVehicle.hmId || v.largeVehicle.hmClass) {
+                          <div class="field-list__row">
+                            <dt>HazMat ID / Class</dt>
+                            <dd>{{ v.largeVehicle.hmId ?? '—' }} / {{ v.largeVehicle.hmClass ?? '—' }}</dd>
+                          </div>
+                        }
+                        <div class="field-list__row">
+                          <dt>HazMat Released</dt>
+                          <dd>{{ label(v.largeVehicle.hmReleasedCode, HM_RELEASED) }}</dd>
+                        </div>
+                        @if (v.largeVehicle.axlesTractor != null) {
+                          <div class="field-list__row">
+                            <dt>Axles — Tractor</dt>
+                            <dd>{{ v.largeVehicle.axlesTractor }}</dd>
+                          </div>
+                        }
+                        @if (v.largeVehicle.trailer1Plate || v.largeVehicle.trailer1Vin) {
+                          <div class="field-list__row">
+                            <dt>Trailer 1</dt>
+                            <dd>{{ v.largeVehicle.trailer1Year ?? '' }} {{ v.largeVehicle.trailer1Make ?? '' }} {{ v.largeVehicle.trailer1Model ?? '' }}</dd>
+                          </div>
+                        }
+                        @if (v.largeVehicle.trailer2Plate || v.largeVehicle.trailer2Vin) {
+                          <div class="field-list__row">
+                            <dt>Trailer 2</dt>
+                            <dd>{{ v.largeVehicle.trailer2Year ?? '' }} {{ v.largeVehicle.trailer2Make ?? '' }} {{ v.largeVehicle.trailer2Model ?? '' }}</dd>
+                          </div>
+                        }
+                        @if (v.largeVehicle.trailer3Plate || v.largeVehicle.trailer3Vin) {
+                          <div class="field-list__row">
+                            <dt>Trailer 3</dt>
+                            <dd>{{ v.largeVehicle.trailer3Year ?? '' }} {{ v.largeVehicle.trailer3Make ?? '' }} {{ v.largeVehicle.trailer3Model ?? '' }}</dd>
+                          </div>
+                        }
+                      </dl>
+                      @if (v.largeVehicle.specialSizing.length) {
+                        <h4 class="conditional-subsection__title">Special Sizing (LV11)</h4>
+                        <ul class="code-list">
+                          @for (s of v.largeVehicle.specialSizing; track s.sequenceNum) {
+                            <li>{{ label(s.code, LV_SPECIAL_SIZING) }}</li>
+                          }
+                        </ul>
+                      }
+                    </div>
+                  }
+
+                  <!-- DV1: Vehicle Automation -->
+                  @if (v.automation) {
+                    <div class="field-section conditional-section conditional-section--dv">
+                      <h3 class="field-section__title">Driving Automation (DV1)</h3>
+                      <dl class="field-list">
+                        <div class="field-list__row">
+                          <dt>Automation Present</dt>
+                          <dd>{{ label(v.automation.automationPresentCode, AUTOMATION_PRESENT) }}</dd>
+                        </div>
+                      </dl>
+                      @if (v.automation.levelsInVehicle.length) {
+                        <h4 class="conditional-subsection__title">Levels Available in Vehicle</h4>
+                        <ul class="code-list">
+                          @for (lv of v.automation.levelsInVehicle; track lv.sequenceNum) {
+                            <li>{{ label(lv.code, AUTOMATION_LEVEL) }}</li>
+                          }
+                        </ul>
+                      }
+                      @if (v.automation.levelsEngaged.length) {
+                        <h4 class="conditional-subsection__title">Levels Engaged at Crash</h4>
+                        <ul class="code-list">
+                          @for (le of v.automation.levelsEngaged; track le.sequenceNum) {
+                            <li>{{ label(le.code, AUTOMATION_LEVEL) }}</li>
+                          }
+                        </ul>
+                      }
+                    </div>
+                  }
+
                 </div>
               </div>
             }
@@ -648,6 +774,86 @@
                           </div>
                         }
                       </dl>
+                    </div>
+                  }
+
+                  <!-- F1–F3: Fatal Section -->
+                  @if (p.fatalSection) {
+                    <div class="field-section conditional-section conditional-section--fatal">
+                      <h3 class="field-section__title">Fatal Section (F1–F3)</h3>
+                      <dl class="field-list">
+                        <div class="field-list__row">
+                          <dt>Avoidance Maneuver</dt>
+                          <dd>{{ label(p.fatalSection.avoidanceManeuverCode, MANEUVER) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>Alcohol Test Type</dt>
+                          <dd>{{ label(p.fatalSection.alcoholTestTypeCode, ALCOHOL_TEST_TYPE) }}</dd>
+                        </div>
+                        @if (p.fatalSection.alcoholTestResult) {
+                          <div class="field-list__row">
+                            <dt>Alcohol Test Result</dt>
+                            <dd>{{ p.fatalSection.alcoholTestResult }}</dd>
+                          </div>
+                        }
+                        <div class="field-list__row">
+                          <dt>Drug Test Type</dt>
+                          <dd>{{ label(p.fatalSection.drugTestTypeCode, DRUG_TEST_TYPE) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>Drug Test Result</dt>
+                          <dd>{{ label(p.fatalSection.drugTestResult, DRUG_TEST_RESULT) }}</dd>
+                        </div>
+                      </dl>
+                    </div>
+                  }
+
+                  <!-- NM1–NM6: Non-Motorist Section -->
+                  @if (p.nonMotorist) {
+                    <div class="field-section conditional-section conditional-section--nm">
+                      <h3 class="field-section__title">Non-Motorist (NM1–NM6)</h3>
+                      <dl class="field-list">
+                        @if (p.nonMotorist.strikingVehicleUnit != null) {
+                          <div class="field-list__row">
+                            <dt>Striking Vehicle Unit</dt>
+                            <dd>Unit {{ p.nonMotorist.strikingVehicleUnit }}</dd>
+                          </div>
+                        }
+                        <div class="field-list__row">
+                          <dt>Action at Crash</dt>
+                          <dd>{{ label(p.nonMotorist.actionCircCode, NM_ACTION_CIRC) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>Origin/Destination</dt>
+                          <dd>{{ label(p.nonMotorist.originDestinationCode, NM_ORIGIN_DESTINATION) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>Contributing Action 1</dt>
+                          <dd>{{ label(p.nonMotorist.contributingAction1, NM_CONTRIBUTING_ACTION) }}</dd>
+                        </div>
+                        @if (p.nonMotorist.contributingAction2 != null) {
+                          <div class="field-list__row">
+                            <dt>Contributing Action 2</dt>
+                            <dd>{{ label(p.nonMotorist.contributingAction2, NM_CONTRIBUTING_ACTION) }}</dd>
+                          </div>
+                        }
+                        <div class="field-list__row">
+                          <dt>Location at Crash</dt>
+                          <dd>{{ label(p.nonMotorist.locationAtCrashCode, NM_LOCATION_AT_CRASH) }}</dd>
+                        </div>
+                        <div class="field-list__row">
+                          <dt>Initial Contact Point</dt>
+                          <dd>{{ label(p.nonMotorist.initialContactPoint, NM_CONTACT_POINT) }}</dd>
+                        </div>
+                      </dl>
+                      @if (p.nonMotorist.safetyEquipment.length) {
+                        <h4 class="conditional-subsection__title">Safety Equipment Used (NM6)</h4>
+                        <ul class="code-list">
+                          @for (e of p.nonMotorist.safetyEquipment; track e.sequenceNum) {
+                            <li>{{ label(e.code, NM_SAFETY_EQUIPMENT) }}</li>
+                          }
+                        </ul>
+                      }
                     </div>
                   }
 

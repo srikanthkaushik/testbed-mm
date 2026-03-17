@@ -7,6 +7,7 @@ import gov.nhtsa.mmucc.crash.dto.*;
 import gov.nhtsa.mmucc.crash.entity.*;
 import gov.nhtsa.mmucc.crash.mapper.CrashMapper;
 import gov.nhtsa.mmucc.crash.repository.*;
+import gov.nhtsa.mmucc.crash.entity.*;
 import gov.nhtsa.mmucc.crash.validation.MmuccValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,6 +35,14 @@ public class CrashService {
     private final PersonDriverActionRepository driverActionRepo;
     private final PersonDlRestrictionRepository dlRestrictionRepo;
     private final PersonDrugTestResultRepository drugTestRepo;
+    private final FatalSectionRepository fatalSectionRepo;
+    private final NonMotoristRepository nonMotoristRepo;
+    private final NonMotoristSafetyEquipmentRepository nmSafetyEquipmentRepo;
+    private final LargeVehicleRepository largeVehicleRepo;
+    private final LvSpecialSizingRepository lvSpecialSizingRepo;
+    private final VehicleAutomationRepository vehicleAutomationRepo;
+    private final VehicleAutomationLevelInVehicleRepository vatInVehicleRepo;
+    private final VehicleAutomationLevelEngagedRepository vatEngagedRepo;
     private final CrashMapper crashMapper;
     private final AuditLogService auditLogService;
     private final MmuccValidator validator;
@@ -52,6 +61,14 @@ public class CrashService {
                         PersonDriverActionRepository driverActionRepo,
                         PersonDlRestrictionRepository dlRestrictionRepo,
                         PersonDrugTestResultRepository drugTestRepo,
+                        FatalSectionRepository fatalSectionRepo,
+                        NonMotoristRepository nonMotoristRepo,
+                        NonMotoristSafetyEquipmentRepository nmSafetyEquipmentRepo,
+                        LargeVehicleRepository largeVehicleRepo,
+                        LvSpecialSizingRepository lvSpecialSizingRepo,
+                        VehicleAutomationRepository vehicleAutomationRepo,
+                        VehicleAutomationLevelInVehicleRepository vatInVehicleRepo,
+                        VehicleAutomationLevelEngagedRepository vatEngagedRepo,
                         CrashMapper crashMapper,
                         AuditLogService auditLogService,
                         MmuccValidator validator) {
@@ -69,6 +86,14 @@ public class CrashService {
         this.driverActionRepo = driverActionRepo;
         this.dlRestrictionRepo = dlRestrictionRepo;
         this.drugTestRepo = drugTestRepo;
+        this.fatalSectionRepo = fatalSectionRepo;
+        this.nonMotoristRepo = nonMotoristRepo;
+        this.nmSafetyEquipmentRepo = nmSafetyEquipmentRepo;
+        this.largeVehicleRepo = largeVehicleRepo;
+        this.lvSpecialSizingRepo = lvSpecialSizingRepo;
+        this.vehicleAutomationRepo = vehicleAutomationRepo;
+        this.vatInVehicleRepo = vatInVehicleRepo;
+        this.vatEngagedRepo = vatEngagedRepo;
         this.crashMapper = crashMapper;
         this.auditLogService = auditLogService;
         this.validator = validator;
@@ -255,6 +280,43 @@ public class CrashService {
         List<ChildCodeDto> se = sequenceEventRepo.findByVehicleIdOrderBySequenceNum(v.getVehicleId())
                 .stream().map(e -> new ChildCodeDto(e.getSequenceNum(), e.getEventCode())).toList();
 
+        LargeVehicleResponse largeVehicle = largeVehicleRepo.findByVehicleId(v.getVehicleId())
+                .map(lv -> {
+                    List<ChildCodeDto> sizing = lvSpecialSizingRepo.findByLvhIdOrderBySequenceNum(lv.getId())
+                            .stream().map(e -> new ChildCodeDto(e.getSequenceNum(), e.getSizingCode())).toList();
+                    return new LargeVehicleResponse(
+                            lv.getId(), lv.getVehicleId(), lv.getCrashId(),
+                            lv.getCmvLicenseStatusCode(), lv.getCdlComplianceCode(),
+                            lv.getTrailer1Plate(), lv.getTrailer2Plate(), lv.getTrailer3Plate(),
+                            lv.getTrailer1Vin(), lv.getTrailer2Vin(), lv.getTrailer3Vin(),
+                            lv.getTrailer1Make(), lv.getTrailer2Make(), lv.getTrailer3Make(),
+                            lv.getTrailer1Model(), lv.getTrailer2Model(), lv.getTrailer3Model(),
+                            lv.getTrailer1Year(), lv.getTrailer2Year(), lv.getTrailer3Year(),
+                            lv.getCarrierIdTypeCode(), lv.getCarrierCountryState(),
+                            lv.getCarrierIdNumber(), lv.getCarrierName(),
+                            lv.getCarrierStreet1(), lv.getCarrierStreet2(), lv.getCarrierCity(),
+                            lv.getCarrierState(), lv.getCarrierZip(), lv.getCarrierCountry(),
+                            lv.getCarrierTypeCode(),
+                            lv.getVehicleConfigCode(), lv.getVehiclePermittedCode(), lv.getCargoBodyTypeCode(),
+                            lv.getHmId(), lv.getHmClass(), lv.getHmReleasedCode(),
+                            lv.getAxlesTractor(), lv.getAxlesTrailer1(), lv.getAxlesTrailer2(), lv.getAxlesTrailer3(),
+                            sizing,
+                            lv.getAudit().getCreatedDt(), lv.getAudit().getModifiedDt());
+                }).orElse(null);
+
+        VehicleAutomationResponse automation = vehicleAutomationRepo.findByVehicleId(v.getVehicleId())
+                .map(va -> {
+                    List<ChildCodeDto> inVehicle = vatInVehicleRepo.findByVatIdOrderBySequenceNum(va.getId())
+                            .stream().map(e -> new ChildCodeDto(e.getSequenceNum(), e.getAutomationLevelCode())).toList();
+                    List<ChildCodeDto> engaged = vatEngagedRepo.findByVatIdOrderBySequenceNum(va.getId())
+                            .stream().map(e -> new ChildCodeDto(e.getSequenceNum(), e.getAutomationLevelCode())).toList();
+                    return new VehicleAutomationResponse(
+                            va.getId(), va.getVehicleId(), va.getCrashId(),
+                            va.getAutomationPresentCode(),
+                            inVehicle, engaged,
+                            va.getAudit().getCreatedDt(), va.getAudit().getModifiedDt());
+                }).orElse(null);
+
         return new VehicleResponse(
                 v.getVehicleId(), v.getCrashId(), v.getVin(),
                 v.getUnitTypeCode(), v.getUnitNumber(),
@@ -270,6 +332,7 @@ public class CrashService {
                 v.getDamageInitialContact(), v.getDamageExtentCode(), v.getMostHarmfulEventCode(),
                 v.getHitAndRunCode(), v.getTowedCode(), v.getContributingCircCode(),
                 tcs, da, se,
+                largeVehicle, automation,
                 v.getAudit().getCreatedDt(), v.getAudit().getModifiedDt()
         );
     }
@@ -284,6 +347,30 @@ public class CrashService {
                 .stream().map(e -> new ChildCodeDto(e.getSequenceNum(), e.getRestrictionCode())).toList();
         List<PersonDrugTestDto> drugTests = drugTestRepo.findByPersonIdOrderBySequenceNum(pid)
                 .stream().map(e -> new PersonDrugTestDto(e.getSequenceNum(), e.getResultCode())).toList();
+
+        FatalSectionResponse fatalSection = fatalSectionRepo.findByPersonId(pid)
+                .map(fs -> new FatalSectionResponse(
+                        fs.getId(), fs.getPersonId(), fs.getCrashId(),
+                        fs.getAvoidanceManeuverCode(),
+                        fs.getAlcoholTestTypeCode(), fs.getAlcoholTestResult(),
+                        fs.getDrugTestTypeCode(), fs.getDrugTestResult(),
+                        fs.getAudit().getCreatedDt(), fs.getAudit().getModifiedDt()))
+                .orElse(null);
+
+        NonMotoristResponse nonMotorist = nonMotoristRepo.findByPersonId(pid)
+                .map(nm -> {
+                    List<ChildCodeDto> equipment = nmSafetyEquipmentRepo.findByNmtIdOrderBySequenceNum(nm.getId())
+                            .stream().map(e -> new ChildCodeDto(e.getSequenceNum(), e.getEquipmentCode())).toList();
+                    return new NonMotoristResponse(
+                            nm.getId(), nm.getPersonId(), nm.getCrashId(),
+                            nm.getStrikingVehicleUnit(),
+                            nm.getActionCircCode(), nm.getOriginDestinationCode(),
+                            nm.getContributingAction1(), nm.getContributingAction2(),
+                            nm.getLocationAtCrashCode(), nm.getInitialContactPoint(),
+                            equipment,
+                            nm.getAudit().getCreatedDt(), nm.getAudit().getModifiedDt());
+                }).orElse(null);
+
         return new PersonResponse(
                 p.getPersonId(), p.getCrashId(), p.getVehicleId(),
                 p.getPersonName(),
@@ -306,6 +393,7 @@ public class CrashService {
                 p.getLeSuspectsDrug(), p.getDrugTestStatusCode(), p.getDrugTestTypeCode(), drugTests,
                 p.getTransportSourceCode(), p.getEmsAgencyId(), p.getEmsRunNumber(), p.getMedicalFacility(),
                 p.getInjuryAreaCode(), p.getInjuryDiagnosis(), p.getInjurySeverityCode(),
+                fatalSection, nonMotorist,
                 p.getAudit().getCreatedDt(), p.getAudit().getModifiedDt()
         );
     }

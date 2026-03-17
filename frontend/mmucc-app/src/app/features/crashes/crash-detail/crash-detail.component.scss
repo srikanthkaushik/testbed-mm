@@ -414,6 +414,27 @@
   color: var(--color-text);
 }
 
+// ── Conditional sections ─────────────────────────────────────────────────────
+
+.conditional-section {
+  border-left-width: 4px;
+  border-left-style: solid;
+
+  &--fatal { border-left-color: var(--color-error); }
+  &--nm    { border-left-color: var(--color-warning, #f59e0b); }
+  &--lv    { border-left-color: var(--color-primary); }
+  &--dv    { border-left-color: var(--color-success, #10b981); }
+}
+
+.conditional-subsection__title {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: var(--space-4) 0 var(--space-2);
+}
+
 // ── Screen reader only ───────────────────────────────────────────────────────
 
 .sr-only {

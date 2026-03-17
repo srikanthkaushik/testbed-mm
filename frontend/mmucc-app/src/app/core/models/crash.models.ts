@@ -96,6 +96,9 @@ export interface VehicleDetail {
   trafficControls: TrafficControl[];
   damageAreas: ChildCode[];
   sequenceEvents: ChildCode[];
+  // Conditional sections
+  largeVehicle: LargeVehicle | null;
+  automation: VehicleAutomation | null;
   createdDt: string | null;
   modifiedDt: string | null;
 }
@@ -186,6 +189,9 @@ export interface PersonDetail {
   injuryDiagnosis: string | null;
   // P27
   injurySeverityCode: number | null;
+  // Conditional sections
+  fatalSection: FatalSection | null;
+  nonMotorist: NonMotorist | null;
   createdDt: string | null;
   modifiedDt: string | null;
 }
@@ -222,6 +228,118 @@ export interface RoadwayDetail {
   crossStreetLanesCount: number | null;
   enteringVehiclesYear: number | null;
   enteringVehiclesAadt: number | null;
+  createdDt: string | null;
+  modifiedDt: string | null;
+}
+
+/** Fatal Section record nested inside PersonDetail (F1–F3). */
+export interface FatalSection {
+  id: number;
+  personId: number;
+  crashId: number;
+  // F1
+  avoidanceManeuverCode: number | null;
+  // F2
+  alcoholTestTypeCode: number | null;
+  alcoholTestResult: string | null;
+  // F3
+  drugTestTypeCode: number | null;
+  drugTestResult: number | null;
+  createdDt: string | null;
+  modifiedDt: string | null;
+}
+
+/** Non-Motorist record nested inside PersonDetail (NM1–NM6). */
+export interface NonMotorist {
+  id: number;
+  personId: number;
+  crashId: number;
+  // NM1
+  strikingVehicleUnit: number | null;
+  actionCircCode: number | null;
+  // NM2
+  originDestinationCode: number | null;
+  // NM3
+  contributingAction1: number | null;
+  contributingAction2: number | null;
+  // NM4
+  locationAtCrashCode: number | null;
+  // NM5
+  initialContactPoint: number | null;
+  // NM6
+  safetyEquipment: ChildCode[];
+  createdDt: string | null;
+  modifiedDt: string | null;
+}
+
+/** Large Vehicle / HazMat record nested inside VehicleDetail (LV1–LV11). */
+export interface LargeVehicle {
+  id: number;
+  vehicleId: number;
+  crashId: number;
+  // LV1
+  cmvLicenseStatusCode: number | null;
+  cdlComplianceCode: number | null;
+  // LV2 – trailers
+  trailer1Plate: string | null;
+  trailer2Plate: string | null;
+  trailer3Plate: string | null;
+  trailer1Vin: string | null;
+  trailer2Vin: string | null;
+  trailer3Vin: string | null;
+  trailer1Make: string | null;
+  trailer2Make: string | null;
+  trailer3Make: string | null;
+  trailer1Model: string | null;
+  trailer2Model: string | null;
+  trailer3Model: string | null;
+  trailer1Year: number | null;
+  trailer2Year: number | null;
+  trailer3Year: number | null;
+  // LV3 – carrier
+  carrierIdTypeCode: number | null;
+  carrierCountryState: string | null;
+  carrierIdNumber: string | null;
+  carrierName: string | null;
+  carrierStreet1: string | null;
+  carrierStreet2: string | null;
+  carrierCity: string | null;
+  carrierState: string | null;
+  carrierZip: string | null;
+  carrierCountry: string | null;
+  // LV4
+  carrierTypeCode: number | null;
+  // LV5
+  vehicleConfigCode: number | null;
+  // LV6
+  vehiclePermittedCode: number | null;
+  // LV7
+  cargoBodyTypeCode: number | null;
+  // LV8 – HazMat
+  hmId: string | null;
+  hmClass: string | null;
+  // LV9
+  hmReleasedCode: number | null;
+  // LV10 – axles
+  axlesTractor: number | null;
+  axlesTrailer1: number | null;
+  axlesTrailer2: number | null;
+  axlesTrailer3: number | null;
+  // LV11
+  specialSizing: ChildCode[];
+  createdDt: string | null;
+  modifiedDt: string | null;
+}
+
+/** Vehicle Automation record nested inside VehicleDetail (DV1). */
+export interface VehicleAutomation {
+  id: number;
+  vehicleId: number;
+  crashId: number;
+  // DV1
+  automationPresentCode: number | null;
+  levelsInVehicle: ChildCode[];
+  levelsEngaged: ChildCode[];
   createdDt: string | null;
   modifiedDt: string | null;
 }

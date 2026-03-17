@@ -266,6 +266,11 @@ public class PersonService {
         List<PersonDrugTestDto> drugTests = drugTestResultRepo.findByPersonIdOrderBySequenceNum(p.getPersonId())
                 .stream().map(e -> new PersonDrugTestDto(e.getSequenceNum(), e.getResultCode())).toList();
 
+        FatalSectionResponse fatalSection = fatalSectionRepo.findByPersonId(p.getPersonId())
+                .map(this::toFatalSectionResponse).orElse(null);
+        NonMotoristResponse nonMotorist = nonMotoristRepo.findByPersonId(p.getPersonId())
+                .map(this::toNonMotoristResponse).orElse(null);
+
         return new PersonResponse(
                 p.getPersonId(), p.getCrashId(), p.getVehicleId(),
                 p.getPersonName(),
@@ -296,6 +301,7 @@ public class PersonService {
                 p.getInjuryAreaCode(),
                 p.getInjuryDiagnosis(),
                 p.getInjurySeverityCode(),
+                fatalSection, nonMotorist,
                 p.getAudit().getCreatedDt(), p.getAudit().getModifiedDt()
         );
     }

@@ -841,3 +841,205 @@ export const INJURY_SEVERITY: Record<number, string> = {
   5: 'No Injury (O)',
   9: 'Unknown',
 };
+
+// ── Fatal Section (F1–F3) ─────────────────────────────────────────────────────
+
+// F3 – Drug Test Result (single code, distinct from P23 list)
+// Reuses DRUG_TEST_RESULT map above.
+
+// ── Non-Motorist Section (NM1–NM6) ───────────────────────────────────────────
+
+// NM1 SF2 – Non-Motorist Action/Circumstance at Time of Crash
+export const NM_ACTION_CIRC: Record<number, string> = {
+  1:  'Walking Along Roadway',
+  2:  'Working in Roadway',
+  3:  'Standing in Roadway',
+  4:  'Riding a Bicycle or E-Scooter',
+  5:  'Exiting/Entering Parked Vehicle',
+  6:  'Playing/Activity in Roadway',
+  7:  'Crossing at Intersection',
+  8:  'Crossing Not at Intersection',
+  9:  'Traveling Along Roadway (not in crosswalk)',
+  10: 'Working on Traffic Control Device',
+  11: 'Pushing Disabled Vehicle',
+  12: 'Other Working',
+  13: 'Other Not in Roadway',
+  99: 'Unknown',
+};
+
+// NM2 – Non-Motorist Origin/Destination
+export const NM_ORIGIN_DESTINATION: Record<number, string> = {
+  1: 'Home',
+  2: 'Work',
+  3: 'School',
+  4: 'Recreation',
+  5: 'Shopping',
+  6: 'Medical/Dental',
+  7: 'Other',
+  9: 'Unknown',
+};
+
+// NM3 – Non-Motorist Contributing Action
+export const NM_CONTRIBUTING_ACTION: Record<number, string> = {
+  1: 'Dart/Dash',
+  2: 'Failure to Yield Right of Way',
+  3: 'Failure to Obey Traffic Control Device',
+  4: 'Inattentive/Distracted',
+  5: 'Other',
+  6: 'None',
+  9: 'Unknown',
+};
+
+// NM4 – Non-Motorist Location at Crash
+export const NM_LOCATION_AT_CRASH: Record<number, string> = {
+  1: 'At Intersection',
+  2: 'Intersection Related',
+  3: 'Driveway Access',
+  4: 'Alley',
+  5: 'In Roadway (not at intersection)',
+  6: 'Not in Roadway',
+  9: 'Unknown',
+};
+
+// NM5 – Non-Motorist Initial Contact Point (clock position)
+export const NM_CONTACT_POINT: Record<number, string> = {
+  1:  'Front',
+  2:  'Front-Right',
+  3:  'Right',
+  4:  'Rear-Right',
+  5:  'Rear',
+  6:  'Rear-Left',
+  7:  'Left',
+  8:  'Front-Left',
+  9:  'Unknown',
+};
+
+// NM6 – Non-Motorist Safety Equipment Used
+export const NM_SAFETY_EQUIPMENT: Record<number, string> = {
+  1: 'Helmet',
+  2: 'Protective Padding',
+  3: 'Protective Clothing',
+  4: 'Reflective Clothing',
+  5: 'Lighting Equipment',
+  6: 'Other',
+  9: 'Unknown',
+};
+
+// ── Large Vehicle / HazMat Section (LV1–LV11) ────────────────────────────────
+
+// LV1 SF1 – CMV Driver License Status
+export const CMV_LICENSE_STATUS: Record<number, string> = {
+  1: 'Valid',
+  2: 'Expired',
+  3: 'Suspended',
+  4: 'Revoked',
+  5: 'Cancelled',
+  6: 'Denied',
+  7: 'Not Required',
+  9: 'Unknown',
+};
+
+// LV1 SF2 – CDL Compliance
+export const CDL_COMPLIANCE: Record<number, string> = {
+  1: 'Yes, Properly Licensed',
+  2: 'No, Not Properly Licensed',
+  3: 'Not Applicable',
+  9: 'Unknown',
+};
+
+// LV3 – Carrier ID Type
+export const CARRIER_ID_TYPE: Record<number, string> = {
+  1: 'US DOT Number',
+  2: 'ICC/MC Number',
+  3: 'State Issued Number',
+  4: 'Other',
+  9: 'Unknown',
+};
+
+// LV4 – Carrier Type
+export const CARRIER_TYPE: Record<number, string> = {
+  1: 'Interstate Carrier',
+  2: 'Intrastate Carrier',
+  3: 'Not in Commerce',
+  4: 'Government',
+  5: 'Other',
+  9: 'Unknown',
+};
+
+// LV5 – Vehicle Configuration
+export const VEHICLE_CONFIG: Record<number, string> = {
+  1: 'Single Unit Truck (2-axle)',
+  2: 'Single Unit Truck (3+ axle)',
+  3: 'Truck Bobtail',
+  4: 'Tractor Semi-Trailer',
+  5: 'Tractor/Doubles',
+  6: 'Tractor/Triples',
+  7: 'Other',
+  9: 'Unknown',
+};
+
+// LV6 – Vehicle Permitted Oversize/Overweight
+export const VEHICLE_PERMITTED: Record<number, string> = {
+  1: 'Oversize/Overweight Permit Required and On File',
+  2: 'Special Use Permit',
+  3: 'None Required',
+  9: 'Unknown',
+};
+
+// LV7 – Cargo Body Type
+export const CARGO_BODY_TYPE: Record<number, string> = {
+  1:  'Bus',
+  2:  'Concrete Mixer',
+  3:  'Dump',
+  4:  'Enclosed Box',
+  5:  'Flatbed',
+  6:  'Grain/Chips/Gravel',
+  7:  'Hopper/Grain',
+  8:  'Intermodal Container',
+  9:  'Log/Pole',
+  10: 'Other',
+  11: 'Pole Trailer',
+  12: 'Tank',
+  13: 'Truck Tractor (Bobtail)',
+  14: 'Van/Enclosed Box',
+  15: 'Vehicle Towing Another Motor Vehicle',
+  99: 'Unknown',
+};
+
+// LV9 – HazMat Released
+export const HM_RELEASED: Record<number, string> = {
+  1: 'Yes',
+  2: 'No',
+  9: 'Unknown',
+};
+
+// LV11 – Special Vehicle Use / Sizing Permit
+export const LV_SPECIAL_SIZING: Record<number, string> = {
+  1: 'Single Item',
+  2: 'Excessive Length',
+  3: 'Excessive Height',
+  4: 'Excessive Width',
+  5: 'Excessive Weight',
+  6: 'Other',
+  9: 'Unknown',
+};
+
+// ── Vehicle Automation Section (DV1) ─────────────────────────────────────────
+
+// DV1 SF1 – Automation Present
+export const AUTOMATION_PRESENT: Record<number, string> = {
+  1: 'Yes',
+  2: 'No',
+  9: 'Unknown',
+};
+
+// DV1 SF2/SF3 – SAE J3016 Automation Level
+export const AUTOMATION_LEVEL: Record<number, string> = {
+  0: 'Level 0 — No Automation',
+  1: 'Level 1 — Driver Assistance',
+  2: 'Level 2 — Partial Automation',
+  3: 'Level 3 — Conditional Automation',
+  4: 'Level 4 — High Automation',
+  5: 'Level 5 — Full Automation',
+  9: 'Unknown',
+};

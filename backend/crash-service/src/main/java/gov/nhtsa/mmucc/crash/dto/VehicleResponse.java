@@ -46,6 +46,9 @@ public record VehicleResponse(
         List<ChildCodeDto> damageAreas,
         List<ChildCodeDto> sequenceEvents,
 
+        // Conditional sections (null when not applicable)
+        LargeVehicleResponse largeVehicle,
+        VehicleAutomationResponse automation,
         // Audit
         LocalDateTime createdDt,
         LocalDateTime modifiedDt

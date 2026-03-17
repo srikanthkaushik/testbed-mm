@@ -12,8 +12,8 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { switchMap, tap, catchError } from 'rxjs/operators';
 import { EMPTY, of } from 'rxjs';
 import { CrashService } from '../../../core/services/crash.service';
-import { AuditLogEntry, CrashDetail, VehicleDetail, PersonDetail, TrafficControl } from '../../../core/models/crash.models';
 import { AlertComponent } from '../../../shared/components/alert/alert.component';
+import { AuditLogEntry, CrashDetail, FatalSection, LargeVehicle, NonMotorist, VehicleAutomation, VehicleDetail, PersonDetail, TrafficControl } from '../../../core/models/crash.models';
 import {
   MANNER_COLLISION,
   LIGHT_CONDITION,
@@ -80,6 +80,23 @@ import {
   DRUG_TEST_RESULT,
   INJURY_AREA,
   INJURY_SEVERITY,
+  NM_ACTION_CIRC,
+  NM_ORIGIN_DESTINATION,
+  NM_CONTRIBUTING_ACTION,
+  NM_LOCATION_AT_CRASH,
+  NM_CONTACT_POINT,
+  NM_SAFETY_EQUIPMENT,
+  CMV_LICENSE_STATUS,
+  CDL_COMPLIANCE,
+  CARRIER_ID_TYPE,
+  CARRIER_TYPE,
+  VEHICLE_CONFIG,
+  VEHICLE_PERMITTED,
+  CARGO_BODY_TYPE,
+  HM_RELEASED,
+  LV_SPECIAL_SIZING,
+  AUTOMATION_PRESENT,
+  AUTOMATION_LEVEL,
 } from '../../../core/models/mmucc-lookup';
 
 export type DetailTab = 'overview' | 'vehicles' | 'persons' | 'roadway' | 'audit';
@@ -171,6 +188,24 @@ export class CrashDetailComponent implements OnInit {
   readonly DRUG_TEST_RESULT     = DRUG_TEST_RESULT;
   readonly INJURY_AREA          = INJURY_AREA;
   readonly INJURY_SEVERITY      = INJURY_SEVERITY;
+
+  readonly NM_ACTION_CIRC         = NM_ACTION_CIRC;
+  readonly NM_ORIGIN_DESTINATION  = NM_ORIGIN_DESTINATION;
+  readonly NM_CONTRIBUTING_ACTION = NM_CONTRIBUTING_ACTION;
+  readonly NM_LOCATION_AT_CRASH   = NM_LOCATION_AT_CRASH;
+  readonly NM_CONTACT_POINT       = NM_CONTACT_POINT;
+  readonly NM_SAFETY_EQUIPMENT    = NM_SAFETY_EQUIPMENT;
+  readonly CMV_LICENSE_STATUS     = CMV_LICENSE_STATUS;
+  readonly CDL_COMPLIANCE         = CDL_COMPLIANCE;
+  readonly CARRIER_ID_TYPE        = CARRIER_ID_TYPE;
+  readonly CARRIER_TYPE           = CARRIER_TYPE;
+  readonly VEHICLE_CONFIG         = VEHICLE_CONFIG;
+  readonly VEHICLE_PERMITTED      = VEHICLE_PERMITTED;
+  readonly CARGO_BODY_TYPE        = CARGO_BODY_TYPE;
+  readonly HM_RELEASED            = HM_RELEASED;
+  readonly LV_SPECIAL_SIZING      = LV_SPECIAL_SIZING;
+  readonly AUTOMATION_PRESENT     = AUTOMATION_PRESENT;
+  readonly AUTOMATION_LEVEL       = AUTOMATION_LEVEL;
 
   readonly tabs: { id: DetailTab; label: string }[] = [
     { id: 'overview', label: 'Overview' },

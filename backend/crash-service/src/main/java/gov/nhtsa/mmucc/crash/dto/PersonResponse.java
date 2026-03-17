@@ -83,6 +83,9 @@ public record PersonResponse(
         String injuryDiagnosis,
         // P27
         Integer injurySeverityCode,
+        // Conditional sections (null when not applicable)
+        FatalSectionResponse fatalSection,
+        NonMotoristResponse nonMotorist,
         // Audit
         LocalDateTime createdDt,
         LocalDateTime modifiedDt
