@@ -15,11 +15,13 @@ This repository is associated with the **MMUCC (Model Minimum Uniform Crash Crit
 
 ## Project Status
 
-Database schema is complete. Backend auth-service and crash-service are fully implemented (Sprints 1–4). Frontend is functionally complete for data entry and record management:
+Database schema is complete. Backend Sprints 1–5 complete. Frontend is functionally complete for data entry and record management:
 
-- **Phases 1–8 complete:** login, crash list, crash detail (read-only, all 115 fields), crash entry form, vehicle entry form, person entry form (P1–P27 with conditional Fatal/Non-Motorist sub-sections), roadway entry form (R1–R16), vehicle automation form (DV1), large vehicle form (LV1–LV11), delete operations (crash/vehicle/person with inline confirmation), dashboard (stat cards + recent crashes), admin user management (user list + inline role editing).
+- **Phases 1–8 complete:** login, crash list, crash detail (read-only, all 115 fields), crash entry form, vehicle entry form, person entry form (P1–P27 with conditional Fatal/Non-Motorist sub-sections), roadway entry form (R1–R16), vehicle automation form (DV1), large vehicle form (LV1–LV11), delete operations (crash/vehicle/person with inline confirmation), dashboard (stat cards + recent crashes), admin user management (user list + inline role editing + activate/deactivate toggle).
 - **All 115 MMUCC data elements are readable and writable** via the frontend.
-- **Remaining:** reports/export (CSV/PDF) — depends on report-service which is not yet built.
+- **reference-service (Sprint 5):** port 8083, serves all 7 REF_* lookup types; Angular pre-loads at startup via `APP_INITIALIZER`.
+- **Security:** role-based UI (VIEWER/ANALYST see read-only; DATA_ENTRY can write; ADMIN can delete); auth-service JWT filter checks DB active status on every request; deactivation clears refresh token immediately.
+- **Remaining:** reports/export (CSV/PDF) — depends on report-service (Sprint 6, not yet built).
 
 ## Repository Structure
 

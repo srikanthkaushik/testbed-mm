@@ -14,7 +14,7 @@ A full-stack web application for collecting, managing, and reporting motor vehic
 | **Sprint 2** | crash-service — Crash + Vehicle + Roadway CRUD, all 6 multi-value child tables, Flyway schema, integration tests | ✅ Complete |
 | **Sprint 3** | crash-service — Person (P1–P27), Fatal Section, Non-Motorist, Large Vehicle/HazMat, Vehicle Automation; 28 integration tests | ✅ Complete |
 | **Sprint 4** | Audit log timeline enhancements, MMUCC validation rules (V-01–V-14) | ✅ Complete |
-| **Sprint 5** | reference-service (lookup codes API) | 🔲 Not started |
+| **Sprint 5** | reference-service (lookup codes API) — port 8083, in-memory cache, `GET /lookups`, `GET /lookups/{type}`, Angular APP_INITIALIZER integration | ✅ Complete |
 | **Sprint 6** | report-service, CSV/Excel export | 🔲 Not started |
 
 ### Frontend

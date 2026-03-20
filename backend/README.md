@@ -112,10 +112,10 @@ See [REFERENCE.md](REFERENCE.md) for full implementation reference, DTO design, 
 | **Sprint 2** | crash-service — crash CRUD + vehicle CRUD + roadway upsert + all 6 multi-value child tables (weather, surface, CCR, TCD, damage area, sequence-of-events), Flyway schema, Testcontainers integration tests | ✅ Complete |
 | **Sprint 3** | crash-service — person (P1–P27): `PERSON_TBL` + `PERSON_AIRBAG_TBL`, `PERSON_DRIVER_ACTION_TBL`, `PERSON_DL_RESTRICTION_TBL`, `PERSON_DRUG_TEST_RESULT_TBL`; conditional sections (`FATAL_SECTION_TBL`, `NON_MOTORIST_TBL`, `LARGE_VEHICLE_TBL`); vehicle automation (`VEHICLE_AUTOMATION_TBL`) | ✅ Complete |
 | **Sprint 4** | Audit log timeline enhancements, MMUCC validation rules V-01–V-14 (crash, vehicle, person) | ✅ Complete |
-| **Sprint 5** | reference-service — read-only lookup codes API (`REF_*` / Oracle `LOOKUP_CODE_VALUES_TBL`) | 🔲 Not started |
+| **Sprint 5** | reference-service — read-only lookup codes API (`REF_*`), port 8083, in-memory `@PostConstruct` cache, `GET /lookups` + `GET /lookups/{type}`, Angular `APP_INITIALIZER` integration, `Cache-Control: max-age=86400` | ✅ Complete |
 | **Sprint 6** | report-service — filtered queries, CSV/Excel export via Apache POI | 🔲 Not started |
 
-> Roadway and all crash/vehicle child tables were completed in Sprint 2. Sprint 3 included Vehicle Automation (DV1) ahead of schedule. The full create-crash → add-vehicle → add-person flow is working end-to-end.
+> Roadway and all crash/vehicle child tables were completed in Sprint 2. Sprint 3 included Vehicle Automation (DV1) ahead of schedule. The full create-crash → add-vehicle → add-person flow is working end-to-end. Sprint 5 reference-service provides live coded-value lookups; the Angular frontend pre-loads all 7 types at startup via `APP_INITIALIZER` with a static fallback if the service is unavailable.
 
 ---
 

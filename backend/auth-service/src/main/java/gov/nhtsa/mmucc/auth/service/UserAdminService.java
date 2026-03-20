@@ -82,8 +82,14 @@ public class UserAdminService {
         AppUser user = findOrThrow(id);
         user.setActive(req.active());
         if (req.active()) {
+            // Reactivation: unlock the account so they can log in again
             user.setAccountLocked(false);
             user.setFailedLoginCount(0);
+        } else {
+            // Deactivation: revoke the refresh token immediately so the user cannot
+            // obtain a new access token after their current one expires (~15 min).
+            user.setRefreshTokenHash(null);
+            user.setRefreshTokenExpiry(null);
         }
         setModifiedAudit(user.getAudit(), actor.getUsername());
         return userMapper.toSummaryResponse(userRepository.save(user));

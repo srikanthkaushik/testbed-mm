@@ -1,5 +1,6 @@
 package gov.nhtsa.mmucc.auth.security;
 
+import gov.nhtsa.mmucc.auth.repository.AppUserRepository;
 import gov.nhtsa.mmucc.common.security.JwtUtils;
 import gov.nhtsa.mmucc.common.security.UserPrincipal;
 import io.jsonwebtoken.Claims;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,7 +24,11 @@ import java.io.IOException;
 
 /**
  * Validates the internal JWT on every request and populates SecurityContextHolder.
- * Does NOT hit the database — all identity is extracted from the JWT claims.
+ *
+ * In addition to signature/expiry validation, this filter performs a lightweight
+ * DB lookup to check the user's active status. This closes the window between an
+ * admin deactivating a user and their current access token expiring (~15 min).
+ * The refresh token is also cleared on deactivation so no new tokens can be issued.
  */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -31,9 +37,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String BEARER_PREFIX = "Bearer ";
 
     private final JwtUtils jwtUtils;
+    private final AppUserRepository userRepository;
 
-    public JwtAuthenticationFilter(JwtUtils jwtUtils) {
+    public JwtAuthenticationFilter(JwtUtils jwtUtils, AppUserRepository userRepository) {
         this.jwtUtils = jwtUtils;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -54,6 +62,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             Claims claims = jwtUtils.validateAndParseToken(token);
             UserPrincipal principal = claimsToPrincipal(claims);
+
+            // Verify the user is still active in the database.
+            // This catches deactivations that occurred after the token was issued.
+            boolean active = userRepository.findById(principal.getUserId())
+                    .map(u -> u.isActive() && !u.isAccountLocked())
+                    .orElse(false);
+
+            if (!active) {
+                log.debug("Rejected token for inactive/locked userId={}", principal.getUserId());
+                response.sendError(HttpStatus.UNAUTHORIZED.value(), "Account is inactive or locked");
+                return;
+            }
 
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
