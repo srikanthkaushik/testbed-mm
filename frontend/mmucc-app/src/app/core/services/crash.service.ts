@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { AuditLogEntry, CrashDetail, CrashFilter, CrashRequest, CrashSummary, FatalSection, FatalSectionRequest, NonMotorist, NonMotoristRequest, Page, PersonDetail, PersonRequest, RoadwayDetail, RoadwayRequest, VehicleAutomation, VehicleAutomationRequest, VehicleDetail, VehicleRequest } from '../models/crash.models';
+import { AuditLogEntry, CrashDetail, CrashFilter, CrashRequest, CrashSummary, FatalSection, FatalSectionRequest, LargeVehicle, LargeVehicleRequest, NonMotorist, NonMotoristRequest, Page, PersonDetail, PersonRequest, RoadwayDetail, RoadwayRequest, VehicleAutomation, VehicleAutomationRequest, VehicleDetail, VehicleRequest } from '../models/crash.models';
 
 @Injectable({ providedIn: 'root' })
 export class CrashService {
@@ -87,7 +87,25 @@ export class CrashService {
     return this.http.put<VehicleAutomation>(`${this.baseUrl}/${crashId}/vehicles/${vehicleId}/automation`, request);
   }
 
+  // ── Large Vehicle endpoints ────────────────────────────────────────────
+
+  getLargeVehicle(crashId: number, vehicleId: number): Observable<LargeVehicle> {
+    return this.http.get<LargeVehicle>(`${this.baseUrl}/${crashId}/vehicles/${vehicleId}/large-vehicle`);
+  }
+
+  upsertLargeVehicle(crashId: number, vehicleId: number, request: LargeVehicleRequest): Observable<LargeVehicle> {
+    return this.http.put<LargeVehicle>(`${this.baseUrl}/${crashId}/vehicles/${vehicleId}/large-vehicle`, request);
+  }
+
   // ── Crash endpoints ────────────────────────────────────────────────────
+
+  deleteCrash(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+
+  deletePerson(crashId: number, vehicleId: number, personId: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${crashId}/vehicles/${vehicleId}/persons/${personId}`);
+  }
 
   createCrash(request: CrashRequest): Observable<CrashDetail> {
     return this.http.post<CrashDetail>(this.baseUrl, request);

@@ -8,7 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { switchMap, tap, catchError } from 'rxjs/operators';
 import { EMPTY, of } from 'rxjs';
 import { CrashService } from '../../../core/services/crash.service';
@@ -111,15 +111,22 @@ export type DetailTab = 'overview' | 'vehicles' | 'persons' | 'roadway' | 'audit
 })
 export class CrashDetailComponent implements OnInit {
   private readonly crashService = inject(CrashService);
-  private readonly route = inject(ActivatedRoute);
-  private readonly destroyRef = inject(DestroyRef);
+  private readonly route        = inject(ActivatedRoute);
+  private readonly router       = inject(Router);
+  private readonly destroyRef   = inject(DestroyRef);
 
-  readonly loading = signal<boolean>(true);
+  readonly loading      = signal<boolean>(true);
   readonly errorMessage = signal<string>('');
-  readonly crash = signal<CrashDetail | null>(null);
-  readonly activeTab = signal<DetailTab>('overview');
-  readonly auditLog = signal<AuditLogEntry[]>([]);
+  readonly crash        = signal<CrashDetail | null>(null);
+  readonly activeTab    = signal<DetailTab>('overview');
+  readonly auditLog     = signal<AuditLogEntry[]>([]);
   readonly auditLoading = signal<boolean>(false);
+
+  // ── Delete state ───────────────────────────────────────────────────────────
+  readonly deletingCrash     = signal<boolean>(false);
+  readonly deletingVehicleId = signal<number | null>(null);
+  readonly deletingPersonId  = signal<number | null>(null);
+  readonly deleteError       = signal<string>('');
 
   // ── Lookup maps exposed for template use ───────────────────────────────────
   readonly MANNER_COLLISION        = MANNER_COLLISION;
@@ -272,6 +279,62 @@ export class CrashDetailComponent implements OnInit {
       .subscribe(entries => {
         this.auditLog.set(entries);
         this.auditLoading.set(false);
+      });
+  }
+
+  // ── Delete helpers ─────────────────────────────────────────────────────────
+
+  confirmDeleteCrash(): void {
+    this.deleteError.set('');
+    this.crashService.deleteCrash(this.crashId())
+      .pipe(
+        catchError((err: unknown) => {
+          this.deleteError.set(err instanceof Error ? err.message : 'Failed to delete crash.');
+          this.deletingCrash.set(false);
+          return EMPTY;
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => this.router.navigate(['/crashes']));
+  }
+
+  confirmDeleteVehicle(vehicleId: number): void {
+    this.deleteError.set('');
+    this.crashService.deleteVehicle(this.crashId(), vehicleId)
+      .pipe(
+        catchError((err: unknown) => {
+          this.deleteError.set(err instanceof Error ? err.message : 'Failed to delete vehicle.');
+          this.deletingVehicleId.set(null);
+          return EMPTY;
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        this.deletingVehicleId.set(null);
+        this.crash.update(c => c ? {
+          ...c,
+          vehicles: c.vehicles.filter(v => v.vehicleId !== vehicleId),
+        } : null);
+      });
+  }
+
+  confirmDeletePerson(vehicleId: number, personId: number): void {
+    this.deleteError.set('');
+    this.crashService.deletePerson(this.crashId(), vehicleId, personId)
+      .pipe(
+        catchError((err: unknown) => {
+          this.deleteError.set(err instanceof Error ? err.message : 'Failed to delete person.');
+          this.deletingPersonId.set(null);
+          return EMPTY;
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        this.deletingPersonId.set(null);
+        this.crash.update(c => c ? {
+          ...c,
+          persons: c.persons.filter(p => p.personId !== personId),
+        } : null);
       });
   }
 

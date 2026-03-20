@@ -15,17 +15,21 @@ This repository is associated with the **MMUCC (Model Minimum Uniform Crash Crit
 
 ## Project Status
 
-Database schema is complete. Backend auth-service and crash-service are fully implemented (Sprints 1–4). Frontend Phases 1–7 are complete: login, crash list, crash detail (read-only, all 115 fields), crash entry form, vehicle entry form, person entry form (P1–P27 with conditional Fatal/Non-Motorist sub-sections), and roadway entry form (R1–R16). Phases 8–9 (dashboard/delete, reports) are not yet started. 104 of 115 MMUCC elements have full entry UI; Large Vehicle (LV1–LV11) entry form is pending.
+Database schema is complete. Backend auth-service and crash-service are fully implemented (Sprints 1–4). Frontend is functionally complete for data entry and record management:
+
+- **Phases 1–8 complete:** login, crash list, crash detail (read-only, all 115 fields), crash entry form, vehicle entry form, person entry form (P1–P27 with conditional Fatal/Non-Motorist sub-sections), roadway entry form (R1–R16), vehicle automation form (DV1), large vehicle form (LV1–LV11).
+- **Delete operations complete:** crash, vehicle, and person records can be deleted from the crash list and crash detail views with inline confirmation.
+- **Remaining:** dashboard (summary statistics), admin user management UI (backend endpoints exist), and reports/export (CSV/PDF).
 
 ## Repository Structure
 
 ```
 database/
 ├── mysql/
-│   ├── MYSQL_SETUP.md          -- Setup guide and verification steps
+│   ├── README.md               -- Setup guide and verification steps
 │   └── 01_*.sql – 31_*.sql    -- Table DDL + reference data INSERTs
 └── oracle/
-    ├── ORACLE_SETUP.md         -- Setup guide and Oracle-specific notes
+    ├── README.md               -- Setup guide and Oracle-specific notes
     └── 01_*.sql – 26_*.sql    -- Table DDL + lookup data INSERTs
 ```
 

@@ -80,9 +80,12 @@
     </form>
   </section>
 
-  <!-- ── Error alert ───────────────────────────────────────────────────── -->
+  <!-- ── Error alerts ──────────────────────────────────────────────────── -->
   @if (errorMessage()) {
     <app-alert [message]="errorMessage()" type="error" />
+  }
+  @if (deleteError()) {
+    <app-alert [message]="deleteError()" type="error" />
   }
 
   <!-- ── Aria live region for status announcements ─────────────────────── -->
@@ -193,7 +196,7 @@
               <td class="crash-table__td crash-table__td--center">
                 {{ crash.numMotorVehicles }}
               </td>
-              <td class="crash-table__td crash-table__td--actions">
+              <td class="crash-table__td crash-table__td--actions" (click)="$event.stopPropagation()">
                 <a
                   [routerLink]="['/crashes', crash.crashId]"
                   class="btn btn--sm btn--outline"
@@ -201,6 +204,21 @@
                 >
                   View
                 </a>
+                @if (deletingCrashId() === crash.crashId) {
+                  <span class="delete-confirm">
+                    <button type="button" class="btn btn--ghost btn--sm" (click)="cancelDelete($event)">Cancel</button>
+                    <button type="button" class="btn btn--danger btn--sm" (click)="confirmDelete(crash.crashId, $event)">Confirm</button>
+                  </span>
+                } @else {
+                  <button
+                    type="button"
+                    class="btn btn--sm btn--danger"
+                    [attr.aria-label]="'Delete crash ' + (crash.crashIdentifier ?? crash.crashId)"
+                    (click)="startDelete(crash.crashId, $event)"
+                  >
+                    Delete
+                  </button>
+                }
               </td>
             </tr>
           }

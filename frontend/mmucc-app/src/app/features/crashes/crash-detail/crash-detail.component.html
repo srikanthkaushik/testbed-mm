@@ -33,6 +33,20 @@
           <span class="badge" [class]="severityBadgeClass(crash()!.crashSeverityCode)">
             {{ severityLabel(crash()!.crashSeverityCode) }}
           </span>
+          <a [routerLink]="['/crashes', crash()!.crashId, 'edit']" class="btn btn--sm btn--outline">
+            Edit Crash
+          </a>
+          @if (!deletingCrash()) {
+            <button type="button" class="btn btn--sm btn--danger" (click)="deletingCrash.set(true)">
+              Delete Crash
+            </button>
+          } @else {
+            <span class="delete-confirm">
+              <span class="delete-confirm__text">Delete this crash?</span>
+              <button type="button" class="btn btn--ghost btn--sm" (click)="deletingCrash.set(false)">Cancel</button>
+              <button type="button" class="btn btn--danger btn--sm" (click)="confirmDeleteCrash()">Yes, Delete</button>
+            </span>
+          }
         </div>
         <p class="detail__subtitle">
           {{ formatDate(crash()!.crashDate) }}
@@ -299,12 +313,35 @@
                     + Add Person
                   </a>
                   <a
+                    [routerLink]="['/crashes', crash()!.crashId, 'vehicles', v.vehicleId, 'large-vehicle']"
+                    class="btn btn--sm btn--outline"
+                    [attr.aria-label]="'Edit large vehicle record for unit ' + (v.unitNumber ?? v.vehicleId)"
+                  >
+                    {{ v.largeVehicle ? 'Edit Large Vehicle' : '+ Add Large Vehicle' }}
+                  </a>
+                  <a
                     [routerLink]="['/crashes', crash()!.crashId, 'vehicles', v.vehicleId, 'automation']"
                     class="btn btn--sm btn--outline"
                     [attr.aria-label]="'Edit automation for vehicle unit ' + (v.unitNumber ?? v.vehicleId)"
                   >
                     {{ v.automation ? 'Edit Automation' : '+ Add Automation' }}
                   </a>
+                  @if (deletingVehicleId() === v.vehicleId) {
+                    <span class="delete-confirm">
+                      <span class="delete-confirm__text">Delete vehicle?</span>
+                      <button type="button" class="btn btn--ghost btn--sm" (click)="deletingVehicleId.set(null)">Cancel</button>
+                      <button type="button" class="btn btn--danger btn--sm" (click)="confirmDeleteVehicle(v.vehicleId)">Yes, Delete</button>
+                    </span>
+                  } @else {
+                    <button
+                      type="button"
+                      class="btn btn--sm btn--danger"
+                      [attr.aria-label]="'Delete vehicle unit ' + (v.unitNumber ?? v.vehicleId)"
+                      (click)="deletingVehicleId.set(v.vehicleId)"
+                    >
+                      Delete
+                    </button>
+                  }
                 </div>
                 <div class="field-grid">
 
@@ -566,6 +603,22 @@
                       >
                         Edit
                       </a>
+                      @if (deletingPersonId() === p.personId) {
+                        <span class="delete-confirm">
+                          <span class="delete-confirm__text">Delete person?</span>
+                          <button type="button" class="btn btn--ghost btn--sm" (click)="deletingPersonId.set(null)">Cancel</button>
+                          <button type="button" class="btn btn--danger btn--sm" (click)="confirmDeletePerson(p.vehicleId!, p.personId)">Yes, Delete</button>
+                        </span>
+                      } @else {
+                        <button
+                          type="button"
+                          class="btn btn--sm btn--danger"
+                          [attr.aria-label]="'Delete ' + personLabel(p)"
+                          (click)="deletingPersonId.set(p.personId)"
+                        >
+                          Delete
+                        </button>
+                      }
                     }
                   </div>
                   <p class="person-card__subtitle">

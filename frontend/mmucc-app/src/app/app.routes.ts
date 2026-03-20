@@ -89,6 +89,16 @@ export const routes: Routes = [
         canActivate: [authGuard],
       },
 
+      // Large Vehicle form — must be before crashes/:id to prevent param conflicts
+      {
+        path: 'crashes/:crashId/vehicles/:vehicleId/large-vehicle',
+        loadComponent: () =>
+          import('./features/crashes/large-vehicle-form/large-vehicle-form.component')
+            .then(m => m.LargeVehicleFormComponent),
+        title: 'Edit Large Vehicle — MMUCC Crash Reporting',
+        canActivate: [authGuard],
+      },
+
       // Person form — must be before crashes/:id to prevent param conflicts
       {
         path: 'crashes/:crashId/vehicles/:vehicleId/persons/new',

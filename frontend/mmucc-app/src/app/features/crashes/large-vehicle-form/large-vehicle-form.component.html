@@ -1,0 +1,466 @@
+<div class="form-page">
+
+  <!-- ── Back link ────────────────────────────────────────────────────────── -->
+  <a [routerLink]="['/crashes', crashId()]" fragment="vehicles" class="form__back">
+    &#8592; Back to Crash Detail
+  </a>
+
+  <!-- ── Page header ──────────────────────────────────────────────────────── -->
+  <h1 class="form__title">{{ pageTitle() }}</h1>
+
+  <!-- ── Loading state ────────────────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="form__loading">
+      <span class="spinner" aria-hidden="true"></span>
+      Loading large vehicle record…
+    </div>
+  }
+
+  <!-- ── Error alert ───────────────────────────────────────────────────────── -->
+  @if (errorMsg()) {
+    <app-alert [message]="errorMsg()" type="error" />
+  }
+
+  @if (!loading()) {
+    <form
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      novalidate
+      class="crash-form"
+    >
+
+      <!-- ── LV1: CMV License & CDL Compliance ────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">CMV Driver License (LV1)</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="cmvLicenseStatusCode" class="form-field__label">
+              CMV License Status (LV1 SF1)
+            </label>
+            <select id="cmvLicenseStatusCode" class="form-field__select" formControlName="cmvLicenseStatusCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of CMV_LICENSE_STATUS_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="cdlComplianceCode" class="form-field__label">
+              CDL Compliance (LV1 SF2)
+            </label>
+            <select id="cdlComplianceCode" class="form-field__select" formControlName="cdlComplianceCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of CDL_COMPLIANCE_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ── LV2: Trailers ─────────────────────────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Trailer Information (LV2)</legend>
+        <p class="form-section__hint">Enter information for up to three trailers involved.</p>
+
+        @for (n of [1, 2, 3]; track n) {
+          <div class="form-subsection">
+            <h4 class="form-section__sub">Trailer {{ n }}</h4>
+            <div class="form-grid">
+
+              <div class="form-field">
+                <label [for]="'trailer' + n + 'Plate'" class="form-field__label">License Plate</label>
+                <input
+                  type="text"
+                  [id]="'trailer' + n + 'Plate'"
+                  class="form-field__input"
+                  [formControlName]="'trailer' + n + 'Plate'"
+                  maxlength="20"
+                />
+              </div>
+
+              <div class="form-field">
+                <label [for]="'trailer' + n + 'Vin'" class="form-field__label">VIN</label>
+                <input
+                  type="text"
+                  [id]="'trailer' + n + 'Vin'"
+                  class="form-field__input"
+                  [formControlName]="'trailer' + n + 'Vin'"
+                  maxlength="17"
+                />
+              </div>
+
+              <div class="form-field">
+                <label [for]="'trailer' + n + 'Make'" class="form-field__label">Make</label>
+                <input
+                  type="text"
+                  [id]="'trailer' + n + 'Make'"
+                  class="form-field__input"
+                  [formControlName]="'trailer' + n + 'Make'"
+                  maxlength="50"
+                />
+              </div>
+
+              <div class="form-field">
+                <label [for]="'trailer' + n + 'Model'" class="form-field__label">Model</label>
+                <input
+                  type="text"
+                  [id]="'trailer' + n + 'Model'"
+                  class="form-field__input"
+                  [formControlName]="'trailer' + n + 'Model'"
+                  maxlength="50"
+                />
+              </div>
+
+              <div class="form-field">
+                <label [for]="'trailer' + n + 'Year'" class="form-field__label">Year</label>
+                <input
+                  type="number"
+                  [id]="'trailer' + n + 'Year'"
+                  class="form-field__input"
+                  [formControlName]="'trailer' + n + 'Year'"
+                  min="1900"
+                  max="2100"
+                />
+              </div>
+
+            </div>
+          </div>
+        }
+      </fieldset>
+
+      <!-- ── LV3 & LV4: Motor Carrier Identity ────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Motor Carrier Identity &amp; Address (LV3–LV4)</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="carrierIdTypeCode" class="form-field__label">
+              Carrier ID Type (LV3 SF1)
+            </label>
+            <select id="carrierIdTypeCode" class="form-field__select" formControlName="carrierIdTypeCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of CARRIER_ID_TYPE_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="carrierCountryState" class="form-field__label">
+              Country/State of Carrier ID (LV3 SF2)
+            </label>
+            <input
+              type="text"
+              id="carrierCountryState"
+              class="form-field__input"
+              formControlName="carrierCountryState"
+              maxlength="5"
+              placeholder="e.g. US-CA"
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="carrierIdNumber" class="form-field__label">
+              Carrier ID Number (LV3 SF3)
+            </label>
+            <input
+              type="text"
+              id="carrierIdNumber"
+              class="form-field__input"
+              formControlName="carrierIdNumber"
+              maxlength="30"
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="carrierName" class="form-field__label">
+              Carrier Name (LV3 SF4)
+            </label>
+            <input
+              type="text"
+              id="carrierName"
+              class="form-field__input"
+              formControlName="carrierName"
+              maxlength="100"
+            />
+          </div>
+
+          <div class="form-field form-field--wide">
+            <label for="carrierStreet1" class="form-field__label">
+              Street Address 1 (LV3 SF5)
+            </label>
+            <input
+              type="text"
+              id="carrierStreet1"
+              class="form-field__input"
+              formControlName="carrierStreet1"
+              maxlength="100"
+            />
+          </div>
+
+          <div class="form-field form-field--wide">
+            <label for="carrierStreet2" class="form-field__label">
+              Street Address 2
+            </label>
+            <input
+              type="text"
+              id="carrierStreet2"
+              class="form-field__input"
+              formControlName="carrierStreet2"
+              maxlength="100"
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="carrierCity" class="form-field__label">City</label>
+            <input
+              type="text"
+              id="carrierCity"
+              class="form-field__input"
+              formControlName="carrierCity"
+              maxlength="50"
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="carrierState" class="form-field__label">State / Province</label>
+            <input
+              type="text"
+              id="carrierState"
+              class="form-field__input"
+              formControlName="carrierState"
+              maxlength="3"
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="carrierZip" class="form-field__label">ZIP / Postal Code</label>
+            <input
+              type="text"
+              id="carrierZip"
+              class="form-field__input"
+              formControlName="carrierZip"
+              maxlength="10"
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="carrierCountry" class="form-field__label">Country</label>
+            <input
+              type="text"
+              id="carrierCountry"
+              class="form-field__input"
+              formControlName="carrierCountry"
+              maxlength="50"
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="carrierTypeCode" class="form-field__label">
+              Carrier Type (LV4)
+            </label>
+            <select id="carrierTypeCode" class="form-field__select" formControlName="carrierTypeCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of CARRIER_TYPE_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ── LV5–LV7: Vehicle Configuration & Cargo ────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Vehicle Configuration &amp; Cargo (LV5–LV7)</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="vehicleConfigCode" class="form-field__label">
+              Vehicle Configuration (LV5)
+            </label>
+            <select id="vehicleConfigCode" class="form-field__select" formControlName="vehicleConfigCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of VEHICLE_CONFIG_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="vehiclePermittedCode" class="form-field__label">
+              Vehicle Permitted (LV6)
+            </label>
+            <select id="vehiclePermittedCode" class="form-field__select" formControlName="vehiclePermittedCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of VEHICLE_PERMITTED_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="cargoBodyTypeCode" class="form-field__label">
+              Cargo Body Type (LV7)
+            </label>
+            <select id="cargoBodyTypeCode" class="form-field__select" formControlName="cargoBodyTypeCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of CARGO_BODY_TYPE_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ── LV8–LV9: Hazardous Materials ──────────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Hazardous Materials (LV8–LV9)</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="hmId" class="form-field__label">
+              HazMat Identification Number (LV8 SF1)
+            </label>
+            <input
+              type="text"
+              id="hmId"
+              class="form-field__input"
+              formControlName="hmId"
+              maxlength="10"
+              placeholder="UN/NA number"
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="hmClass" class="form-field__label">
+              HazMat Class/Division (LV8 SF2)
+            </label>
+            <input
+              type="text"
+              id="hmClass"
+              class="form-field__input"
+              formControlName="hmClass"
+              maxlength="10"
+              placeholder="e.g. 3, 4.1"
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="hmReleasedCode" class="form-field__label">
+              HazMat Released (LV9)
+            </label>
+            <select id="hmReleasedCode" class="form-field__select" formControlName="hmReleasedCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of HM_RELEASED_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ── LV10–LV11: Axles & Special Sizing ─────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Axles &amp; Special Sizing (LV10–LV11)</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="axlesTractor" class="form-field__label">
+              Axles — Tractor (LV10 SF1)
+            </label>
+            <input
+              type="number"
+              id="axlesTractor"
+              class="form-field__input"
+              formControlName="axlesTractor"
+              min="0"
+              max="99"
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="axlesTrailer1" class="form-field__label">
+              Axles — Trailer 1 (LV10 SF2)
+            </label>
+            <input
+              type="number"
+              id="axlesTrailer1"
+              class="form-field__input"
+              formControlName="axlesTrailer1"
+              min="0"
+              max="99"
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="axlesTrailer2" class="form-field__label">
+              Axles — Trailer 2 (LV10 SF3)
+            </label>
+            <input
+              type="number"
+              id="axlesTrailer2"
+              class="form-field__input"
+              formControlName="axlesTrailer2"
+              min="0"
+              max="99"
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="axlesTrailer3" class="form-field__label">
+              Axles — Trailer 3 (LV10 SF4)
+            </label>
+            <input
+              type="number"
+              id="axlesTrailer3"
+              class="form-field__input"
+              formControlName="axlesTrailer3"
+              min="0"
+              max="99"
+            />
+          </div>
+
+        </div>
+
+        <!-- LV11: Special Sizing Permits -->
+        <h4 class="form-section__sub">Special Sizing Permits (LV11)</h4>
+        <p class="form-section__hint">Select all special sizing permits that apply.</p>
+        <div class="checkbox-grid">
+          @for (entry of LV_SPECIAL_SIZING_ENTRIES; track entry[0]) {
+            <label class="checkbox-item">
+              <input
+                type="checkbox"
+                class="checkbox-item__input"
+                [checked]="selectedSpecialSizing().has(entry[0])"
+                (change)="toggleSpecialSizing(entry[0])"
+              />
+              <span class="checkbox-item__label">{{ entry[0] }} — {{ entry[1] }}</span>
+            </label>
+          }
+        </div>
+      </fieldset>
+
+      <!-- ── Actions ────────────────────────────────────────────────────────── -->
+      <div class="form-actions">
+        <button type="button" class="btn btn--outline" (click)="onCancel()">Cancel</button>
+        <button type="submit" class="btn btn--primary" [disabled]="saving()">
+          @if (saving()) {
+            <span class="spinner spinner--sm" aria-hidden="true"></span>
+            Saving…
+          } @else {
+            Save Large Vehicle
+          }
+        </button>
+      </div>
+
+    </form>
+  }
+
+</div>

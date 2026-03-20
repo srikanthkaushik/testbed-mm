@@ -491,6 +491,60 @@ export interface NonMotoristRequest {
   safetyEquipment:       { sequenceNum: number; code: number }[];
 }
 
+/** Request body for PUT …/vehicles/{vid}/large-vehicle (upsert). */
+export interface LargeVehicleRequest {
+  // LV1
+  cmvLicenseStatusCode:  number | null;
+  cdlComplianceCode:     number | null;
+  // LV2 – trailers (up to 3)
+  trailer1Plate:   string | null;
+  trailer2Plate:   string | null;
+  trailer3Plate:   string | null;
+  trailer1Vin:     string | null;
+  trailer2Vin:     string | null;
+  trailer3Vin:     string | null;
+  trailer1Make:    string | null;
+  trailer2Make:    string | null;
+  trailer3Make:    string | null;
+  trailer1Model:   string | null;
+  trailer2Model:   string | null;
+  trailer3Model:   string | null;
+  trailer1Year:    number | null;
+  trailer2Year:    number | null;
+  trailer3Year:    number | null;
+  // LV3 – motor carrier identity & address
+  carrierIdTypeCode:    number | null;
+  carrierCountryState:  string | null;
+  carrierIdNumber:      string | null;
+  carrierName:          string | null;
+  carrierStreet1:       string | null;
+  carrierStreet2:       string | null;
+  carrierCity:          string | null;
+  carrierState:         string | null;
+  carrierZip:           string | null;
+  carrierCountry:       string | null;
+  // LV4
+  carrierTypeCode:      number | null;
+  // LV5
+  vehicleConfigCode:    number | null;
+  // LV6
+  vehiclePermittedCode: number | null;
+  // LV7
+  cargoBodyTypeCode:    number | null;
+  // LV8
+  hmId:                 string | null;
+  hmClass:              string | null;
+  // LV9
+  hmReleasedCode:       number | null;
+  // LV10
+  axlesTractor:         number | null;
+  axlesTrailer1:        number | null;
+  axlesTrailer2:        number | null;
+  axlesTrailer3:        number | null;
+  // LV11
+  specialSizing:        { sequenceNum: number; code: number }[];
+}
+
 /** Request body for PUT …/vehicles/{vid}/automation (upsert). */
 export interface VehicleAutomationRequest {
   automationPresentCode: number | null;

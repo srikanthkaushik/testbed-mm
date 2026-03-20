@@ -37,9 +37,11 @@ export class CrashListComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   // ── Local UI state (signals) ──────────────────────────────────────────
-  readonly loading = signal<boolean>(false);
-  readonly errorMessage = signal<string>('');
-  readonly page = signal<Page<CrashSummary> | null>(null);
+  readonly loading         = signal<boolean>(false);
+  readonly errorMessage    = signal<string>('');
+  readonly page            = signal<Page<CrashSummary> | null>(null);
+  readonly deletingCrashId = signal<number | null>(null);
+  readonly deleteError     = signal<string>('');
 
   /** Current sort direction for crashDate column. */
   readonly sortAsc = signal<boolean>(false);
@@ -159,6 +161,38 @@ export class CrashListComponent implements OnInit {
     this.currentPage.set(0);
     this.syncUrl();
     this.fetch$.next();
+  }
+
+  // ── Delete helpers ────────────────────────────────────────────────────
+
+  startDelete(id: number, event: Event): void {
+    event.stopPropagation();
+    this.deleteError.set('');
+    this.deletingCrashId.set(id);
+  }
+
+  cancelDelete(event: Event): void {
+    event.stopPropagation();
+    this.deletingCrashId.set(null);
+    this.deleteError.set('');
+  }
+
+  confirmDelete(id: number, event: Event): void {
+    event.stopPropagation();
+    this.deleteError.set('');
+    this.crashService.deleteCrash(id)
+      .pipe(
+        catchError((err: unknown) => {
+          this.deleteError.set(err instanceof Error ? err.message : 'Failed to delete crash.');
+          this.deletingCrashId.set(null);
+          return EMPTY;
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        this.deletingCrashId.set(null);
+        this.fetch$.next();
+      });
   }
 
   // ── Formatting helpers ────────────────────────────────────────────────
