@@ -81,7 +81,7 @@ export const routes: Routes = [
 
       // Automation form — must be before crashes/:id to prevent param conflicts
       {
-        path: 'crashes/:crashId/vehicles/:vehicleId/automation/edit',
+        path: 'crashes/:crashId/vehicles/:vehicleId/automation',
         loadComponent: () =>
           import('./features/crashes/vehicle-automation-form/vehicle-automation-form.component')
             .then(m => m.VehicleAutomationFormComponent),

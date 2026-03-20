@@ -299,7 +299,7 @@
                     + Add Person
                   </a>
                   <a
-                    [routerLink]="['/crashes', crash()!.crashId, 'vehicles', v.vehicleId, 'automation', 'edit']"
+                    [routerLink]="['/crashes', crash()!.crashId, 'vehicles', v.vehicleId, 'automation']"
                     class="btn btn--sm btn--outline"
                     [attr.aria-label]="'Edit automation for vehicle unit ' + (v.unitNumber ?? v.vehicleId)"
                   >
