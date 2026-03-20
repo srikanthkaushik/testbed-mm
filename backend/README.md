@@ -74,6 +74,11 @@ DELETE /crashes/{id}/roadway             → delete roadway (ADMIN)
 See [CRASH.md](CRASH.md) for full implementation reference, module structure, API details, and local run instructions.
 
 ### 5. reference-service
+Simple read-only service on port **8083**. Queries the 7 `REF_*` tables at startup, caches results in memory, and exposes them via `GET /lookups` (all types) and `GET /lookups/{type}` (single type). No auth required. The Angular frontend pre-loads all types at startup via `APP_INITIALIZER`.
+
+See [REFERENCE.md](REFERENCE.md) for full implementation reference, DTO design, frontend integration, and local run instructions.
+
+### 5. reference-service
 - Simple read-only service over the `REF_*` tables (MySQL) or `LOOKUP_CODE_VALUES_TBL` (Oracle)
 - Cache responses with Spring Cache + Caffeine — reference data changes very rarely
 - `crash-service` calls this at startup or on-demand to validate coded values

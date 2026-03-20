@@ -87,6 +87,7 @@ mmucc-develop/
 │   ├── README.md                 Architecture, sprint plan, technical decisions
 │   ├── AUTH.md                   auth-service API, token design, configuration
 │   ├── CRASH.md                  crash-service API reference, data model, migrations
+│   ├── REFERENCE.md              reference-service API, lookup types, frontend integration
 │   ├── pom.xml                   Maven parent aggregator (multi-module)
 │   ├── common/                   Shared library: JwtUtils, AuditFields, exceptions
 │   ├── auth-service/             Port 8081 — Firebase → JWT, user CRUD, RBAC
@@ -176,6 +177,7 @@ Login via the Firebase-backed login page. New accounts are auto-provisioned as `
 - [`backend/README.md`](backend/README.md) — service decomposition, sprint history, key decisions
 - [`backend/AUTH.md`](backend/AUTH.md) — auth-service API, token design, roles, security notes
 - [`backend/CRASH.md`](backend/CRASH.md) — crash-service API reference, multi-value child pattern, Flyway history
+- [`backend/REFERENCE.md`](backend/REFERENCE.md) — reference-service API, lookup types, DTO fields, frontend integration
 - [`database/mysql/README.md`](database/mysql/README.md) — MySQL schema setup, table acronyms, seed data
 - [`database/oracle/README.md`](database/oracle/README.md) — Oracle schema, consolidated lookup design
 - [`frontend/mmucc-app/README.md`](frontend/mmucc-app/README.md) — Angular architecture, route map, component inventory
