@@ -12,9 +12,14 @@ Angular 18 single-page application for the MMUCC v5 Crash Reporting System.
 | Phase 2–3 | Crash detail — all 115 MMUCC elements across 5 tabs | ✅ Complete |
 | Phase 4 | Crash entry form (C1–C27) | ✅ Complete |
 | Phase 5 | Vehicle entry form (V1–V24) | ✅ Complete |
-| Phase 6 | Person entry form (P1–P27) | 🔲 Not started |
-| Phase 7 | Roadway entry form (R1–R16) | 🔲 Not started |
-| Phase 8 | Dashboard, delete actions, admin | 🔲 Not started |
+| Phase 6 | Person entry form (P1–P27) with conditional Fatal / Non-Motorist sub-sections | ✅ Complete |
+| Phase 7 | Roadway entry form (R1–R16) | ✅ Complete |
+| Phase 7a | Vehicle Automation form (DV1) | ✅ Complete |
+| Phase 7b | Large Vehicle / HazMat form (LV1–LV11) | ✅ Complete |
+| Phase 7c | Delete crash / vehicle / person with inline confirmation | ✅ Complete |
+| Phase 8 | Dashboard (stat cards, recent crashes table) | ✅ Complete |
+| Phase 8a | Admin user management (user list, role filter, inline role editing) | ✅ Complete |
+| Phase 9 | Reports / CSV export (report-service not yet built) | 🔲 Not started |
 
 ---
 
@@ -33,7 +38,10 @@ npm install
 ng serve            # http://localhost:4200
 ```
 
-API calls are proxied to `http://localhost:8082` via `proxy.conf.json`. The proxy is active when running `ng serve`.
+API calls are proxied via `proxy.conf.json` (active during `ng serve`):
+- `/auth` → `http://localhost:8081` (auth-service)
+- `/admin` → `http://localhost:8081` (auth-service admin endpoints)
+- `/api` → `http://localhost:8082` (crash-service; `/api` prefix is stripped before forwarding)
 
 ### Build
 
@@ -55,7 +63,7 @@ ng build --configuration development  # development (unminified)
 | Change detection | `OnPush` everywhere |
 | Routing | Lazy-loaded standalone components |
 | HTTP | `HttpClient` via `provideHttpClient(withInterceptors([...]))` |
-| Auth | `authInterceptor` attaches `Authorization: Bearer <token>` from `localStorage` |
+| Auth | `authInterceptor` attaches `Authorization: Bearer <token>` from in-memory JWT (never localStorage) |
 | Forms | `ReactiveFormsModule` with `FormBuilder.nonNullable` |
 | Styles | Component-scoped SCSS + global CSS custom properties (design tokens) |
 
@@ -69,24 +77,33 @@ src/app/
 │   ├── interceptors/
 │   │   └── auth.interceptor.ts        Attaches Bearer token to all API requests
 │   ├── models/
-│   │   ├── crash.models.ts            TypeScript interfaces for all API types
+│   │   ├── crash.models.ts            TypeScript interfaces for all crash-service DTOs
 │   │   │                              (CrashSummary, CrashDetail, VehicleDetail,
-│   │   │                               PersonDetail, CrashRequest, VehicleRequest, …)
+│   │   │                               PersonDetail, all Request types, Page<T>, …)
+│   │   ├── admin.models.ts            UserSummary, RoleCode, ROLE_LABELS, ALL_ROLES
 │   │   └── mmucc-lookup.ts            Record<number, string> maps for all MMUCC
 │   │                                  coded-value fields (50+ lookup maps)
 │   └── services/
 │       ├── auth.service.ts            Firebase login, token storage, logout
-│       └── crash.service.ts           All crash/vehicle API calls
+│       ├── crash.service.ts           All crash / vehicle / person / roadway API calls
+│       └── admin.service.ts           User list, role update (admin endpoints)
 │
 ├── features/
 │   ├── auth/
-│   │   └── login/                     Firebase SSO + email/password login
-│   ├── crashes/
-│   │   ├── crash-list/                Crash list with filters, sort, pagination
-│   │   ├── crash-detail/              5-tab read-only detail view (all 115 fields)
-│   │   ├── crash-form/                Create / edit crash (C1–C27)
-│   │   └── vehicle-form/              Add / edit vehicle (V1–V24)
-│   └── shell/                         App shell — nav, sidebar, outlet
+│   │   └── login/                         Firebase SSO + email/password login
+│   ├── shell/                             App shell — nav, sidebar, outlet
+│   ├── dashboard/                         Stat cards + recent crashes table
+│   ├── admin/
+│   │   └── admin-users/                  User list, role filter, inline role editing
+│   └── crashes/
+│       ├── crash-list/                    Crash list with filters, sort, pagination, delete
+│       ├── crash-detail/                  5-tab read-only detail (all 115 fields), delete
+│       ├── crash-form/                    Create / edit crash (C1–C27)
+│       ├── vehicle-form/                  Add / edit vehicle (V1–V24)
+│       ├── person-form/                   Add / edit person (P1–P27, conditional F/NM)
+│       ├── roadway-form/                  Upsert roadway (R1–R16)
+│       ├── vehicle-automation-form/       Upsert automation data (DV1)
+│       └── large-vehicle-form/            Upsert large vehicle / HazMat (LV1–LV11)
 │
 └── shared/
     └── components/
@@ -123,9 +140,14 @@ Defined in `src/styles.scss` and available globally:
 | `/crashes/:id/edit` | `CrashFormComponent` | Edit an existing crash |
 | `/crashes/:crashId/vehicles/new` | `VehicleFormComponent` | Add a vehicle to a crash |
 | `/crashes/:crashId/vehicles/:vehicleId/edit` | `VehicleFormComponent` | Edit a vehicle |
-| `/dashboard` | *(coming soon)* | Summary statistics |
+| `/crashes/:crashId/vehicles/:vehicleId/persons/new` | `PersonFormComponent` | Add a person to a vehicle |
+| `/crashes/:crashId/vehicles/:vehicleId/persons/:personId/edit` | `PersonFormComponent` | Edit a person |
+| `/crashes/:crashId/roadway/edit` | `RoadwayFormComponent` | Create or edit roadway data |
+| `/crashes/:crashId/vehicles/:vehicleId/automation` | `VehicleAutomationFormComponent` | Create or edit automation data |
+| `/crashes/:crashId/vehicles/:vehicleId/large-vehicle` | `LargeVehicleFormComponent` | Create or edit large vehicle / HazMat data |
+| `/dashboard` | `DashboardComponent` | Summary stat cards + recent crashes |
 | `/reports` | *(coming soon)* | Filtered exports |
-| `/admin/users` | *(coming soon)* | User management (ADMIN only) |
+| `/admin/users` | `AdminUsersComponent` | User list + inline role editing (ADMIN only) |
 
 > Route order matters: `crashes/new` and `crashes/:crashId/vehicles/new` are declared before their parameterized siblings to prevent the literal string `"new"` from matching a numeric `:id` or `:crashId`.
 
@@ -154,7 +176,7 @@ Over 50 lookup maps are defined covering all 8 MMUCC sections. The form componen
 
 ## Forms Architecture
 
-Both entry forms (`CrashFormComponent`, `VehicleFormComponent`) follow the same pattern:
+All entry forms (`CrashFormComponent`, `VehicleFormComponent`, `PersonFormComponent`, `RoadwayFormComponent`, `VehicleAutomationFormComponent`, `LargeVehicleFormComponent`) follow the same pattern:
 
 1. **Mode detection** — `crashId` / `vehicleId` from route params; `null` = create, non-null = edit
 2. **Pre-load** — in edit mode, fetch the existing record and `patchValue()` the form

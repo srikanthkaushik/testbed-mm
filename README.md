@@ -26,9 +26,14 @@ A full-stack web application for collecting, managing, and reporting motor vehic
 | **Phase 3** | Crash detail — all 115 MMUCC fields displayed with "N — Description" lookup rendering | ✅ Complete |
 | **Phase 4** | Crash entry form (C1–C27) — create and edit crash records | ✅ Complete |
 | **Phase 5** | Vehicle entry form (V1–V24) — add and edit vehicles on a crash | ✅ Complete |
-| **Phase 6** | Person entry form (P1–P27) | 🔲 Not started |
-| **Phase 7** | Roadway entry form (R1–R16) | 🔲 Not started |
-| **Phase 8** | Dashboard, reports, admin | 🔲 Not started |
+| **Phase 6** | Person entry form (P1–P27) with conditional Fatal / Non-Motorist sub-sections | ✅ Complete |
+| **Phase 7** | Roadway entry form (R1–R16) | ✅ Complete |
+| **Phase 7a** | Vehicle Automation form (DV1) | ✅ Complete |
+| **Phase 7b** | Large Vehicle / HazMat form (LV1–LV11) | ✅ Complete |
+| **Phase 7c** | Delete crash / vehicle / person with inline confirmation | ✅ Complete |
+| **Phase 8** | Dashboard (stat cards, recent crashes table) | ✅ Complete |
+| **Phase 8a** | Admin user management (user list, inline role editing) | ✅ Complete |
+| **Phase 9** | Reports / CSV export (report-service not yet built) | 🔲 Not started |
 
 ### MMUCC Coverage Summary
 
@@ -36,12 +41,12 @@ A full-stack web application for collecting, managing, and reporting motor vehic
 |---|---|---|---|---|
 | Crash (C) | C1–C27 | ✅ | ✅ | ✅ |
 | Vehicle (V) | V1–V24 | ✅ | ✅ | ✅ |
-| Person (P) | P1–P27 | ✅ | ✅ | 🔲 |
-| Roadway (R) | R1–R16 | ✅ | ✅ | 🔲 |
-| Fatal (F) | F1–F3 | ✅ | ✅ | 🔲 |
-| Large Vehicle / HazMat (LV) | LV1–LV11 | ✅ | ✅ | 🔲 |
-| Non-Motorist (NM) | NM1–NM6 | ✅ | ✅ | 🔲 |
-| Dynamic / Automation (DV) | DV1 | ✅ | ✅ | 🔲 |
+| Person (P) | P1–P27 | ✅ | ✅ | ✅ |
+| Roadway (R) | R1–R16 | ✅ | ✅ | ✅ |
+| Fatal (F) | F1–F3 | ✅ | ✅ | ✅ |
+| Large Vehicle / HazMat (LV) | LV1–LV11 | ✅ | ✅ | ✅ |
+| Non-Motorist (NM) | NM1–NM6 | ✅ | ✅ | ✅ |
+| Dynamic / Automation (DV) | DV1 | ✅ | ✅ | ✅ |
 
 ---
 
@@ -92,7 +97,7 @@ mmucc-develop/
         ├── README.md             Angular app architecture, routes, local dev guide
         └── src/app/
             ├── core/             Services, models, guards, auth interceptor
-            ├── features/         crashes/ (list, detail, crash-form, vehicle-form)
+            ├── features/         crashes/ (list, detail, all entry forms), dashboard/, admin/
             └── shared/           Alert component, shared styles
 ```
 

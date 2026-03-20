@@ -17,9 +17,9 @@ This repository is associated with the **MMUCC (Model Minimum Uniform Crash Crit
 
 Database schema is complete. Backend auth-service and crash-service are fully implemented (Sprints 1–4). Frontend is functionally complete for data entry and record management:
 
-- **Phases 1–8 complete:** login, crash list, crash detail (read-only, all 115 fields), crash entry form, vehicle entry form, person entry form (P1–P27 with conditional Fatal/Non-Motorist sub-sections), roadway entry form (R1–R16), vehicle automation form (DV1), large vehicle form (LV1–LV11).
-- **Delete operations complete:** crash, vehicle, and person records can be deleted from the crash list and crash detail views with inline confirmation.
-- **Remaining:** dashboard (summary statistics), admin user management UI (backend endpoints exist), and reports/export (CSV/PDF).
+- **Phases 1–8 complete:** login, crash list, crash detail (read-only, all 115 fields), crash entry form, vehicle entry form, person entry form (P1–P27 with conditional Fatal/Non-Motorist sub-sections), roadway entry form (R1–R16), vehicle automation form (DV1), large vehicle form (LV1–LV11), delete operations (crash/vehicle/person with inline confirmation), dashboard (stat cards + recent crashes), admin user management (user list + inline role editing).
+- **All 115 MMUCC data elements are readable and writable** via the frontend.
+- **Remaining:** reports/export (CSV/PDF) — depends on report-service which is not yet built.
 
 ## Repository Structure
 

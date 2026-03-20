@@ -47,23 +47,20 @@ frontend/
             │           └── alert.component.ts    ← accessible alert/status banner
             └── features/
                 ├── auth/
-                │   └── login/
-                │       ├── login.component.ts    ← Google SSO + email/password logic
-                │       ├── login.component.html  ← split-panel, fully annotated ADA
-                │       └── login.component.scss  ← muted palette, contrast documented
-                ├── shell/
-                │   ├── shell.component.ts        ← authenticated layout host
-                │   ├── shell.component.html      ← responsive nav + collapsible sidebar
-                │   └── shell.component.scss      ← layout, role badge, mobile breakpoints
+                │   └── login/                    ← Google SSO + email/password login page
+                ├── shell/                         ← authenticated layout: nav, sidebar, outlet
+                ├── dashboard/                     ← stat cards + recent crashes table
+                ├── admin/
+                │   └── admin-users/              ← user list, role filter, inline role editing
                 └── crashes/
-                    ├── crash-list/
-                    │   ├── crash-list.component.ts    ← filter/page/sort + URL sync
-                    │   ├── crash-list.component.html  ← table, filters, pagination controls
-                    │   └── crash-list.component.scss  ← table styling, skeleton shimmer
-                    └── crash-detail/
-                        ├── crash-detail.component.ts    ← tabbed detail, signals, formatters
-                        ├── crash-detail.component.html  ← 5-tab layout with stats strip
-                        └── crash-detail.component.scss  ← field grid, vehicle/person cards, tab bar
+                    ├── crash-list/               ← filters, sort, pagination, URL state, delete
+                    ├── crash-detail/             ← 5-tab read-only view (all 115 fields), delete
+                    ├── crash-form/               ← create / edit crash (C1–C27)
+                    ├── vehicle-form/             ← add / edit vehicle (V1–V24)
+                    ├── person-form/              ← add / edit person (P1–P27, conditional F/NM)
+                    ├── roadway-form/             ← upsert roadway (R1–R16)
+                    ├── vehicle-automation-form/  ← upsert automation data (DV1)
+                    └── large-vehicle-form/       ← upsert large vehicle / HazMat (LV1–LV11)
 ```
 
 ---
@@ -107,7 +104,7 @@ npm start
 # → http://localhost:4200
 ```
 
-The dev server proxies `/auth` to `http://localhost:8081` and `/crashes` to `http://localhost:8082`, so no CORS configuration is needed during development.
+The dev server proxies `/auth` and `/admin` to `http://localhost:8081` (auth-service) and `/api` to `http://localhost:8082` (crash-service, with `/api` prefix stripped), so no CORS configuration is needed during development.
 
 ### Production Build
 
@@ -173,9 +170,14 @@ User
 | `/` | — | — | Redirects to `/crashes` |
 | `/crashes` | `CrashListComponent` | `authGuard` | Authenticated |
 | `/crashes/:id` | `CrashDetailComponent` | `authGuard` | Authenticated |
-| `/dashboard` | `ComingSoonComponent` | `authGuard` | Authenticated |
+| `/crashes/:crashId/vehicles/:vehicleId/persons/new` | `PersonFormComponent` | `authGuard` | Authenticated |
+| `/crashes/:crashId/vehicles/:vehicleId/persons/:personId/edit` | `PersonFormComponent` | `authGuard` | Authenticated |
+| `/crashes/:crashId/roadway/edit` | `RoadwayFormComponent` | `authGuard` | Authenticated |
+| `/crashes/:crashId/vehicles/:vehicleId/automation` | `VehicleAutomationFormComponent` | `authGuard` | Authenticated |
+| `/crashes/:crashId/vehicles/:vehicleId/large-vehicle` | `LargeVehicleFormComponent` | `authGuard` | Authenticated |
+| `/dashboard` | `DashboardComponent` | `authGuard` | Authenticated |
 | `/reports` | `ComingSoonComponent` | `authGuard` | Authenticated |
-| `/admin/users` | `ComingSoonComponent` | `authGuard` | Authenticated |
+| `/admin/users` | `AdminUsersComponent` | `authGuard` | ADMIN role (backend-enforced) |
 | `**` | — | — | Redirects to `/crashes` |
 
 The `authGuard` redirects unauthenticated users to `/login?returnUrl=<attempted-path>`. After a successful login the user is sent back to the originally requested URL.
@@ -238,11 +240,12 @@ All colour values are defined as CSS custom properties in `src/styles.scss`:
 | **Sprint 1** | Routing scaffold, core services, login page (Google SSO + email/password), end-to-end auth verified | ✅ Complete |
 | **Sprint 2** | Authenticated shell (responsive nav + collapsible sidebar, role-aware links, logout) | ✅ Complete |
 | **Sprint 3** | Crash list with date/county filters, sort, pagination, URL state sync, skeleton shimmer | ✅ Complete |
-| **Sprint 4** | Multi-step crash entry form (C1–C27 MMUCC fields) | 🔲 Not started |
+| **Sprint 4** | Crash entry form (C1–C27) — create and edit crash records | ✅ Complete |
 | **Sprint 5** | Crash detail view (tabbed: overview, vehicles, persons, roadway, audit log) | ✅ Complete |
-| **Sprint 6** | Vehicle entry modal (V1–V24), roadway upsert form | 🔲 Not started |
-| **Sprint 7** | Admin: user management, role assignment | 🔲 Not started |
-| **Sprint 8** | Reports, CSV export, analytics charts | 🔲 Not started |
+| **Sprint 6** | Vehicle entry form (V1–V24), person entry form (P1–P27) with conditional Fatal / Non-Motorist sub-sections | ✅ Complete |
+| **Sprint 7** | Roadway entry form (R1–R16), vehicle automation form (DV1), large vehicle / HazMat form (LV1–LV11) | ✅ Complete |
+| **Sprint 8** | Delete crash / vehicle / person (inline confirmation), dashboard (stat cards + recent crashes), admin user management (user list + inline role editing) | ✅ Complete |
+| **Sprint 9** | Reports, CSV/PDF export (depends on report-service backend) | 🔲 Not started |
 
 ### Sprint 1 — Completed
 

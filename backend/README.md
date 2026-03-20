@@ -128,5 +128,9 @@ The Angular app is developed in phases that build on the backend sprints above.
 | **Phase 5** | Vehicle entry form (V1–V24) — add/edit vehicle (`POST`/`PUT /crashes/{id}/vehicles`), 8 fieldset sections, traffic control / damage area / sequence event checkbox grids | ✅ Complete |
 | **Phase 6** | Person entry form (P1–P27) — add/edit person, conditional fatal/non-motorist sub-sections | ✅ Complete |
 | **Phase 7** | Roadway entry form (R1–R16) | ✅ Complete |
-| **Phase 8** | Dashboard (counts, trends, top counties), delete crash/vehicle/person, admin user management | 🔲 Not started |
+| **Phase 7a** | Vehicle Automation form (DV1) | ✅ Complete |
+| **Phase 7b** | Large Vehicle / HazMat form (LV1–LV11) | ✅ Complete |
+| **Phase 7c** | Delete crash / vehicle / person with inline confirmation | ✅ Complete |
+| **Phase 8** | Dashboard (stat cards, recent crashes table) | ✅ Complete |
+| **Phase 8a** | Admin user management — user list, role filter, inline role editing | ✅ Complete |
 | **Phase 9** | Reports — filtered exports (CSV/PDF) driven by report-service | 🔲 Not started |
