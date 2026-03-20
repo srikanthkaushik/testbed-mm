@@ -104,7 +104,7 @@
             <label for="bodyTypeCode" class="form-field__label">Body Type (V8)</label>
             <select id="bodyTypeCode" class="form-field__select" formControlName="bodyTypeCode">
               <option [ngValue]="null">— Select —</option>
-              @for (entry of BODY_TYPE_ENTRIES; track entry[0]) {
+              @for (entry of BODY_TYPE_ENTRIES(); track entry[0]) {
                 <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
               }
             </select>
@@ -313,7 +313,7 @@
 
         <p class="form-section__sub">Sequence of Events (V19) — select all that apply</p>
         <div class="checkbox-grid">
-          @for (entry of HARMFUL_EVENT_ENTRIES; track entry[0]) {
+          @for (entry of HARMFUL_EVENT_ENTRIES(); track entry[0]) {
             <label class="checkbox-item">
               <input
                 type="checkbox"
@@ -331,7 +331,7 @@
             <label for="mostHarmfulEventCode" class="form-field__label">Most Harmful Event (V20)</label>
             <select id="mostHarmfulEventCode" class="form-field__select" formControlName="mostHarmfulEventCode">
               <option [ngValue]="null">— Select —</option>
-              @for (entry of HARMFUL_EVENT_ENTRIES; track entry[0]) {
+              @for (entry of HARMFUL_EVENT_ENTRIES(); track entry[0]) {
                 <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
               }
             </select>

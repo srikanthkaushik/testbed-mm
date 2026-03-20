@@ -86,7 +86,7 @@
             <label for="personTypeCode" class="form-field__label">Person Type (P4)</label>
             <select id="personTypeCode" class="form-field__select" formControlName="personTypeCode">
               <option [ngValue]="null">— Select —</option>
-              @for (entry of PERSON_TYPE_ENTRIES; track entry[0]) {
+              @for (entry of PERSON_TYPE_ENTRIES(); track entry[0]) {
                 <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
               }
             </select>
@@ -106,7 +106,7 @@
             <label for="injuryStatusCode" class="form-field__label">Injury Status (P5)</label>
             <select id="injuryStatusCode" class="form-field__select" formControlName="injuryStatusCode">
               <option [ngValue]="null">— Select —</option>
-              @for (entry of INJURY_STATUS_ENTRIES; track entry[0]) {
+              @for (entry of INJURY_STATUS_ENTRIES(); track entry[0]) {
                 <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
               }
             </select>

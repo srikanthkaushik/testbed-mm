@@ -15,11 +15,12 @@ import { CrashService } from '../../../core/services/crash.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AlertComponent } from '../../../shared/components/alert/alert.component';
 import { AuditLogEntry, CrashDetail, FatalSection, LargeVehicle, NonMotorist, VehicleAutomation, VehicleDetail, PersonDetail, TrafficControl } from '../../../core/models/crash.models';
+import { ReferenceService } from '../../../core/services/reference.service';
 import {
   MANNER_COLLISION,
   LIGHT_CONDITION,
-  WEATHER_CONDITION,
-  SURFACE_CONDITION,
+  WEATHER_CONDITION    as WEATHER_CONDITION_STATIC,
+  SURFACE_CONDITION   as SURFACE_CONDITION_STATIC,
   JUNCTION_TYPE,
   INTERSECTION_GEOMETRY,
   INTERSECTION_TRAFFIC_CTL,
@@ -28,10 +29,10 @@ import {
   WORK_ZONE_LOCATION,
   WORK_ZONE_TYPE,
   LOC_FIRST_HARMFUL_EVENT,
-  CRASH_TYPE,
-  HARMFUL_EVENT,
+  CRASH_TYPE          as CRASH_TYPE_STATIC,
+  HARMFUL_EVENT       as HARMFUL_EVENT_STATIC,
   UNIT_TYPE,
-  BODY_TYPE,
+  BODY_TYPE           as BODY_TYPE_STATIC,
   TRAFFIC_CONTROL,
   DIRECTION_OF_TRAVEL,
   TRAFFICWAY_TRAVEL_DIR,
@@ -51,8 +52,8 @@ import {
   PAVEMENT_LANE_LINE,
   ROUTE_TYPE,
   SEX_CODE,
-  PERSON_TYPE,
-  INJURY_STATUS,
+  PERSON_TYPE         as PERSON_TYPE_STATIC,
+  INJURY_STATUS       as INJURY_STATUS_STATIC,
   SEATING_ROW,
   SEATING_SEAT,
   RESTRAINT,
@@ -113,6 +114,7 @@ export type DetailTab = 'overview' | 'vehicles' | 'persons' | 'roadway' | 'audit
 export class CrashDetailComponent implements OnInit {
   private readonly crashService = inject(CrashService);
   private readonly authService  = inject(AuthService);
+  private readonly refSvc       = inject(ReferenceService);
   private readonly route        = inject(ActivatedRoute);
   private readonly router       = inject(Router);
   private readonly destroyRef   = inject(DestroyRef);
@@ -139,10 +141,44 @@ export class CrashDetailComponent implements OnInit {
   readonly deleteError       = signal<string>('');
 
   // ── Lookup maps exposed for template use ───────────────────────────────────
+  // The 7 maps that the reference-service covers are computed signals: they read
+  // from the live API data when available and fall back to static maps otherwise.
+
+  private static toLookupMap(entries: { code: number; description: string }[]): Record<number, string> {
+    return Object.fromEntries(entries.map(e => [e.code, e.description]));
+  }
+
+  readonly CRASH_TYPE = computed<Record<number, string>>(() => {
+    const live = this.refSvc.crashTypes();
+    return live.length > 0 ? CrashDetailComponent.toLookupMap(live) : CRASH_TYPE_STATIC;
+  });
+  readonly HARMFUL_EVENT = computed<Record<number, string>>(() => {
+    const live = this.refSvc.harmfulEvents();
+    return live.length > 0 ? CrashDetailComponent.toLookupMap(live) : HARMFUL_EVENT_STATIC;
+  });
+  readonly WEATHER_CONDITION = computed<Record<number, string>>(() => {
+    const live = this.refSvc.weatherConditions();
+    return live.length > 0 ? CrashDetailComponent.toLookupMap(live) : WEATHER_CONDITION_STATIC;
+  });
+  readonly SURFACE_CONDITION = computed<Record<number, string>>(() => {
+    const live = this.refSvc.surfaceConditions();
+    return live.length > 0 ? CrashDetailComponent.toLookupMap(live) : SURFACE_CONDITION_STATIC;
+  });
+  readonly PERSON_TYPE = computed<Record<number, string>>(() => {
+    const live = this.refSvc.personTypes();
+    return live.length > 0 ? CrashDetailComponent.toLookupMap(live) : PERSON_TYPE_STATIC;
+  });
+  readonly INJURY_STATUS = computed<Record<number, string>>(() => {
+    const live = this.refSvc.injuryStatuses();
+    return live.length > 0 ? CrashDetailComponent.toLookupMap(live) : INJURY_STATUS_STATIC;
+  });
+  readonly BODY_TYPE = computed<Record<number, string>>(() => {
+    const live = this.refSvc.bodyTypes();
+    return live.length > 0 ? CrashDetailComponent.toLookupMap(live) : BODY_TYPE_STATIC;
+  });
+
   readonly MANNER_COLLISION        = MANNER_COLLISION;
   readonly LIGHT_CONDITION         = LIGHT_CONDITION;
-  readonly WEATHER_CONDITION       = WEATHER_CONDITION;
-  readonly SURFACE_CONDITION       = SURFACE_CONDITION;
   readonly JUNCTION_TYPE           = JUNCTION_TYPE;
   readonly INTERSECTION_GEOMETRY   = INTERSECTION_GEOMETRY;
   readonly INTERSECTION_TRAFFIC_CTL = INTERSECTION_TRAFFIC_CTL;
@@ -151,10 +187,7 @@ export class CrashDetailComponent implements OnInit {
   readonly WORK_ZONE_LOCATION      = WORK_ZONE_LOCATION;
   readonly WORK_ZONE_TYPE          = WORK_ZONE_TYPE;
   readonly LOC_FIRST_HARMFUL_EVENT = LOC_FIRST_HARMFUL_EVENT;
-  readonly CRASH_TYPE              = CRASH_TYPE;
-  readonly HARMFUL_EVENT           = HARMFUL_EVENT;
   readonly UNIT_TYPE               = UNIT_TYPE;
-  readonly BODY_TYPE               = BODY_TYPE;
   readonly TRAFFIC_CONTROL         = TRAFFIC_CONTROL;
   readonly DIRECTION_OF_TRAVEL     = DIRECTION_OF_TRAVEL;
   readonly TRAFFICWAY_TRAVEL_DIR   = TRAFFICWAY_TRAVEL_DIR;
@@ -175,8 +208,6 @@ export class CrashDetailComponent implements OnInit {
   readonly ROUTE_TYPE              = ROUTE_TYPE;
 
   readonly SEX_CODE        = SEX_CODE;
-  readonly PERSON_TYPE     = PERSON_TYPE;
-  readonly INJURY_STATUS   = INJURY_STATUS;
   readonly SEATING_ROW     = SEATING_ROW;
   readonly SEATING_SEAT    = SEATING_SEAT;
   readonly RESTRAINT       = RESTRAINT;

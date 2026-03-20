@@ -13,16 +13,17 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
 import { CrashService } from '../../../core/services/crash.service';
+import { ReferenceService } from '../../../core/services/reference.service';
 import { CrashRequest } from '../../../core/models/crash.models';
 import { AlertComponent } from '../../../shared/components/alert/alert.component';
 import {
-  CRASH_TYPE,
-  HARMFUL_EVENT,
+  CRASH_TYPE          as CRASH_TYPE_STATIC,
+  HARMFUL_EVENT       as HARMFUL_EVENT_STATIC,
   MANNER_COLLISION,
   LOC_FIRST_HARMFUL_EVENT,
   LIGHT_CONDITION,
-  WEATHER_CONDITION,
-  SURFACE_CONDITION,
+  WEATHER_CONDITION   as WEATHER_CONDITION_STATIC,
+  SURFACE_CONDITION   as SURFACE_CONDITION_STATIC,
   JUNCTION_TYPE,
   INTERSECTION_GEOMETRY,
   INTERSECTION_TRAFFIC_CTL,
@@ -115,6 +116,7 @@ function entries(map: Record<number, string>): [number, string][] {
 })
 export class CrashFormComponent implements OnInit {
   private readonly crashService = inject(CrashService);
+  private readonly refSvc       = inject(ReferenceService);
   private readonly route        = inject(ActivatedRoute);
   private readonly router       = inject(Router);
   private readonly fb           = inject(FormBuilder);
@@ -142,13 +144,27 @@ export class CrashFormComponent implements OnInit {
   readonly selectedContrib     = signal<Set<number>>(new Set());
 
   // ── Lookup maps exposed to template ───────────────────────────────────────
-  readonly CRASH_TYPE_ENTRIES            = entries(CRASH_TYPE);
-  readonly HARMFUL_EVENT_ENTRIES         = entries(HARMFUL_EVENT);
+  // 4 maps covered by reference-service: live data preferred, static fallback.
+  readonly CRASH_TYPE_ENTRIES = computed<[number, string][]>(() => {
+    const live = this.refSvc.crashTypes();
+    return live.length > 0 ? live.map(e => [e.code, e.description]) : entries(CRASH_TYPE_STATIC);
+  });
+  readonly HARMFUL_EVENT_ENTRIES = computed<[number, string][]>(() => {
+    const live = this.refSvc.harmfulEvents();
+    return live.length > 0 ? live.map(e => [e.code, e.description]) : entries(HARMFUL_EVENT_STATIC);
+  });
+  readonly WEATHER_CONDITION_ENTRIES = computed<[number, string][]>(() => {
+    const live = this.refSvc.weatherConditions();
+    return live.length > 0 ? live.map(e => [e.code, e.description]) : entries(WEATHER_CONDITION_STATIC);
+  });
+  readonly SURFACE_CONDITION_ENTRIES = computed<[number, string][]>(() => {
+    const live = this.refSvc.surfaceConditions();
+    return live.length > 0 ? live.map(e => [e.code, e.description]) : entries(SURFACE_CONDITION_STATIC);
+  });
+
   readonly MANNER_COLLISION_ENTRIES      = entries(MANNER_COLLISION);
   readonly LOC_FIRST_HARMFUL_EVENT_ENTRIES = entries(LOC_FIRST_HARMFUL_EVENT);
   readonly LIGHT_CONDITION_ENTRIES       = entries(LIGHT_CONDITION);
-  readonly WEATHER_CONDITION_ENTRIES     = entries(WEATHER_CONDITION);
-  readonly SURFACE_CONDITION_ENTRIES     = entries(SURFACE_CONDITION);
   readonly JUNCTION_TYPE_ENTRIES         = entries(JUNCTION_TYPE);
   readonly INTERSECTION_GEOMETRY_ENTRIES = entries(INTERSECTION_GEOMETRY);
   readonly INTERSECTION_TRAFFIC_CTL_ENTRIES = entries(INTERSECTION_TRAFFIC_CTL);

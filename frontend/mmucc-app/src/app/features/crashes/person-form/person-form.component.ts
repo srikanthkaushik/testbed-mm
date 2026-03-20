@@ -13,13 +13,14 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { EMPTY, Observable, forkJoin, of } from 'rxjs';
 import { CrashService } from '../../../core/services/crash.service';
+import { ReferenceService } from '../../../core/services/reference.service';
 import { FatalSectionRequest, NonMotoristRequest, PersonRequest } from '../../../core/models/crash.models';
 import { AlertComponent } from '../../../shared/components/alert/alert.component';
 import {
   SEX_CODE,
-  PERSON_TYPE,
+  PERSON_TYPE         as PERSON_TYPE_STATIC,
   INCIDENT_RESPONDER,
-  INJURY_STATUS,
+  INJURY_STATUS       as INJURY_STATUS_STATIC,
   SEATING_ROW,
   SEATING_SEAT,
   RESTRAINT,
@@ -71,6 +72,7 @@ const NM_PERSON_TYPES = new Set([5, 6, 7, 8, 9]);
 })
 export class PersonFormComponent implements OnInit {
   private readonly crashService = inject(CrashService);
+  private readonly refSvc       = inject(ReferenceService);
   private readonly route        = inject(ActivatedRoute);
   private readonly router       = inject(Router);
   private readonly fb           = inject(FormBuilder);
@@ -109,17 +111,38 @@ export class PersonFormComponent implements OnInit {
 
   // ── Conditional display ────────────────────────────────────────────────────
   readonly isDriver = computed(() => this.form.controls.personTypeCode.value === 1);
-  readonly requiresFatal = computed(() => this.form.controls.injuryStatusCode.value === 1);
+  // Use DB-driven flags from reference-service when available; fall back to
+  // hardcoded sets when the service is unavailable (signals empty).
+  readonly requiresFatal = computed(() => {
+    const code = this.form.controls.injuryStatusCode.value;
+    if (code == null) return false;
+    const live = this.refSvc.injuryStatuses();
+    return live.length > 0
+      ? this.refSvc.requiresFatalSection(code)
+      : code === 1;
+  });
   readonly isNonMotorist = computed(() => {
-    const t = this.form.controls.personTypeCode.value;
-    return t != null && NM_PERSON_TYPES.has(t);
+    const code = this.form.controls.personTypeCode.value;
+    if (code == null) return false;
+    const live = this.refSvc.personTypes();
+    return live.length > 0
+      ? this.refSvc.isNonMotoristType(code)
+      : NM_PERSON_TYPES.has(code);
   });
 
   // ── Lookup entries ─────────────────────────────────────────────────────────
+  // 2 entries covered by reference-service: live data preferred, static fallback.
+  readonly PERSON_TYPE_ENTRIES = computed<[number, string][]>(() => {
+    const live = this.refSvc.personTypes();
+    return live.length > 0 ? live.map(e => [e.code, e.description]) : entries(PERSON_TYPE_STATIC);
+  });
+  readonly INJURY_STATUS_ENTRIES = computed<[number, string][]>(() => {
+    const live = this.refSvc.injuryStatuses();
+    return live.length > 0 ? live.map(e => [e.code, e.description]) : entries(INJURY_STATUS_STATIC);
+  });
+
   readonly SEX_CODE_ENTRIES              = entries(SEX_CODE);
-  readonly PERSON_TYPE_ENTRIES           = entries(PERSON_TYPE);
   readonly INCIDENT_RESPONDER_ENTRIES    = entries(INCIDENT_RESPONDER);
-  readonly INJURY_STATUS_ENTRIES         = entries(INJURY_STATUS);
   readonly SEATING_ROW_ENTRIES           = entries(SEATING_ROW);
   readonly SEATING_SEAT_ENTRIES          = entries(SEATING_SEAT);
   readonly RESTRAINT_ENTRIES             = entries(RESTRAINT);

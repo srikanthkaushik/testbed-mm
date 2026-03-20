@@ -208,7 +208,7 @@
             <label for="crashTypeCode" class="form-field__label">Crash Type (C2)</label>
             <select id="crashTypeCode" class="form-field__select" formControlName="crashTypeCode">
               <option [ngValue]="null">— Select —</option>
-              @for (entry of CRASH_TYPE_ENTRIES; track entry[0]) {
+              @for (entry of CRASH_TYPE_ENTRIES(); track entry[0]) {
                 <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
               }
             </select>
@@ -218,7 +218,7 @@
             <label for="firstHarmfulEventCode" class="form-field__label">First Harmful Event (C7)</label>
             <select id="firstHarmfulEventCode" class="form-field__select" formControlName="firstHarmfulEventCode">
               <option [ngValue]="null">— Select —</option>
-              @for (entry of HARMFUL_EVENT_ENTRIES; track entry[0]) {
+              @for (entry of HARMFUL_EVENT_ENTRIES(); track entry[0]) {
                 <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
               }
             </select>
@@ -263,7 +263,7 @@
 
         <p class="form-section__sub">Weather Conditions (C11) — select all that apply</p>
         <div class="checkbox-grid">
-          @for (entry of WEATHER_CONDITION_ENTRIES; track entry[0]) {
+          @for (entry of WEATHER_CONDITION_ENTRIES(); track entry[0]) {
             <label class="checkbox-item">
               <input
                 type="checkbox"
@@ -278,7 +278,7 @@
 
         <p class="form-section__sub">Roadway Surface Conditions (C13) — select all that apply</p>
         <div class="checkbox-grid">
-          @for (entry of SURFACE_CONDITION_ENTRIES; track entry[0]) {
+          @for (entry of SURFACE_CONDITION_ENTRIES(); track entry[0]) {
             <label class="checkbox-item">
               <input
                 type="checkbox"

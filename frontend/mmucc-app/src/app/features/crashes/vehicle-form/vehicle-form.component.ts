@@ -13,11 +13,12 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
 import { CrashService } from '../../../core/services/crash.service';
+import { ReferenceService } from '../../../core/services/reference.service';
 import { VehicleRequest } from '../../../core/models/crash.models';
 import { AlertComponent } from '../../../shared/components/alert/alert.component';
 import {
   UNIT_TYPE,
-  BODY_TYPE,
+  BODY_TYPE           as BODY_TYPE_STATIC,
   TRAFFIC_CONTROL,
   DIRECTION_OF_TRAVEL,
   TRAFFICWAY_TRAVEL_DIR,
@@ -29,7 +30,7 @@ import {
   TOWED,
   DAMAGE_AREA,
   CONTRIBUTING_CIRC,
-  HARMFUL_EVENT,
+  HARMFUL_EVENT       as HARMFUL_EVENT_STATIC,
   YES_NO,
 } from '../../../core/models/mmucc-lookup';
 
@@ -95,6 +96,7 @@ function entries(map: Record<number, string>): [number, string][] {
 })
 export class VehicleFormComponent implements OnInit {
   private readonly crashService = inject(CrashService);
+  private readonly refSvc       = inject(ReferenceService);
   private readonly route        = inject(ActivatedRoute);
   private readonly router       = inject(Router);
   private readonly fb           = inject(FormBuilder);
@@ -126,8 +128,17 @@ export class VehicleFormComponent implements OnInit {
   readonly selectedSequenceEvents  = signal<Set<number>>(new Set());
 
   // ── Lookup maps ───────────────────────────────────────────────────────────
+  // 2 maps covered by reference-service: live data preferred, static fallback.
+  readonly BODY_TYPE_ENTRIES = computed<[number, string][]>(() => {
+    const live = this.refSvc.bodyTypes();
+    return live.length > 0 ? live.map(e => [e.code, e.description]) : entries(BODY_TYPE_STATIC);
+  });
+  readonly HARMFUL_EVENT_ENTRIES = computed<[number, string][]>(() => {
+    const live = this.refSvc.harmfulEvents();
+    return live.length > 0 ? live.map(e => [e.code, e.description]) : entries(HARMFUL_EVENT_STATIC);
+  });
+
   readonly UNIT_TYPE_ENTRIES             = entries(UNIT_TYPE);
-  readonly BODY_TYPE_ENTRIES             = entries(BODY_TYPE);
   readonly TRAFFIC_CONTROL_ENTRIES       = entries(TRAFFIC_CONTROL);
   readonly DIRECTION_OF_TRAVEL_ENTRIES   = entries(DIRECTION_OF_TRAVEL);
   readonly TRAFFICWAY_TRAVEL_DIR_ENTRIES = entries(TRAFFICWAY_TRAVEL_DIR);
@@ -140,7 +151,6 @@ export class VehicleFormComponent implements OnInit {
   readonly TOWED_ENTRIES                 = entries(TOWED);
   readonly DAMAGE_AREA_ENTRIES           = entries(DAMAGE_AREA);
   readonly CONTRIBUTING_CIRC_ENTRIES     = entries(CONTRIBUTING_CIRC);
-  readonly HARMFUL_EVENT_ENTRIES         = entries(HARMFUL_EVENT);
   readonly YES_NO_ENTRIES                = entries(YES_NO);
   readonly SPECIAL_FUNCTION_ENTRIES      = entries(SPECIAL_FUNCTION);
   readonly EMERGENCY_USE_ENTRIES         = entries(EMERGENCY_USE);

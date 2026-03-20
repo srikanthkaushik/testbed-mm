@@ -121,11 +121,11 @@
                 </div>
                 <div class="field-list__row">
                   <dt>Crash Type</dt>
-                  <dd>{{ label(crash()!.crashTypeCode, CRASH_TYPE) }}</dd>
+                  <dd>{{ label(crash()!.crashTypeCode, CRASH_TYPE()) }}</dd>
                 </div>
                 <div class="field-list__row">
                   <dt>First Harmful Event</dt>
-                  <dd>{{ label(crash()!.firstHarmfulEventCode, HARMFUL_EVENT) }}</dd>
+                  <dd>{{ label(crash()!.firstHarmfulEventCode, HARMFUL_EVENT()) }}</dd>
                 </div>
                 <div class="field-list__row">
                   <dt>Location of First Harmful Event</dt>
@@ -189,11 +189,11 @@
                 </div>
                 <div class="field-list__row">
                   <dt>Weather</dt>
-                  <dd>{{ labelList(crash()!.weatherConditions, WEATHER_CONDITION) }}</dd>
+                  <dd>{{ labelList(crash()!.weatherConditions, WEATHER_CONDITION()) }}</dd>
                 </div>
                 <div class="field-list__row">
                   <dt>Surface Condition</dt>
-                  <dd>{{ labelList(crash()!.surfaceConditions, SURFACE_CONDITION) }}</dd>
+                  <dd>{{ labelList(crash()!.surfaceConditions, SURFACE_CONDITION()) }}</dd>
                 </div>
                 <div class="field-list__row">
                   <dt>Alcohol Involvement</dt>
@@ -363,7 +363,7 @@
                       <div class="field-list__row"><dt>License Plate</dt><dd>{{ nullOr(v.licensePlate) }}</dd></div>
                       <div class="field-list__row"><dt>State</dt><dd>{{ nullOr(v.registrationState) }}</dd></div>
                       <div class="field-list__row"><dt>Reg. Year</dt><dd>{{ nullOr(v.registrationYear) }}</dd></div>
-                      <div class="field-list__row"><dt>Body Type</dt><dd>{{ label(v.bodyTypeCode, BODY_TYPE) }}</dd></div>
+                      <div class="field-list__row"><dt>Body Type</dt><dd>{{ label(v.bodyTypeCode, BODY_TYPE()) }}</dd></div>
                     </dl>
                   </div>
 
@@ -373,7 +373,7 @@
                       <div class="field-list__row"><dt>Speed Limit</dt><dd>{{ v.speedLimitMph != null ? v.speedLimitMph + ' mph' : '—' }}</dd></div>
                       <div class="field-list__row"><dt>Direction of Travel</dt><dd>{{ label(v.directionOfTravelCode, DIRECTION_OF_TRAVEL) }}</dd></div>
                       <div class="field-list__row"><dt>Maneuver</dt><dd>{{ label(v.maneuverCode, MANEUVER) }}</dd></div>
-                      <div class="field-list__row"><dt>Most Harmful Event</dt><dd>{{ label(v.mostHarmfulEventCode, HARMFUL_EVENT) }}</dd></div>
+                      <div class="field-list__row"><dt>Most Harmful Event</dt><dd>{{ label(v.mostHarmfulEventCode, HARMFUL_EVENT()) }}</dd></div>
                       <div class="field-list__row"><dt>Initial Contact Point</dt><dd>{{ label(v.damageInitialContact, DAMAGE_AREA) }}</dd></div>
                       <div class="field-list__row"><dt>Damage Extent</dt><dd>{{ label(v.damageExtentCode, DAMAGE_EXTENT) }}</dd></div>
                       <div class="field-list__row"><dt>Hit &amp; Run</dt><dd>{{ label(v.hitAndRunCode, YES_NO) }}</dd></div>
@@ -411,7 +411,7 @@
                       <h3 class="field-section__title">Sequence of Events</h3>
                       <ol class="code-list">
                         @for (e of v.sequenceEvents; track e.sequenceNum) {
-                          <li>{{ label(e.code, HARMFUL_EVENT) }}</li>
+                          <li>{{ label(e.code, HARMFUL_EVENT()) }}</li>
                         }
                       </ol>
                     </div>
@@ -601,8 +601,8 @@
                     </h2>
                     @if (p.injuryStatusCode != null) {
                       <span class="badge" [class]="injuryBadgeClass(p.injuryStatusCode)"
-                            [attr.aria-label]="'Injury status: ' + label(p.injuryStatusCode, INJURY_STATUS)">
-                        {{ label(p.injuryStatusCode, INJURY_STATUS) }}
+                            [attr.aria-label]="'Injury status: ' + label(p.injuryStatusCode, INJURY_STATUS())">
+                        {{ label(p.injuryStatusCode, INJURY_STATUS()) }}
                       </span>
                     }
                     @if (p.vehicleId != null && canWrite()) {
@@ -634,7 +634,7 @@
                     }
                   </div>
                   <p class="person-card__subtitle">
-                    {{ label(p.personTypeCode, PERSON_TYPE) }}
+                    {{ label(p.personTypeCode, PERSON_TYPE()) }}
                     @if (p.incidentResponderCode != null && p.incidentResponderCode !== 1) {
                       <span class="badge badge--info">{{ label(p.incidentResponderCode, INCIDENT_RESPONDER) }}</span>
                     }
