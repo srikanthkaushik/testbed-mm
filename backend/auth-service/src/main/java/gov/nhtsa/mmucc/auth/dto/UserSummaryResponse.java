@@ -11,5 +11,6 @@ public record UserSummaryResponse(
         String lastName,
         String roleCode,
         String agencyCode,
-        String agencyName
+        String agencyName,
+        boolean active
 ) {}

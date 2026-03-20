@@ -33,19 +33,23 @@
           <span class="badge" [class]="severityBadgeClass(crash()!.crashSeverityCode)">
             {{ severityLabel(crash()!.crashSeverityCode) }}
           </span>
-          <a [routerLink]="['/crashes', crash()!.crashId, 'edit']" class="btn btn--sm btn--outline">
-            Edit Crash
-          </a>
-          @if (!deletingCrash()) {
-            <button type="button" class="btn btn--sm btn--danger" (click)="deletingCrash.set(true)">
-              Delete Crash
-            </button>
-          } @else {
-            <span class="delete-confirm">
-              <span class="delete-confirm__text">Delete this crash?</span>
-              <button type="button" class="btn btn--ghost btn--sm" (click)="deletingCrash.set(false)">Cancel</button>
-              <button type="button" class="btn btn--danger btn--sm" (click)="confirmDeleteCrash()">Yes, Delete</button>
-            </span>
+          @if (canWrite()) {
+            <a [routerLink]="['/crashes', crash()!.crashId, 'edit']" class="btn btn--sm btn--outline">
+              Edit Crash
+            </a>
+          }
+          @if (canDelete()) {
+            @if (!deletingCrash()) {
+              <button type="button" class="btn btn--sm btn--danger" (click)="deletingCrash.set(true)">
+                Delete Crash
+              </button>
+            } @else {
+              <span class="delete-confirm">
+                <span class="delete-confirm__text">Delete this crash?</span>
+                <button type="button" class="btn btn--ghost btn--sm" (click)="deletingCrash.set(false)">Cancel</button>
+                <button type="button" class="btn btn--danger btn--sm" (click)="confirmDeleteCrash()">Yes, Delete</button>
+              </span>
+            }
           }
         </div>
         <p class="detail__subtitle">
@@ -281,14 +285,16 @@
           aria-labelledby="tab-vehicles"
           class="tab-panel"
         >
-          <div class="tab-panel__actions">
-            <a
-              [routerLink]="['/crashes', crash()!.crashId, 'vehicles', 'new']"
-              class="btn btn--primary btn--sm"
-            >
-              + Add Vehicle
-            </a>
-          </div>
+          @if (canWrite()) {
+            <div class="tab-panel__actions">
+              <a
+                [routerLink]="['/crashes', crash()!.crashId, 'vehicles', 'new']"
+                class="btn btn--primary btn--sm"
+              >
+                + Add Vehicle
+              </a>
+            </div>
+          }
 
           @if (crash()!.vehicles.length === 0) {
             <p class="empty-note">No vehicles recorded for this crash.</p>
@@ -299,48 +305,52 @@
                   <h2 class="vehicle-card__title">
                     Unit {{ v.unitNumber ?? '?' }} — {{ vehicleLabel(v) }}
                   </h2>
-                  <a
-                    [routerLink]="['/crashes', crash()!.crashId, 'vehicles', v.vehicleId, 'edit']"
-                    class="btn btn--sm btn--outline"
-                    [attr.aria-label]="'Edit vehicle unit ' + (v.unitNumber ?? v.vehicleId)"
-                  >
-                    Edit
-                  </a>
-                  <a
-                    [routerLink]="['/crashes', crash()!.crashId, 'vehicles', v.vehicleId, 'persons', 'new']"
-                    class="btn btn--sm btn--outline"
-                  >
-                    + Add Person
-                  </a>
-                  <a
-                    [routerLink]="['/crashes', crash()!.crashId, 'vehicles', v.vehicleId, 'large-vehicle']"
-                    class="btn btn--sm btn--outline"
-                    [attr.aria-label]="'Edit large vehicle record for unit ' + (v.unitNumber ?? v.vehicleId)"
-                  >
-                    {{ v.largeVehicle ? 'Edit Large Vehicle' : '+ Add Large Vehicle' }}
-                  </a>
-                  <a
-                    [routerLink]="['/crashes', crash()!.crashId, 'vehicles', v.vehicleId, 'automation']"
-                    class="btn btn--sm btn--outline"
-                    [attr.aria-label]="'Edit automation for vehicle unit ' + (v.unitNumber ?? v.vehicleId)"
-                  >
-                    {{ v.automation ? 'Edit Automation' : '+ Add Automation' }}
-                  </a>
-                  @if (deletingVehicleId() === v.vehicleId) {
-                    <span class="delete-confirm">
-                      <span class="delete-confirm__text">Delete vehicle?</span>
-                      <button type="button" class="btn btn--ghost btn--sm" (click)="deletingVehicleId.set(null)">Cancel</button>
-                      <button type="button" class="btn btn--danger btn--sm" (click)="confirmDeleteVehicle(v.vehicleId)">Yes, Delete</button>
-                    </span>
-                  } @else {
-                    <button
-                      type="button"
-                      class="btn btn--sm btn--danger"
-                      [attr.aria-label]="'Delete vehicle unit ' + (v.unitNumber ?? v.vehicleId)"
-                      (click)="deletingVehicleId.set(v.vehicleId)"
+                  @if (canWrite()) {
+                    <a
+                      [routerLink]="['/crashes', crash()!.crashId, 'vehicles', v.vehicleId, 'edit']"
+                      class="btn btn--sm btn--outline"
+                      [attr.aria-label]="'Edit vehicle unit ' + (v.unitNumber ?? v.vehicleId)"
                     >
-                      Delete
-                    </button>
+                      Edit
+                    </a>
+                    <a
+                      [routerLink]="['/crashes', crash()!.crashId, 'vehicles', v.vehicleId, 'persons', 'new']"
+                      class="btn btn--sm btn--outline"
+                    >
+                      + Add Person
+                    </a>
+                    <a
+                      [routerLink]="['/crashes', crash()!.crashId, 'vehicles', v.vehicleId, 'large-vehicle']"
+                      class="btn btn--sm btn--outline"
+                      [attr.aria-label]="'Edit large vehicle record for unit ' + (v.unitNumber ?? v.vehicleId)"
+                    >
+                      {{ v.largeVehicle ? 'Edit Large Vehicle' : '+ Add Large Vehicle' }}
+                    </a>
+                    <a
+                      [routerLink]="['/crashes', crash()!.crashId, 'vehicles', v.vehicleId, 'automation']"
+                      class="btn btn--sm btn--outline"
+                      [attr.aria-label]="'Edit automation for vehicle unit ' + (v.unitNumber ?? v.vehicleId)"
+                    >
+                      {{ v.automation ? 'Edit Automation' : '+ Add Automation' }}
+                    </a>
+                  }
+                  @if (canDelete()) {
+                    @if (deletingVehicleId() === v.vehicleId) {
+                      <span class="delete-confirm">
+                        <span class="delete-confirm__text">Delete vehicle?</span>
+                        <button type="button" class="btn btn--ghost btn--sm" (click)="deletingVehicleId.set(null)">Cancel</button>
+                        <button type="button" class="btn btn--danger btn--sm" (click)="confirmDeleteVehicle(v.vehicleId)">Yes, Delete</button>
+                      </span>
+                    } @else {
+                      <button
+                        type="button"
+                        class="btn btn--sm btn--danger"
+                        [attr.aria-label]="'Delete vehicle unit ' + (v.unitNumber ?? v.vehicleId)"
+                        (click)="deletingVehicleId.set(v.vehicleId)"
+                      >
+                        Delete
+                      </button>
+                    }
                   }
                 </div>
                 <div class="field-grid">
@@ -595,7 +605,7 @@
                         {{ label(p.injuryStatusCode, INJURY_STATUS) }}
                       </span>
                     }
-                    @if (p.vehicleId != null) {
+                    @if (p.vehicleId != null && canWrite()) {
                       <a
                         [routerLink]="['/crashes', crash()!.crashId, 'vehicles', p.vehicleId, 'persons', p.personId, 'edit']"
                         class="btn btn--sm btn--outline"
@@ -603,6 +613,8 @@
                       >
                         Edit
                       </a>
+                    }
+                    @if (p.vehicleId != null && canDelete()) {
                       @if (deletingPersonId() === p.personId) {
                         <span class="delete-confirm">
                           <span class="delete-confirm__text">Delete person?</span>
@@ -965,14 +977,16 @@
           aria-labelledby="tab-roadway"
           class="tab-panel"
         >
-          <div class="tab-panel__actions">
-            <a
-              [routerLink]="['/crashes', crash()!.crashId, 'roadway', 'edit']"
-              class="btn btn--primary btn--sm"
-            >
-              {{ crash()!.roadway ? 'Edit Roadway' : '+ Add Roadway' }}
-            </a>
-          </div>
+          @if (canWrite()) {
+            <div class="tab-panel__actions">
+              <a
+                [routerLink]="['/crashes', crash()!.crashId, 'roadway', 'edit']"
+                class="btn btn--primary btn--sm"
+              >
+                {{ crash()!.roadway ? 'Edit Roadway' : '+ Add Roadway' }}
+              </a>
+            </div>
+          }
 
           @if (!crash()!.roadway) {
             <p class="empty-note">No roadway data recorded for this crash.</p>

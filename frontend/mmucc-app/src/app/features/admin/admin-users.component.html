@@ -38,6 +38,7 @@
           <th scope="col">Username</th>
           <th scope="col">Email</th>
           <th scope="col">Agency</th>
+          <th scope="col">Status</th>
           <th scope="col">Role</th>
           <th scope="col" class="users-table__th--actions"></th>
         </tr>
@@ -51,12 +52,13 @@
               <td><span class="skeleton skeleton--medium"></span></td>
               <td><span class="skeleton skeleton--short"></span></td>
               <td><span class="skeleton skeleton--xs"></span></td>
+              <td><span class="skeleton skeleton--xs"></span></td>
               <td></td>
             </tr>
           }
         } @else if (!page() || page()!.content.length === 0) {
           <tr>
-            <td colspan="6" class="users-table__empty">No users found.</td>
+            <td colspan="7" class="users-table__empty">No users found.</td>
           </tr>
         } @else {
           @for (u of page()!.content; track u.userId) {
@@ -65,6 +67,24 @@
               <td class="users-table__td users-table__td--mono">{{ u.username }}</td>
               <td class="users-table__td">{{ u.email }}</td>
               <td class="users-table__td">{{ u.agencyName ?? u.agencyCode ?? '—' }}</td>
+
+              <!-- Status cell -->
+              <td class="users-table__td">
+                <button
+                  type="button"
+                  class="btn btn--sm"
+                  [class]="u.active ? 'btn--success' : 'btn--outline'"
+                  [disabled]="togglingStatusId() === u.userId"
+                  [attr.aria-label]="(u.active ? 'Deactivate ' : 'Activate ') + fullName(u)"
+                  (click)="toggleStatus(u)"
+                >
+                  @if (togglingStatusId() === u.userId) {
+                    …
+                  } @else {
+                    {{ u.active ? 'Active' : 'Inactive' }}
+                  }
+                </button>
+              </td>
 
               <!-- Role cell: view or edit -->
               <td class="users-table__td">

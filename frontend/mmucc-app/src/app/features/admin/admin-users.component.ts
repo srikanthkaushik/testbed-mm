@@ -44,6 +44,9 @@ export class AdminUsersComponent implements OnInit {
   readonly roleSaving     = signal(false);
   readonly roleError      = signal('');
 
+  /** userId whose status toggle is in progress; null = none */
+  readonly togglingStatusId = signal<number | null>(null);
+
   // ── Filter form ───────────────────────────────────────────────────────
   readonly filterForm = this.fb.nonNullable.group({ role: [''] });
 
@@ -143,6 +146,26 @@ export class AdminUsersComponent implements OnInit {
       this.roleSaving.set(false);
       this.editingRoleId.set(null);
       this.pendingRole.set(null);
+    });
+  }
+
+  toggleStatus(user: UserSummary): void {
+    this.togglingStatusId.set(user.userId);
+    this.adminService.updateStatus(user.userId, !user.active).pipe(
+      catchError(() => {
+        this.togglingStatusId.set(null);
+        return EMPTY;
+      }),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(updated => {
+      const p = this.page();
+      if (p) {
+        this.page.set({
+          ...p,
+          content: p.content.map(u => u.userId === user.userId ? updated : u),
+        });
+      }
+      this.togglingStatusId.set(null);
     });
   }
 

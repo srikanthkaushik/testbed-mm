@@ -11,6 +11,7 @@ export interface UserSummary {
   roleCode:   RoleCode;
   agencyCode: string | null;
   agencyName: string | null;
+  active:     boolean;
 }
 
 export type UserPage = Page<UserSummary>;

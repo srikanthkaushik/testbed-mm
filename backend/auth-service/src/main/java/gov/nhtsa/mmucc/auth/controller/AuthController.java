@@ -109,7 +109,7 @@ public class AuthController {
                 .map(userMapper::toSummaryResponse)
                 .orElse(new UserSummaryResponse(
                         principal.getUserId(), principal.getUsername(), principal.getEmail(),
-                        null, null, principal.getRole(), principal.getAgencyCode(), null));
+                        null, null, principal.getRole(), principal.getAgencyCode(), null, true));
         return ResponseEntity.ok(response);
     }
 

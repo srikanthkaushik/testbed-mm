@@ -7,12 +7,13 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { debounceTime, distinctUntilChanged, switchMap, tap, catchError } from 'rxjs/operators';
 import { EMPTY, Subject } from 'rxjs';
 import { CrashService } from '../../../core/services/crash.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { CrashFilter, CrashSummary, Page } from '../../../core/models/crash.models';
 import { AlertComponent } from '../../../shared/components/alert/alert.component';
 
@@ -31,10 +32,15 @@ const DEFAULT_SORT = 'crashDate,desc';
 })
 export class CrashListComponent implements OnInit {
   private readonly crashService = inject(CrashService);
+  private readonly authService  = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
+
+  // ── Role-based access ─────────────────────────────────────────────────
+  private readonly authState = toSignal(this.authService.state$);
+  readonly canDelete = computed(() => this.authState()?.user?.roleCode === 'ADMIN');
 
   // ── Local UI state (signals) ──────────────────────────────────────────
   readonly loading         = signal<boolean>(false);

@@ -7,11 +7,12 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { switchMap, tap, catchError } from 'rxjs/operators';
 import { EMPTY, of } from 'rxjs';
 import { CrashService } from '../../../core/services/crash.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { AlertComponent } from '../../../shared/components/alert/alert.component';
 import { AuditLogEntry, CrashDetail, FatalSection, LargeVehicle, NonMotorist, VehicleAutomation, VehicleDetail, PersonDetail, TrafficControl } from '../../../core/models/crash.models';
 import {
@@ -111,9 +112,18 @@ export type DetailTab = 'overview' | 'vehicles' | 'persons' | 'roadway' | 'audit
 })
 export class CrashDetailComponent implements OnInit {
   private readonly crashService = inject(CrashService);
+  private readonly authService  = inject(AuthService);
   private readonly route        = inject(ActivatedRoute);
   private readonly router       = inject(Router);
   private readonly destroyRef   = inject(DestroyRef);
+
+  // ── Role-based access ──────────────────────────────────────────────────────
+  private readonly authState = toSignal(this.authService.state$);
+  readonly canWrite = computed(() => {
+    const role = this.authState()?.user?.roleCode;
+    return role === 'ADMIN' || role === 'DATA_ENTRY';
+  });
+  readonly canDelete = computed(() => this.authState()?.user?.roleCode === 'ADMIN');
 
   readonly loading      = signal<boolean>(true);
   readonly errorMessage = signal<string>('');
