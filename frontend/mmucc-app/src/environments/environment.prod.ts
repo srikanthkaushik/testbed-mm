@@ -5,6 +5,7 @@ export const environment = {
   // API gateway, so relative paths work without a proxy.
   authServiceUrl: '/auth',
   crashServiceUrl: '/crashes',
+  referenceServiceUrl: '/lookups',
 
   firebase: {
     apiKey:            'PROD_API_KEY',

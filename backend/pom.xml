@@ -23,6 +23,7 @@
         <module>common</module>
         <module>auth-service</module>
         <module>crash-service</module>
+        <module>reference-service</module>
     </modules>
 
     <properties>

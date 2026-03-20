@@ -4,6 +4,7 @@ export const environment = {
   // Backend services (proxied via proxy.conf.json in dev)
   authServiceUrl: '/auth',
   crashServiceUrl: '/api/crashes',
+  referenceServiceUrl: '/lookups',
 
   // Firebase project configuration
   // Replace these values with your actual Firebase project settings.

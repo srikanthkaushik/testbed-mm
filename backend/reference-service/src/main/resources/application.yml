@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: mmucc-reference-service
+
+  datasource:
+    url: ${MMUCC_DB_URL:jdbc:mysql://localhost:3306/mmucc_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+    username: ${MMUCC_DB_USER}
+    password: ${MMUCC_DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+      connection-timeout: 30000
+      idle-timeout: 600000
+
+  jpa:
+    hibernate:
+      ddl-auto: none  # Tables are managed by the MySQL DDL scripts; Hibernate must not touch them
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+
+mmucc:
+  cors:
+    allowed-origins: ${MMUCC_CORS_ORIGINS:http://localhost:4200}
+
+server:
+  port: 8083
+  servlet:
+    context-path: /
+  error:
+    include-message: always   # Safe: no sensitive data in this service
+    include-stacktrace: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    gov.nhtsa.mmucc: INFO
