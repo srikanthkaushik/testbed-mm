@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { AuditLogEntry, CrashDetail, CrashFilter, CrashRequest, CrashSummary, FatalSection, FatalSectionRequest, NonMotorist, NonMotoristRequest, Page, PersonDetail, PersonRequest, VehicleDetail, VehicleRequest } from '../models/crash.models';
+import { AuditLogEntry, CrashDetail, CrashFilter, CrashRequest, CrashSummary, FatalSection, FatalSectionRequest, NonMotorist, NonMotoristRequest, Page, PersonDetail, PersonRequest, RoadwayDetail, RoadwayRequest, VehicleDetail, VehicleRequest } from '../models/crash.models';
 
 @Injectable({ providedIn: 'root' })
 export class CrashService {
@@ -43,6 +43,16 @@ export class CrashService {
 
   deleteVehicle(crashId: number, vehicleId: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${crashId}/vehicles/${vehicleId}`);
+  }
+
+  // ── Roadway endpoints ──────────────────────────────────────────────────
+
+  getRoadway(crashId: number): Observable<RoadwayDetail> {
+    return this.http.get<RoadwayDetail>(`${this.baseUrl}/${crashId}/roadway`);
+  }
+
+  upsertRoadway(crashId: number, request: RoadwayRequest): Observable<RoadwayDetail> {
+    return this.http.put<RoadwayDetail>(`${this.baseUrl}/${crashId}/roadway`, request);
   }
 
   // ── Person endpoints ───────────────────────────────────────────────────

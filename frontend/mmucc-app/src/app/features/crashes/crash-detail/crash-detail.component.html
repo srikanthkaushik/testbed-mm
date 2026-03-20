@@ -905,6 +905,15 @@
           aria-labelledby="tab-roadway"
           class="tab-panel"
         >
+          <div class="tab-panel__actions">
+            <a
+              [routerLink]="['/crashes', crash()!.crashId, 'roadway', 'edit']"
+              class="btn btn--primary btn--sm"
+            >
+              {{ crash()!.roadway ? 'Edit Roadway' : '+ Add Roadway' }}
+            </a>
+          </div>
+
           @if (!crash()!.roadway) {
             <p class="empty-note">No roadway data recorded for this crash.</p>
           } @else {

@@ -1,0 +1,296 @@
+<div class="form-page">
+
+  <!-- ── Back link ────────────────────────────────────────────────────────── -->
+  <a [routerLink]="['/crashes', crashId()]" [fragment]="'roadway'" class="form__back">
+    &#8592; Back to Crash Detail
+  </a>
+
+  <!-- ── Page header ──────────────────────────────────────────────────────── -->
+  <h1 class="form__title">{{ pageTitle() }}</h1>
+
+  <!-- ── Loading state ────────────────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="form__loading">
+      <span class="spinner" aria-hidden="true"></span>
+      Loading roadway record…
+    </div>
+  }
+
+  <!-- ── Error alert ───────────────────────────────────────────────────────── -->
+  @if (errorMsg()) {
+    <app-alert [message]="errorMsg()" type="error" />
+  }
+
+  @if (!loading()) {
+    <form
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      novalidate
+      class="crash-form"
+    >
+
+      <!-- ── 1. Classification (R4, R5, R9) ────────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Classification (R4, R5, R9)</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="functionalClassCode" class="form-field__label">Functional Classification (R5)</label>
+            <select id="functionalClassCode" class="form-field__select" formControlName="functionalClassCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of FUNCTIONAL_CLASS_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="nationalHwySysCode" class="form-field__label">National Highway System (R4)</label>
+            <select id="nationalHwySysCode" class="form-field__select" formControlName="nationalHwySysCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of YES_NO_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="accessControlCode" class="form-field__label">Access Control (R9)</label>
+            <select id="accessControlCode" class="form-field__select" formControlName="accessControlCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of ACCESS_CONTROL_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ── 2. Physical Geometry (R1–R3, R7, R8) ──────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Physical Geometry (R1–R3, R7, R8)</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="bridgeStructureId" class="form-field__label">Bridge/Structure ID (R1)</label>
+            <input id="bridgeStructureId" type="text" class="form-field__input"
+              formControlName="bridgeStructureId" autocomplete="off" />
+          </div>
+
+          <div class="form-field">
+            <label for="curveRadiusFt" class="form-field__label">Curve Radius, ft (R2)</label>
+            <input id="curveRadiusFt" type="number" class="form-field__input"
+              formControlName="curveRadiusFt" min="0" step="0.1" />
+          </div>
+
+          <div class="form-field">
+            <label for="curveLengthFt" class="form-field__label">Curve Length, ft (R2)</label>
+            <input id="curveLengthFt" type="number" class="form-field__input"
+              formControlName="curveLengthFt" min="0" step="0.1" />
+          </div>
+
+          <div class="form-field">
+            <label for="curveSuperelevationPct" class="form-field__label">Curve Superelevation, % (R2)</label>
+            <input id="curveSuperelevationPct" type="number" class="form-field__input"
+              formControlName="curveSuperelevationPct" min="0" max="100" step="0.1" />
+          </div>
+
+          <div class="form-field">
+            <label for="gradeDirection" class="form-field__label">Grade Direction (R3)</label>
+            <select id="gradeDirection" class="form-field__select" formControlName="gradeDirection">
+              <option value="">— Select —</option>
+              @for (entry of GRADE_DIRECTION_ENTRIES; track entry[0]) {
+                <option [value]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="gradePercent" class="form-field__label">Grade, % (R3)</label>
+            <input id="gradePercent" type="number" class="form-field__input"
+              formControlName="gradePercent" min="0" max="100" step="0.1" />
+          </div>
+
+          <div class="form-field">
+            <label for="laneWidthFt" class="form-field__label">Lane Width, ft (R7)</label>
+            <input id="laneWidthFt" type="number" class="form-field__input"
+              formControlName="laneWidthFt" min="0" step="0.1" />
+          </div>
+
+          <div class="form-field">
+            <label for="leftShoulderWidthFt" class="form-field__label">Left Shoulder Width, ft (R7)</label>
+            <input id="leftShoulderWidthFt" type="number" class="form-field__input"
+              formControlName="leftShoulderWidthFt" min="0" step="0.1" />
+          </div>
+
+          <div class="form-field">
+            <label for="rightShoulderWidthFt" class="form-field__label">Right Shoulder Width, ft (R7)</label>
+            <input id="rightShoulderWidthFt" type="number" class="form-field__input"
+              formControlName="rightShoulderWidthFt" min="0" step="0.1" />
+          </div>
+
+          <div class="form-field">
+            <label for="medianWidthFt" class="form-field__label">Median Width, ft (R8)</label>
+            <input id="medianWidthFt" type="number" class="form-field__input"
+              formControlName="medianWidthFt" min="0" step="0.1" />
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ── 3. Traffic Volume (R6, R14–R16) ───────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Traffic Volume (R6, R14–R16)</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="aadtYear" class="form-field__label">AADT Year (R6)</label>
+            <input id="aadtYear" type="number" class="form-field__input"
+              formControlName="aadtYear" min="1900" max="2099" placeholder="YYYY" />
+          </div>
+
+          <div class="form-field">
+            <label for="aadtValue" class="form-field__label">AADT Value (R6)</label>
+            <input id="aadtValue" type="number" class="form-field__input"
+              formControlName="aadtValue" min="0" />
+          </div>
+
+          <div class="form-field">
+            <label for="aadtTruckMeasure" class="form-field__label">Truck % of AADT (R6)</label>
+            <input id="aadtTruckMeasure" type="text" class="form-field__input"
+              formControlName="aadtTruckMeasure" placeholder="e.g. 12.5" autocomplete="off" />
+          </div>
+
+          <div class="form-field">
+            <label for="aadtMotorcycleMeasure" class="form-field__label">Motorcycle % of AADT (R6)</label>
+            <input id="aadtMotorcycleMeasure" type="text" class="form-field__input"
+              formControlName="aadtMotorcycleMeasure" placeholder="e.g. 2.3" autocomplete="off" />
+          </div>
+
+          <div class="form-field">
+            <label for="mainlineLanesCount" class="form-field__label">Mainline Lanes at Intersection (R14)</label>
+            <input id="mainlineLanesCount" type="number" class="form-field__input"
+              formControlName="mainlineLanesCount" min="0" />
+          </div>
+
+          <div class="form-field">
+            <label for="crossStreetLanesCount" class="form-field__label">Cross-Street Lanes at Intersection (R15)</label>
+            <input id="crossStreetLanesCount" type="number" class="form-field__input"
+              formControlName="crossStreetLanesCount" min="0" />
+          </div>
+
+          <div class="form-field">
+            <label for="enteringVehiclesYear" class="form-field__label">Entering Vehicles Year (R16)</label>
+            <input id="enteringVehiclesYear" type="number" class="form-field__input"
+              formControlName="enteringVehiclesYear" min="1900" max="2099" placeholder="YYYY" />
+          </div>
+
+          <div class="form-field">
+            <label for="enteringVehiclesAadt" class="form-field__label">Entering Vehicles AADT (R16)</label>
+            <input id="enteringVehiclesAadt" type="number" class="form-field__input"
+              formControlName="enteringVehiclesAadt" min="0" />
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ── 4. Infrastructure (R10–R12) ───────────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Infrastructure (R10–R12)</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="railwayCrossingId" class="form-field__label">Railway Crossing ID (R10)</label>
+            <input id="railwayCrossingId" type="text" class="form-field__input"
+              formControlName="railwayCrossingId" autocomplete="off" />
+          </div>
+
+          <div class="form-field">
+            <label for="roadwayLightingCode" class="form-field__label">Roadway Lighting (R11)</label>
+            <select id="roadwayLightingCode" class="form-field__select" formControlName="roadwayLightingCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of ROADWAY_LIGHTING_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="pavementCenterlineCode" class="form-field__label">Centerline Marking (R12)</label>
+            <select id="pavementCenterlineCode" class="form-field__select" formControlName="pavementCenterlineCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of PAVEMENT_CENTERLINE_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="pavementEdgelineCode" class="form-field__label">Edgeline Marking (R12)</label>
+            <select id="pavementEdgelineCode" class="form-field__select" formControlName="pavementEdgelineCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of PAVEMENT_EDGELINE_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="pavementLaneLineCode" class="form-field__label">Lane Line Marking (R12)</label>
+            <select id="pavementLaneLineCode" class="form-field__select" formControlName="pavementLaneLineCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of PAVEMENT_LANE_LINE_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ── 5. Bicycle Facilities (R13) ───────────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Bicycle Facilities (R13)</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="bicycleFacilityCode" class="form-field__label">Bicycle Facility Type (R13)</label>
+            <select id="bicycleFacilityCode" class="form-field__select" formControlName="bicycleFacilityCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of BICYCLE_FACILITY_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="bicycleSignedRouteCode" class="form-field__label">Bicycle Signed Route (R13)</label>
+            <select id="bicycleSignedRouteCode" class="form-field__select" formControlName="bicycleSignedRouteCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of BICYCLE_SIGNED_ROUTE_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ── Actions ───────────────────────────────────────────────────────── -->
+      <div class="form-actions">
+        <button type="button" class="btn btn--outline" (click)="onCancel()">Cancel</button>
+        <button type="submit" class="btn btn--primary" [disabled]="saving()">
+          @if (saving()) {
+            <span class="spinner spinner--sm" aria-hidden="true"></span>
+            Saving…
+          } @else {
+            Save Roadway
+          }
+        </button>
+      </div>
+
+    </form>
+  }
+
+</div>

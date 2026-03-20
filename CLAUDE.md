@@ -15,7 +15,7 @@ This repository is associated with the **MMUCC (Model Minimum Uniform Crash Crit
 
 ## Project Status
 
-Database schema is complete. Backend auth-service and crash-service are fully implemented (Sprints 1–4). Frontend Phases 1–6 are complete: login, crash list, crash detail (read-only, all 115 fields), crash entry form, vehicle entry form, and person entry form (P1–P27 with conditional Fatal/Non-Motorist sub-sections). Phases 7–9 (roadway form, dashboard/delete, reports) are not yet started.
+Database schema is complete. Backend auth-service and crash-service are fully implemented (Sprints 1–4). Frontend Phases 1–7 are complete: login, crash list, crash detail (read-only, all 115 fields), crash entry form, vehicle entry form, person entry form (P1–P27 with conditional Fatal/Non-Motorist sub-sections), and roadway entry form (R1–R16). Phases 8–9 (dashboard/delete, reports) are not yet started. 103 of 115 MMUCC elements have full entry UI; Large Vehicle (LV1–LV11) and Automation (DV1) entry forms are pending.
 
 ## Repository Structure
 

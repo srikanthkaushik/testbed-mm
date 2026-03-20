@@ -385,6 +385,38 @@ export interface VehicleRequest {
   sequenceEvents:   { sequenceNum: number; code: number }[];
 }
 
+/** Request body for PUT /crashes/{id}/roadway (upsert — same endpoint for create and update). */
+export interface RoadwayRequest {
+  bridgeStructureId:        string | null;
+  curveRadiusFt:            number | null;
+  curveLengthFt:            number | null;
+  curveSuperelevationPct:   number | null;
+  gradeDirection:           string | null;
+  gradePercent:             number | null;
+  nationalHwySysCode:       number | null;
+  functionalClassCode:      number | null;
+  aadtYear:                 number | null;
+  aadtValue:                number | null;
+  aadtTruckMeasure:         string | null;
+  aadtMotorcycleMeasure:    string | null;
+  laneWidthFt:              number | null;
+  leftShoulderWidthFt:      number | null;
+  rightShoulderWidthFt:     number | null;
+  medianWidthFt:            number | null;
+  accessControlCode:        number | null;
+  railwayCrossingId:        string | null;
+  roadwayLightingCode:      number | null;
+  pavementEdgelineCode:     number | null;
+  pavementCenterlineCode:   number | null;
+  pavementLaneLineCode:     number | null;
+  bicycleFacilityCode:      number | null;
+  bicycleSignedRouteCode:   number | null;
+  mainlineLanesCount:       number | null;
+  crossStreetLanesCount:    number | null;
+  enteringVehiclesYear:     number | null;
+  enteringVehiclesAadt:     number | null;
+}
+
 /** Request body for POST /crashes/{id}/vehicles/{vid}/persons and PUT …/persons/{pid}. */
 export interface PersonRequest {
   personName:              string | null;

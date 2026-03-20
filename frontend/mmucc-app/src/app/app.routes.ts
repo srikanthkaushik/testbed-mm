@@ -69,6 +69,16 @@ export const routes: Routes = [
         canActivate: [authGuard],
       },
 
+      // Roadway form — must be before crashes/:id to prevent param conflicts
+      {
+        path: 'crashes/:crashId/roadway/edit',
+        loadComponent: () =>
+          import('./features/crashes/roadway-form/roadway-form.component')
+            .then(m => m.RoadwayFormComponent),
+        title: 'Edit Roadway — MMUCC Crash Reporting',
+        canActivate: [authGuard],
+      },
+
       // Person form — must be before crashes/:id to prevent param conflicts
       {
         path: 'crashes/:crashId/vehicles/:vehicleId/persons/new',
