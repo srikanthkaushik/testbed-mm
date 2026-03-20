@@ -126,7 +126,7 @@ The Angular app is developed in phases that build on the backend sprints above.
 | **Phase 3a** | Crash detail — all 115 MMUCC fields displayed with `N — Description` rendering via `mmucc-lookup.ts`; Fatal, NonMotorist, Large Vehicle, Automation sections | ✅ Complete |
 | **Phase 4** | Crash entry form (C1–C27) — create (`POST /crashes`) and edit (`PUT /crashes/{id}`) modes, reactive form, multi-value checkbox grids, inline validation | ✅ Complete |
 | **Phase 5** | Vehicle entry form (V1–V24) — add/edit vehicle (`POST`/`PUT /crashes/{id}/vehicles`), 8 fieldset sections, traffic control / damage area / sequence event checkbox grids | ✅ Complete |
-| **Phase 6** | Person entry form (P1–P27) — add/edit person, conditional fatal/non-motorist sub-sections | 🔲 Not started |
+| **Phase 6** | Person entry form (P1–P27) — add/edit person, conditional fatal/non-motorist sub-sections | ✅ Complete |
 | **Phase 7** | Roadway entry form (R1–R16) | 🔲 Not started |
 | **Phase 8** | Dashboard (counts, trends, top counties), delete crash/vehicle/person, admin user management | 🔲 Not started |
 | **Phase 9** | Reports — filtered exports (CSV/PDF) driven by report-service | 🔲 Not started |

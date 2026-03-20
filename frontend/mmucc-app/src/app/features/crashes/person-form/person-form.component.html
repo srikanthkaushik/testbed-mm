@@ -1,0 +1,715 @@
+<div class="form-page">
+
+  <!-- ── Back link ────────────────────────────────────────────────────────── -->
+  <a [routerLink]="['/crashes', crashId()]" [fragment]="'persons'" class="form__back">
+    &#8592; Back to Crash Detail
+  </a>
+
+  <!-- ── Page header ──────────────────────────────────────────────────────── -->
+  <h1 class="form__title">{{ pageTitle() }}</h1>
+
+  <!-- ── Loading state ────────────────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="form__loading">
+      <span class="spinner" aria-hidden="true"></span>
+      Loading person record…
+    </div>
+  }
+
+  <!-- ── Error alert ───────────────────────────────────────────────────────── -->
+  @if (errorMsg()) {
+    <app-alert [message]="errorMsg()" type="error" />
+  }
+
+  @if (!loading()) {
+    <form
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      novalidate
+      class="crash-form"
+    >
+
+      <!-- ── 1. Identity (P1–P3) ───────────────────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Identity (P1–P3)</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="personName" class="form-field__label">Name (P1)</label>
+            <input id="personName" type="text" class="form-field__input"
+              formControlName="personName" placeholder="Last, First MI" autocomplete="off" />
+          </div>
+
+          <div class="form-field">
+            <label for="dobYear" class="form-field__label">DOB Year (P2)</label>
+            <input id="dobYear" type="number" class="form-field__input"
+              formControlName="dobYear" min="1900" max="2099" placeholder="YYYY" />
+          </div>
+
+          <div class="form-field">
+            <label for="dobMonth" class="form-field__label">DOB Month</label>
+            <input id="dobMonth" type="number" class="form-field__input"
+              formControlName="dobMonth" min="1" max="12" placeholder="MM" />
+          </div>
+
+          <div class="form-field">
+            <label for="dobDay" class="form-field__label">DOB Day</label>
+            <input id="dobDay" type="number" class="form-field__input"
+              formControlName="dobDay" min="1" max="31" placeholder="DD" />
+          </div>
+
+          <div class="form-field">
+            <label for="ageYears" class="form-field__label">Age (years)</label>
+            <input id="ageYears" type="number" class="form-field__input"
+              formControlName="ageYears" min="0" max="120" />
+          </div>
+
+          <div class="form-field">
+            <label for="sexCode" class="form-field__label">Sex (P3)</label>
+            <select id="sexCode" class="form-field__select" formControlName="sexCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of SEX_CODE_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ── 2. Person Type & Status (P4–P6) ──────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Person Type &amp; Status (P4–P6)</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="personTypeCode" class="form-field__label">Person Type (P4)</label>
+            <select id="personTypeCode" class="form-field__select" formControlName="personTypeCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of PERSON_TYPE_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="incidentResponderCode" class="form-field__label">Incident Responder</label>
+            <select id="incidentResponderCode" class="form-field__select" formControlName="incidentResponderCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of INCIDENT_RESPONDER_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="injuryStatusCode" class="form-field__label">Injury Status (P5)</label>
+            <select id="injuryStatusCode" class="form-field__select" formControlName="injuryStatusCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of INJURY_STATUS_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="vehicleUnitNumber" class="form-field__label">Vehicle Unit Number (P6)</label>
+            <input id="vehicleUnitNumber" type="number" class="form-field__input"
+              formControlName="vehicleUnitNumber" min="1" />
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ── 3. Seating & Safety (P7–P10) ─────────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Seating &amp; Safety (P7–P10)</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="seatingRowCode" class="form-field__label">Seating Row (P7)</label>
+            <select id="seatingRowCode" class="form-field__select" formControlName="seatingRowCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of SEATING_ROW_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="seatingSeatCode" class="form-field__label">Seat Position</label>
+            <select id="seatingSeatCode" class="form-field__select" formControlName="seatingSeatCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of SEATING_SEAT_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="restraintCode" class="form-field__label">Restraint (P8)</label>
+            <select id="restraintCode" class="form-field__select" formControlName="restraintCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of RESTRAINT_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="restraintImproperFlg" class="form-field__label">Restraint Improper Use</label>
+            <select id="restraintImproperFlg" class="form-field__select" formControlName="restraintImproperFlg">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of YES_NO_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="ejectionCode" class="form-field__label">Ejection (P10)</label>
+            <select id="ejectionCode" class="form-field__select" formControlName="ejectionCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of EJECTION_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Airbags (P9) — checkbox grid -->
+        <p class="form-section__sub">Airbag Deployed (P9) — select all that apply</p>
+        <div class="checkbox-grid">
+          @for (entry of AIRBAG_ENTRIES; track entry[0]) {
+            <label class="checkbox-item">
+              <input
+                type="checkbox"
+                class="checkbox-item__input"
+                [checked]="selectedAirbags().has(entry[0])"
+                (change)="toggleAirbag(entry[0])"
+              />
+              <span class="checkbox-item__label">{{ entry[0] }} — {{ entry[1] }}</span>
+            </label>
+          }
+        </div>
+
+      </fieldset>
+
+      <!-- ── 4. Driver License (P11–P17) — driver only ─────────────────────── -->
+      @if (isDriver()) {
+        <fieldset class="form-section">
+          <legend class="form-section__title">Driver License (P11–P17)</legend>
+          <div class="form-grid">
+
+            <div class="form-field">
+              <label for="dlJurisdictionType" class="form-field__label">Jurisdiction Type (P11)</label>
+              <select id="dlJurisdictionType" class="form-field__select" formControlName="dlJurisdictionType">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of DL_JURISDICTION_TYPE_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="dlJurisdictionCode" class="form-field__label">Jurisdiction Code</label>
+              <input id="dlJurisdictionCode" type="text" class="form-field__input"
+                formControlName="dlJurisdictionCode" placeholder="e.g. TN" maxlength="10" autocomplete="off" />
+            </div>
+
+            <div class="form-field">
+              <label for="dlNumber" class="form-field__label">License Number (P12)</label>
+              <input id="dlNumber" type="text" class="form-field__input"
+                formControlName="dlNumber" autocomplete="off" />
+            </div>
+
+            <div class="form-field">
+              <label for="dlClassCode" class="form-field__label">License Class (P12)</label>
+              <select id="dlClassCode" class="form-field__select" formControlName="dlClassCode">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of DL_CLASS_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="dlIsCdlFlg" class="form-field__label">CDL</label>
+              <select id="dlIsCdlFlg" class="form-field__select" formControlName="dlIsCdlFlg">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of YES_NO_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="dlEndorsementCode" class="form-field__label">CDL Endorsement</label>
+              <select id="dlEndorsementCode" class="form-field__select" formControlName="dlEndorsementCode">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of DL_ENDORSEMENT_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="dlAlcoholInterlockFlg" class="form-field__label">Alcohol Interlock</label>
+              <select id="dlAlcoholInterlockFlg" class="form-field__select" formControlName="dlAlcoholInterlockFlg">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of YES_NO_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="dlStatusTypeCode" class="form-field__label">License Status Type (P17)</label>
+              <select id="dlStatusTypeCode" class="form-field__select" formControlName="dlStatusTypeCode">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of DL_STATUS_TYPE_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="dlStatusCode" class="form-field__label">License Status</label>
+              <select id="dlStatusCode" class="form-field__select" formControlName="dlStatusCode">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of DL_STATUS_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+          </div>
+
+          <!-- DL Restrictions (P16) — checkbox grid -->
+          <p class="form-section__sub">License Restrictions (P16) — select all that apply</p>
+          <div class="checkbox-grid">
+            @for (entry of DL_RESTRICTION_ENTRIES; track entry[0]) {
+              <label class="checkbox-item">
+                <input
+                  type="checkbox"
+                  class="checkbox-item__input"
+                  [checked]="selectedDlRestrictions().has(entry[0])"
+                  (change)="toggleDlRestriction(entry[0])"
+                />
+                <span class="checkbox-item__label">{{ entry[0] }} — {{ entry[1] }}</span>
+              </label>
+            }
+          </div>
+
+        </fieldset>
+      }
+
+      <!-- ── 5. Behavior & Conditions (P13–P19) — driver only ──────────────── -->
+      @if (isDriver()) {
+        <fieldset class="form-section">
+          <legend class="form-section__title">Behavior &amp; Conditions (P13–P19)</legend>
+          <div class="form-grid">
+
+            <div class="form-field">
+              <label for="speedingCode" class="form-field__label">Speeding (P13)</label>
+              <select id="speedingCode" class="form-field__select" formControlName="speedingCode">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of SPEEDING_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="violationCode1" class="form-field__label">Violation Code 1 (P15)</label>
+              <input id="violationCode1" type="text" class="form-field__input"
+                formControlName="violationCode1" autocomplete="off" />
+            </div>
+
+            <div class="form-field">
+              <label for="violationCode2" class="form-field__label">Violation Code 2</label>
+              <input id="violationCode2" type="text" class="form-field__input"
+                formControlName="violationCode2" autocomplete="off" />
+            </div>
+
+            <div class="form-field">
+              <label for="distractedActionCode" class="form-field__label">Distracted — Action (P18)</label>
+              <select id="distractedActionCode" class="form-field__select" formControlName="distractedActionCode">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of DISTRACTED_ACTION_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="distractedSourceCode" class="form-field__label">Distracted — Source</label>
+              <select id="distractedSourceCode" class="form-field__select" formControlName="distractedSourceCode">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of DISTRACTED_SOURCE_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="conditionCode1" class="form-field__label">Condition 1 (P19)</label>
+              <select id="conditionCode1" class="form-field__select" formControlName="conditionCode1">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of DRIVER_CONDITION_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="conditionCode2" class="form-field__label">Condition 2</label>
+              <select id="conditionCode2" class="form-field__select" formControlName="conditionCode2">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of DRIVER_CONDITION_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+          </div>
+
+          <!-- Driver Actions (P14) — checkbox grid -->
+          <p class="form-section__sub">Driver Actions (P14) — select all that apply</p>
+          <div class="checkbox-grid">
+            @for (entry of DRIVER_ACTION_ENTRIES; track entry[0]) {
+              <label class="checkbox-item">
+                <input
+                  type="checkbox"
+                  class="checkbox-item__input"
+                  [checked]="selectedDriverActions().has(entry[0])"
+                  (change)="toggleDriverAction(entry[0])"
+                />
+                <span class="checkbox-item__label">{{ entry[0] }} — {{ entry[1] }}</span>
+              </label>
+            }
+          </div>
+
+        </fieldset>
+      }
+
+      <!-- ── 6. Alcohol & Drug (P20–P23) ──────────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Alcohol &amp; Drug (P20–P23)</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="leSuspectsAlcohol" class="form-field__label">LE Suspects Alcohol (P20)</label>
+            <select id="leSuspectsAlcohol" class="form-field__select" formControlName="leSuspectsAlcohol">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of YES_NO_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="alcoholTestStatusCode" class="form-field__label">Alcohol Test Status (P21)</label>
+            <select id="alcoholTestStatusCode" class="form-field__select" formControlName="alcoholTestStatusCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of ALCOHOL_TEST_STATUS_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="alcoholTestTypeCode" class="form-field__label">Alcohol Test Type</label>
+            <select id="alcoholTestTypeCode" class="form-field__select" formControlName="alcoholTestTypeCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of ALCOHOL_TEST_TYPE_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="alcoholBacResult" class="form-field__label">BAC Result</label>
+            <input id="alcoholBacResult" type="text" class="form-field__input"
+              formControlName="alcoholBacResult" placeholder="e.g. 0.12" autocomplete="off" />
+          </div>
+
+          <div class="form-field">
+            <label for="leSuspectsDrug" class="form-field__label">LE Suspects Drug (P22)</label>
+            <select id="leSuspectsDrug" class="form-field__select" formControlName="leSuspectsDrug">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of YES_NO_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="drugTestStatusCode" class="form-field__label">Drug Test Status (P23)</label>
+            <select id="drugTestStatusCode" class="form-field__select" formControlName="drugTestStatusCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of DRUG_TEST_STATUS_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="drugTestTypeCode" class="form-field__label">Drug Test Type</label>
+            <select id="drugTestTypeCode" class="form-field__select" formControlName="drugTestTypeCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of DRUG_TEST_TYPE_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Drug Test Results (P23 SF3) — checkbox grid -->
+        <p class="form-section__sub">Drug Test Results (P23) — select all that apply</p>
+        <div class="checkbox-grid">
+          @for (entry of DRUG_TEST_RESULT_ENTRIES; track entry[0]) {
+            <label class="checkbox-item">
+              <input
+                type="checkbox"
+                class="checkbox-item__input"
+                [checked]="selectedDrugResults().has(entry[0])"
+                (change)="toggleDrugResult(entry[0])"
+              />
+              <span class="checkbox-item__label">{{ entry[0] }} — {{ entry[1] }}</span>
+            </label>
+          }
+        </div>
+
+      </fieldset>
+
+      <!-- ── 7. Medical (P24–P27) ──────────────────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Medical (P24–P27)</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="transportSourceCode" class="form-field__label">Transport Source (P24)</label>
+            <select id="transportSourceCode" class="form-field__select" formControlName="transportSourceCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of TRANSPORT_SOURCE_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="emsAgencyId" class="form-field__label">EMS Agency ID</label>
+            <input id="emsAgencyId" type="text" class="form-field__input"
+              formControlName="emsAgencyId" autocomplete="off" />
+          </div>
+
+          <div class="form-field">
+            <label for="emsRunNumber" class="form-field__label">EMS Run Number</label>
+            <input id="emsRunNumber" type="text" class="form-field__input"
+              formControlName="emsRunNumber" autocomplete="off" />
+          </div>
+
+          <div class="form-field">
+            <label for="medicalFacility" class="form-field__label">Medical Facility</label>
+            <input id="medicalFacility" type="text" class="form-field__input"
+              formControlName="medicalFacility" autocomplete="off" />
+          </div>
+
+          <div class="form-field">
+            <label for="injuryAreaCode" class="form-field__label">Injury Area (P25)</label>
+            <select id="injuryAreaCode" class="form-field__select" formControlName="injuryAreaCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of INJURY_AREA_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="injuryDiagnosis" class="form-field__label">Injury Diagnosis (P26)</label>
+            <input id="injuryDiagnosis" type="text" class="form-field__input"
+              formControlName="injuryDiagnosis" autocomplete="off" />
+          </div>
+
+          <div class="form-field">
+            <label for="injurySeverityCode" class="form-field__label">Injury Severity (P27)</label>
+            <select id="injurySeverityCode" class="form-field__select" formControlName="injurySeverityCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of INJURY_SEVERITY_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ── 8. Fatal Section (F1–F3) — fatal persons only ────────────────── -->
+      @if (requiresFatal()) {
+        <fieldset class="form-section">
+          <legend class="form-section__title">Fatal Section (F1–F3)</legend>
+          <div class="form-grid">
+
+            <div class="form-field">
+              <label for="fatalAvoidanceManeuver" class="form-field__label">Avoidance Maneuver (F1)</label>
+              <select id="fatalAvoidanceManeuver" class="form-field__select" formControlName="fatalAvoidanceManeuver">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of MANEUVER_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="fatalAlcoholTestType" class="form-field__label">Alcohol Test Type (F2)</label>
+              <select id="fatalAlcoholTestType" class="form-field__select" formControlName="fatalAlcoholTestType">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of ALCOHOL_TEST_TYPE_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="fatalAlcoholTestResult" class="form-field__label">Alcohol Test Result</label>
+              <input id="fatalAlcoholTestResult" type="text" class="form-field__input"
+                formControlName="fatalAlcoholTestResult" placeholder="e.g. 0.15" autocomplete="off" />
+            </div>
+
+            <div class="form-field">
+              <label for="fatalDrugTestType" class="form-field__label">Drug Test Type (F3)</label>
+              <select id="fatalDrugTestType" class="form-field__select" formControlName="fatalDrugTestType">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of DRUG_TEST_TYPE_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="fatalDrugTestResult" class="form-field__label">Drug Test Result Code</label>
+              <select id="fatalDrugTestResult" class="form-field__select" formControlName="fatalDrugTestResult">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of DRUG_TEST_RESULT_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+          </div>
+        </fieldset>
+      }
+
+      <!-- ── 9. Non-Motorist (NM1–NM6) — non-motorist persons only ─────────── -->
+      @if (isNonMotorist()) {
+        <fieldset class="form-section">
+          <legend class="form-section__title">Non-Motorist (NM1–NM6)</legend>
+          <div class="form-grid">
+
+            <div class="form-field">
+              <label for="nmStrikingVehicleUnit" class="form-field__label">Striking Vehicle Unit (NM1)</label>
+              <input id="nmStrikingVehicleUnit" type="number" class="form-field__input"
+                formControlName="nmStrikingVehicleUnit" min="1" />
+            </div>
+
+            <div class="form-field">
+              <label for="nmActionCircCode" class="form-field__label">Action at Time of Crash (NM1)</label>
+              <select id="nmActionCircCode" class="form-field__select" formControlName="nmActionCircCode">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of NM_ACTION_CIRC_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="nmOriginDestination" class="form-field__label">Origin/Destination (NM2)</label>
+              <select id="nmOriginDestination" class="form-field__select" formControlName="nmOriginDestination">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of NM_ORIGIN_DESTINATION_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="nmContributingAction1" class="form-field__label">Contributing Action 1 (NM3)</label>
+              <select id="nmContributingAction1" class="form-field__select" formControlName="nmContributingAction1">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of NM_CONTRIBUTING_ACTION_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="nmContributingAction2" class="form-field__label">Contributing Action 2</label>
+              <select id="nmContributingAction2" class="form-field__select" formControlName="nmContributingAction2">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of NM_CONTRIBUTING_ACTION_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="nmLocationAtCrash" class="form-field__label">Location at Crash (NM4)</label>
+              <select id="nmLocationAtCrash" class="form-field__select" formControlName="nmLocationAtCrash">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of NM_LOCATION_AT_CRASH_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="nmInitialContactPoint" class="form-field__label">Initial Contact Point (NM5)</label>
+              <select id="nmInitialContactPoint" class="form-field__select" formControlName="nmInitialContactPoint">
+                <option [ngValue]="null">— Select —</option>
+                @for (entry of NM_CONTACT_POINT_ENTRIES; track entry[0]) {
+                  <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+                }
+              </select>
+            </div>
+
+          </div>
+
+          <!-- Safety Equipment (NM6) — checkbox grid -->
+          <p class="form-section__sub">Safety Equipment (NM6) — select all that apply</p>
+          <div class="checkbox-grid">
+            @for (entry of NM_SAFETY_EQUIPMENT_ENTRIES; track entry[0]) {
+              <label class="checkbox-item">
+                <input
+                  type="checkbox"
+                  class="checkbox-item__input"
+                  [checked]="selectedNmSafetyEquip().has(entry[0])"
+                  (change)="toggleNmSafetyEquip(entry[0])"
+                />
+                <span class="checkbox-item__label">{{ entry[0] }} — {{ entry[1] }}</span>
+              </label>
+            }
+          </div>
+
+        </fieldset>
+      }
+
+      <!-- ── Actions ───────────────────────────────────────────────────────── -->
+      <div class="form-actions">
+        <button type="button" class="btn btn--outline" (click)="onCancel()">Cancel</button>
+        <button type="submit" class="btn btn--primary" [disabled]="saving()">
+          @if (saving()) {
+            <span class="spinner spinner--sm" aria-hidden="true"></span>
+            Saving…
+          } @else {
+            Save Person
+          }
+        </button>
+      </div>
+
+    </form>
+  }
+
+</div>

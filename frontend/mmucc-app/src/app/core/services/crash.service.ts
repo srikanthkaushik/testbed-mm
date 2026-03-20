@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { AuditLogEntry, CrashDetail, CrashFilter, CrashRequest, CrashSummary, Page, VehicleDetail, VehicleRequest } from '../models/crash.models';
+import { AuditLogEntry, CrashDetail, CrashFilter, CrashRequest, CrashSummary, FatalSection, FatalSectionRequest, NonMotorist, NonMotoristRequest, Page, PersonDetail, PersonRequest, VehicleDetail, VehicleRequest } from '../models/crash.models';
 
 @Injectable({ providedIn: 'root' })
 export class CrashService {
@@ -43,6 +43,28 @@ export class CrashService {
 
   deleteVehicle(crashId: number, vehicleId: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${crashId}/vehicles/${vehicleId}`);
+  }
+
+  // ── Person endpoints ───────────────────────────────────────────────────
+
+  getPerson(crashId: number, vehicleId: number, personId: number): Observable<PersonDetail> {
+    return this.http.get<PersonDetail>(`${this.baseUrl}/${crashId}/vehicles/${vehicleId}/persons/${personId}`);
+  }
+
+  createPerson(crashId: number, vehicleId: number, request: PersonRequest): Observable<PersonDetail> {
+    return this.http.post<PersonDetail>(`${this.baseUrl}/${crashId}/vehicles/${vehicleId}/persons`, request);
+  }
+
+  updatePerson(crashId: number, vehicleId: number, personId: number, request: PersonRequest): Observable<PersonDetail> {
+    return this.http.put<PersonDetail>(`${this.baseUrl}/${crashId}/vehicles/${vehicleId}/persons/${personId}`, request);
+  }
+
+  upsertFatalSection(crashId: number, vehicleId: number, personId: number, request: FatalSectionRequest): Observable<FatalSection> {
+    return this.http.put<FatalSection>(`${this.baseUrl}/${crashId}/vehicles/${vehicleId}/persons/${personId}/fatal`, request);
+  }
+
+  upsertNonMotorist(crashId: number, vehicleId: number, personId: number, request: NonMotoristRequest): Observable<NonMotorist> {
+    return this.http.put<NonMotorist>(`${this.baseUrl}/${crashId}/vehicles/${vehicleId}/persons/${personId}/non-motorist`, request);
   }
 
   // ── Crash endpoints ────────────────────────────────────────────────────

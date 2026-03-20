@@ -385,6 +385,80 @@ export interface VehicleRequest {
   sequenceEvents:   { sequenceNum: number; code: number }[];
 }
 
+/** Request body for POST /crashes/{id}/vehicles/{vid}/persons and PUT …/persons/{pid}. */
+export interface PersonRequest {
+  personName:              string | null;
+  dobYear:                 number | null;
+  dobMonth:                number | null;
+  dobDay:                  number | null;
+  ageYears:                number | null;
+  sexCode:                 number | null;
+  personTypeCode:          number | null;
+  incidentResponderCode:   number | null;
+  injuryStatusCode:        number | null;
+  vehicleUnitNumber:       number | null;
+  seatingRowCode:          number | null;
+  seatingSeatCode:         number | null;
+  restraintCode:           number | null;
+  restraintImproperFlg:    number | null;
+  airbags:                 { sequenceNum: number; code: number }[];
+  ejectionCode:            number | null;
+  dlJurisdictionType:      number | null;
+  dlJurisdictionCode:      string | null;
+  dlNumber:                string | null;
+  dlClassCode:             number | null;
+  dlIsCdlFlg:              number | null;
+  dlEndorsementCode:       number | null;
+  speedingCode:            number | null;
+  driverActions:           { sequenceNum: number; code: number }[];
+  violationCode1:          string | null;
+  violationCode2:          string | null;
+  dlRestrictions:          { sequenceNum: number; code: number }[];
+  dlAlcoholInterlockFlg:   number | null;
+  dlStatusTypeCode:        number | null;
+  dlStatusCode:            number | null;
+  distractedActionCode:    number | null;
+  distractedSourceCode:    number | null;
+  conditionCode1:          number | null;
+  conditionCode2:          number | null;
+  leSuspectsAlcohol:       number | null;
+  alcoholTestStatusCode:   number | null;
+  alcoholTestTypeCode:     number | null;
+  alcoholBacResult:        string | null;
+  leSuspectsDrug:          number | null;
+  drugTestStatusCode:      number | null;
+  drugTestTypeCode:        number | null;
+  drugTestResults:         { sequenceNum: number; resultCode: number }[];
+  transportSourceCode:     number | null;
+  emsAgencyId:             string | null;
+  emsRunNumber:            string | null;
+  medicalFacility:         string | null;
+  injuryAreaCode:          number | null;
+  injuryDiagnosis:         string | null;
+  injurySeverityCode:      number | null;
+}
+
+/** Request body for PUT …/persons/{pid}/fatal (upsert). */
+export interface FatalSectionRequest {
+  avoidanceManeuverCode: number | null;
+  alcoholTestTypeCode:   number | null;
+  alcoholTestResult:     string | null;
+  drugTestTypeCode:      number | null;
+  drugTestResult:        number | null;
+}
+
+/** Request body for PUT …/persons/{pid}/non-motorist (upsert). */
+export interface NonMotoristRequest {
+  strikingVehicleUnit:   number | null;
+  actionCircCode:        number | null;
+  originDestinationCode: number | null;
+  contributingAction1:   number | null;
+  contributingAction2:   number | null;
+  locationAtCrashCode:   number | null;
+  initialContactPoint:   number | null;
+  safetyEquipment:       { sequenceNum: number; code: number }[];
+}
+
 /** Request body for POST /crashes and PUT /crashes/{id}. */
 export interface CrashRequest {
   crashIdentifier:          string | null;

@@ -292,6 +292,12 @@
                   >
                     Edit
                   </a>
+                  <a
+                    [routerLink]="['/crashes', crash()!.crashId, 'vehicles', v.vehicleId, 'persons', 'new']"
+                    class="btn btn--sm btn--outline"
+                  >
+                    + Add Person
+                  </a>
                 </div>
                 <div class="field-grid">
 
@@ -544,6 +550,15 @@
                             [attr.aria-label]="'Injury status: ' + label(p.injuryStatusCode, INJURY_STATUS)">
                         {{ label(p.injuryStatusCode, INJURY_STATUS) }}
                       </span>
+                    }
+                    @if (p.vehicleId != null) {
+                      <a
+                        [routerLink]="['/crashes', crash()!.crashId, 'vehicles', p.vehicleId, 'persons', p.personId, 'edit']"
+                        class="btn btn--sm btn--outline"
+                        [attr.aria-label]="'Edit ' + personLabel(p)"
+                      >
+                        Edit
+                      </a>
                     }
                   </div>
                   <p class="person-card__subtitle">

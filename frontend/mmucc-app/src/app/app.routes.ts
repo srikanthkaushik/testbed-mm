@@ -69,6 +69,24 @@ export const routes: Routes = [
         canActivate: [authGuard],
       },
 
+      // Person form — must be before crashes/:id to prevent param conflicts
+      {
+        path: 'crashes/:crashId/vehicles/:vehicleId/persons/new',
+        loadComponent: () =>
+          import('./features/crashes/person-form/person-form.component')
+            .then(m => m.PersonFormComponent),
+        title: 'Add Person — MMUCC Crash Reporting',
+        canActivate: [authGuard],
+      },
+      {
+        path: 'crashes/:crashId/vehicles/:vehicleId/persons/:personId/edit',
+        loadComponent: () =>
+          import('./features/crashes/person-form/person-form.component')
+            .then(m => m.PersonFormComponent),
+        title: 'Edit Person — MMUCC Crash Reporting',
+        canActivate: [authGuard],
+      },
+
       // Crash create — must be before crashes/:id to avoid "new" matching as an id
       {
         path: 'crashes/new',
