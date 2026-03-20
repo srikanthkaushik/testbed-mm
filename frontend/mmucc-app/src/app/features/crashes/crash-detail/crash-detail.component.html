@@ -298,6 +298,13 @@
                   >
                     + Add Person
                   </a>
+                  <a
+                    [routerLink]="['/crashes', crash()!.crashId, 'vehicles', v.vehicleId, 'automation', 'edit']"
+                    class="btn btn--sm btn--outline"
+                    [attr.aria-label]="'Edit automation for vehicle unit ' + (v.unitNumber ?? v.vehicleId)"
+                  >
+                    {{ v.automation ? 'Edit Automation' : '+ Add Automation' }}
+                  </a>
                 </div>
                 <div class="field-grid">
 

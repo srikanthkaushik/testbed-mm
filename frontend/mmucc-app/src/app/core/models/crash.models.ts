@@ -491,6 +491,13 @@ export interface NonMotoristRequest {
   safetyEquipment:       { sequenceNum: number; code: number }[];
 }
 
+/** Request body for PUT …/vehicles/{vid}/automation (upsert). */
+export interface VehicleAutomationRequest {
+  automationPresentCode: number | null;
+  levelsInVehicle:       { sequenceNum: number; code: number }[];
+  levelsEngaged:         { sequenceNum: number; code: number }[];
+}
+
 /** Request body for POST /crashes and PUT /crashes/{id}. */
 export interface CrashRequest {
   crashIdentifier:          string | null;

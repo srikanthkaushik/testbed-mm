@@ -79,6 +79,16 @@ export const routes: Routes = [
         canActivate: [authGuard],
       },
 
+      // Automation form — must be before crashes/:id to prevent param conflicts
+      {
+        path: 'crashes/:crashId/vehicles/:vehicleId/automation/edit',
+        loadComponent: () =>
+          import('./features/crashes/vehicle-automation-form/vehicle-automation-form.component')
+            .then(m => m.VehicleAutomationFormComponent),
+        title: 'Edit Automation — MMUCC Crash Reporting',
+        canActivate: [authGuard],
+      },
+
       // Person form — must be before crashes/:id to prevent param conflicts
       {
         path: 'crashes/:crashId/vehicles/:vehicleId/persons/new',

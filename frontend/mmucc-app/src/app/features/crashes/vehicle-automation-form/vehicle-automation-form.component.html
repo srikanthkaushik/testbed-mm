@@ -1,0 +1,104 @@
+<div class="form-page">
+
+  <!-- ── Back link ────────────────────────────────────────────────────────── -->
+  <a [routerLink]="['/crashes', crashId()]" [fragment]="'vehicles'" class="form__back">
+    &#8592; Back to Crash Detail
+  </a>
+
+  <!-- ── Page header ──────────────────────────────────────────────────────── -->
+  <h1 class="form__title">{{ pageTitle() }}</h1>
+
+  <!-- ── Loading state ────────────────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="form__loading">
+      <span class="spinner" aria-hidden="true"></span>
+      Loading automation record…
+    </div>
+  }
+
+  <!-- ── Error alert ───────────────────────────────────────────────────────── -->
+  @if (errorMsg()) {
+    <app-alert [message]="errorMsg()" type="error" />
+  }
+
+  @if (!loading()) {
+    <form
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      novalidate
+      class="crash-form"
+    >
+
+      <!-- ── DV1 SF1: Automation Present ──────────────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">Automation Present (DV1 SF1)</legend>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label for="automationPresentCode" class="form-field__label">
+              Motor Vehicle with ADS Present (DV1)
+            </label>
+            <select id="automationPresentCode" class="form-field__select" formControlName="automationPresentCode">
+              <option [ngValue]="null">— Select —</option>
+              @for (entry of AUTOMATION_PRESENT_ENTRIES; track entry[0]) {
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
+              }
+            </select>
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ── DV1 SF2: SAE Levels Available in Vehicle ─────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">SAE Automation Levels Available in Vehicle (DV1 SF2)</legend>
+        <p class="form-section__hint">Select all automation levels present in this vehicle (SAE J3016).</p>
+        <div class="checkbox-grid">
+          @for (entry of AUTOMATION_LEVEL_ENTRIES; track entry[0]) {
+            <label class="checkbox-label">
+              <input
+                type="checkbox"
+                [checked]="selectedInVehicle().has(entry[0])"
+                (change)="toggleInVehicle(entry[0])"
+              />
+              {{ entry[0] }} — {{ entry[1] }}
+            </label>
+          }
+        </div>
+      </fieldset>
+
+      <!-- ── DV1 SF3: SAE Levels Engaged at Crash ──────────────────────────── -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">SAE Automation Levels Engaged at Time of Crash (DV1 SF3)</legend>
+        <p class="form-section__hint">Select all automation levels that were actively engaged at the time of the crash.</p>
+        <div class="checkbox-grid">
+          @for (entry of AUTOMATION_LEVEL_ENTRIES; track entry[0]) {
+            <label class="checkbox-label">
+              <input
+                type="checkbox"
+                [checked]="selectedEngaged().has(entry[0])"
+                (change)="toggleEngaged(entry[0])"
+              />
+              {{ entry[0] }} — {{ entry[1] }}
+            </label>
+          }
+        </div>
+      </fieldset>
+
+      <!-- ── Actions ───────────────────────────────────────────────────────── -->
+      <div class="form-actions">
+        <button type="button" class="btn btn--outline" (click)="onCancel()">Cancel</button>
+        <button type="submit" class="btn btn--primary" [disabled]="saving()">
+          @if (saving()) {
+            <span class="spinner spinner--sm" aria-hidden="true"></span>
+            Saving…
+          } @else {
+            Save Automation
+          }
+        </button>
+      </div>
+
+    </form>
+  }
+
+</div>

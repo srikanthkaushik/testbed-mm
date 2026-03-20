@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { AuditLogEntry, CrashDetail, CrashFilter, CrashRequest, CrashSummary, FatalSection, FatalSectionRequest, NonMotorist, NonMotoristRequest, Page, PersonDetail, PersonRequest, RoadwayDetail, RoadwayRequest, VehicleDetail, VehicleRequest } from '../models/crash.models';
+import { AuditLogEntry, CrashDetail, CrashFilter, CrashRequest, CrashSummary, FatalSection, FatalSectionRequest, NonMotorist, NonMotoristRequest, Page, PersonDetail, PersonRequest, RoadwayDetail, RoadwayRequest, VehicleAutomation, VehicleAutomationRequest, VehicleDetail, VehicleRequest } from '../models/crash.models';
 
 @Injectable({ providedIn: 'root' })
 export class CrashService {
@@ -75,6 +75,16 @@ export class CrashService {
 
   upsertNonMotorist(crashId: number, vehicleId: number, personId: number, request: NonMotoristRequest): Observable<NonMotorist> {
     return this.http.put<NonMotorist>(`${this.baseUrl}/${crashId}/vehicles/${vehicleId}/persons/${personId}/non-motorist`, request);
+  }
+
+  // ── Automation endpoints ───────────────────────────────────────────────
+
+  getAutomation(crashId: number, vehicleId: number): Observable<VehicleAutomation> {
+    return this.http.get<VehicleAutomation>(`${this.baseUrl}/${crashId}/vehicles/${vehicleId}/automation`);
+  }
+
+  upsertAutomation(crashId: number, vehicleId: number, request: VehicleAutomationRequest): Observable<VehicleAutomation> {
+    return this.http.put<VehicleAutomation>(`${this.baseUrl}/${crashId}/vehicles/${vehicleId}/automation`, request);
   }
 
   // ── Crash endpoints ────────────────────────────────────────────────────
