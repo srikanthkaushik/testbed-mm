@@ -1,0 +1,158 @@
+<div class="admin-users">
+
+  <!-- ── Header ──────────────────────────────────────────────────────────── -->
+  <div class="admin-users__header">
+    <div>
+      <h1 class="admin-users__title">User Management</h1>
+      <p class="admin-users__subtitle">Manage roles for all registered users</p>
+    </div>
+  </div>
+
+  <!-- ── Errors ─────────────────────────────────────────────────────────── -->
+  @if (errorMsg()) {
+    <app-alert [message]="errorMsg()" type="error" />
+  }
+  @if (roleError()) {
+    <app-alert [message]="roleError()" type="error" />
+  }
+
+  <!-- ── Filter bar ─────────────────────────────────────────────────────── -->
+  <form [formGroup]="filterForm" class="filter-bar">
+    <div class="filter-bar__group">
+      <label class="filter-bar__label" for="roleFilter">Role</label>
+      <select id="roleFilter" formControlName="role" class="filter-bar__select">
+        <option value="">All Roles</option>
+        @for (r of allRoles; track r) {
+          <option [value]="r">{{ roleLabels[r] }}</option>
+        }
+      </select>
+    </div>
+  </form>
+
+  <!-- ── Table ──────────────────────────────────────────────────────────── -->
+  <div class="table-wrap">
+    <table class="users-table" aria-label="User list">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Username</th>
+          <th scope="col">Email</th>
+          <th scope="col">Agency</th>
+          <th scope="col">Role</th>
+          <th scope="col" class="users-table__th--actions"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
+          @for (row of skeletonRows; track row) {
+            <tr aria-hidden="true">
+              <td><span class="skeleton skeleton--medium"></span></td>
+              <td><span class="skeleton skeleton--short"></span></td>
+              <td><span class="skeleton skeleton--medium"></span></td>
+              <td><span class="skeleton skeleton--short"></span></td>
+              <td><span class="skeleton skeleton--xs"></span></td>
+              <td></td>
+            </tr>
+          }
+        } @else if (!page() || page()!.content.length === 0) {
+          <tr>
+            <td colspan="6" class="users-table__empty">No users found.</td>
+          </tr>
+        } @else {
+          @for (u of page()!.content; track u.userId) {
+            <tr class="users-table__row">
+              <td class="users-table__td users-table__td--name">{{ fullName(u) }}</td>
+              <td class="users-table__td users-table__td--mono">{{ u.username }}</td>
+              <td class="users-table__td">{{ u.email }}</td>
+              <td class="users-table__td">{{ u.agencyName ?? u.agencyCode ?? '—' }}</td>
+
+              <!-- Role cell: view or edit -->
+              <td class="users-table__td">
+                @if (editingRoleId() === u.userId) {
+                  <select
+                    class="role-select"
+                    [value]="pendingRole()"
+                    (change)="pendingRole.set($any($event.target).value)"
+                    [disabled]="roleSaving()"
+                    aria-label="Select role"
+                  >
+                    @for (r of allRoles; track r) {
+                      <option [value]="r">{{ roleLabels[r] }}</option>
+                    }
+                  </select>
+                } @else {
+                  <span class="badge" [class]="roleBadgeClass(u.roleCode)">
+                    {{ roleLabels[u.roleCode] }}
+                  </span>
+                }
+              </td>
+
+              <!-- Actions cell -->
+              <td class="users-table__td users-table__td--actions">
+                @if (editingRoleId() === u.userId) {
+                  <span class="action-group">
+                    <button
+                      type="button"
+                      class="btn btn--sm btn--primary"
+                      [disabled]="roleSaving()"
+                      (click)="saveRole(u.userId)"
+                    >
+                      @if (roleSaving()) { Saving… } @else { Save }
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn--sm btn--ghost"
+                      [disabled]="roleSaving()"
+                      (click)="cancelEditRole()"
+                    >
+                      Cancel
+                    </button>
+                  </span>
+                } @else {
+                  <button
+                    type="button"
+                    class="btn btn--sm btn--outline"
+                    (click)="startEditRole(u)"
+                  >
+                    Edit Role
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── Pagination ─────────────────────────────────────────────────────── -->
+  @if (page() && page()!.totalElements > 0) {
+    <div class="pagination">
+      <span class="pagination__info">
+        Showing {{ rangeStart() }}–{{ rangeEnd() }} of {{ page()!.totalElements }} users
+      </span>
+      <div class="pagination__controls">
+        <button
+          type="button"
+          class="btn btn--sm btn--outline"
+          [disabled]="page()!.first"
+          (click)="goToPage(currentPage() - 1)"
+        >
+          Previous
+        </button>
+        <span class="pagination__page">
+          Page {{ page()!.number + 1 }} of {{ page()!.totalPages }}
+        </span>
+        <button
+          type="button"
+          class="btn btn--sm btn--outline"
+          [disabled]="page()!.last"
+          (click)="goToPage(currentPage() + 1)"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  }
+
+</div>

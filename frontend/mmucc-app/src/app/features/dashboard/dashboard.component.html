@@ -1,0 +1,117 @@
+<div class="dashboard">
+
+  <!-- ── Page header ──────────────────────────────────────────────────────── -->
+  <div class="dashboard__header">
+    <div>
+      <h1 class="dashboard__title">Dashboard</h1>
+      <p class="dashboard__subtitle">Crash data overview &nbsp;·&nbsp; as of {{ asOf }}</p>
+    </div>
+    <a routerLink="/crashes/new" class="btn btn--primary">+ New Crash</a>
+  </div>
+
+  <!-- ── Error ─────────────────────────────────────────────────────────────── -->
+  @if (errorMsg()) {
+    <app-alert [message]="errorMsg()" type="error" />
+  }
+
+  <!-- ── Stat cards ────────────────────────────────────────────────────────── -->
+  <div class="stat-grid" role="list" aria-label="Summary statistics">
+    @for (s of stats(); track s.label) {
+      <div class="stat-card" [class]="'stat-card--' + (s.variant ?? 'default')" role="listitem">
+        @if (loading()) {
+          <span class="stat-card__value skeleton skeleton--short" aria-hidden="true">&nbsp;</span>
+        } @else {
+          <span class="stat-card__value">{{ s.value ?? '—' }}</span>
+        }
+        <span class="stat-card__label">{{ s.label }}</span>
+      </div>
+    }
+  </div>
+
+  <!-- ── Recent Crashes ─────────────────────────────────────────────────────── -->
+  <section class="dashboard-section">
+    <div class="dashboard-section__header">
+      <h2 class="dashboard-section__title">Recent Crashes</h2>
+      <a routerLink="/crashes" class="btn btn--sm btn--outline">View All</a>
+    </div>
+
+    @if (loading()) {
+      <div class="recent-table-wrap">
+        <table class="recent-table" aria-label="Recent crashes loading">
+          <tbody>
+            @for (row of [1,2,3,4,5]; track row) {
+              <tr class="recent-table__row" aria-hidden="true">
+                <td><span class="skeleton skeleton--short"></span></td>
+                <td><span class="skeleton skeleton--medium"></span></td>
+                <td><span class="skeleton skeleton--medium"></span></td>
+                <td><span class="skeleton skeleton--short"></span></td>
+                <td><span class="skeleton skeleton--xs"></span></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else if (recentCrashes().length === 0) {
+      <p class="dashboard-empty">No crash records found. <a routerLink="/crashes/new">Create the first one.</a></p>
+    } @else {
+      <div class="recent-table-wrap">
+        <table class="recent-table" aria-label="Five most recent crash records">
+          <thead>
+            <tr>
+              <th scope="col">Case #</th>
+              <th scope="col">Date</th>
+              <th scope="col">Location</th>
+              <th scope="col">Severity</th>
+              <th scope="col">Vehicles</th>
+              <th scope="col">Fatalities</th>
+              <th scope="col" class="recent-table__th--actions"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (c of recentCrashes(); track c.crashId) {
+              <tr
+                class="recent-table__row recent-table__row--clickable"
+                [routerLink]="['/crashes', c.crashId]"
+                role="link"
+                [attr.aria-label]="'View crash ' + (c.crashIdentifier ?? c.crashId)"
+              >
+                <td class="recent-table__td recent-table__td--mono">
+                  {{ c.crashIdentifier ?? '—' }}
+                </td>
+                <td class="recent-table__td recent-table__td--mono">
+                  {{ formatDate(c.crashDate) }}
+                </td>
+                <td class="recent-table__td">{{ formatLocation(c) }}</td>
+                <td class="recent-table__td">
+                  <span class="badge" [class]="severityClass(c.crashSeverityCode)">
+                    {{ severityLabel(c.crashSeverityCode) }}
+                  </span>
+                </td>
+                <td class="recent-table__td recent-table__td--center">
+                  {{ c.numMotorVehicles }}
+                </td>
+                <td class="recent-table__td recent-table__td--center">
+                  @if (c.numFatalities > 0) {
+                    <span class="badge badge--danger">{{ c.numFatalities }}</span>
+                  } @else {
+                    <span class="recent-table__zero">0</span>
+                  }
+                </td>
+                <td class="recent-table__td recent-table__td--actions" (click)="$event.stopPropagation()">
+                  <a
+                    [routerLink]="['/crashes', c.crashId]"
+                    class="btn btn--sm btn--outline"
+                    [attr.aria-label]="'View crash ' + (c.crashIdentifier ?? c.crashId)"
+                  >
+                    View
+                  </a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+
+</div>

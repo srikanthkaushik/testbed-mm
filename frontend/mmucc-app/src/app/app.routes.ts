@@ -32,10 +32,11 @@ export const routes: Routes = [
       // Default redirect to crash list
       { path: '', redirectTo: 'crashes', pathMatch: 'full' },
 
-      // Dashboard (placeholder)
+      // Dashboard
       {
         path: 'dashboard',
-        component: ComingSoonComponent,
+        loadComponent: () =>
+          import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
         title: 'Dashboard — MMUCC Crash Reporting',
       },
 
@@ -156,11 +157,13 @@ export const routes: Routes = [
         title: 'Reports — MMUCC Crash Reporting',
       },
 
-      // Admin users (placeholder)
+      // Admin users
       {
         path: 'admin/users',
-        component: ComingSoonComponent,
+        loadComponent: () =>
+          import('./features/admin/admin-users.component').then(m => m.AdminUsersComponent),
         title: 'Admin: Users — MMUCC Crash Reporting',
+        canActivate: [authGuard],
       },
     ],
   },
