@@ -13,6 +13,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -67,10 +70,22 @@ public class SecurityConfig {
                             ErrorResponse.of(401, "Unauthorized", e.getMessage(), req.getRequestURI())));
                 })
                 .accessDeniedHandler((req, res, e) -> {
-                    res.setStatus(403);
-                    res.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                    res.getWriter().write(objectMapper.writeValueAsString(
-                            ErrorResponse.of(403, "Forbidden", e.getMessage(), req.getRequestURI())));
+                    // Anonymous users (expired/missing token) should get 401 so the
+                    // Angular interceptor's refresh-and-retry logic is triggered.
+                    // Authenticated users who lack the required role get 403.
+                    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                    boolean isAnonymous = auth == null || auth instanceof AnonymousAuthenticationToken;
+                    if (isAnonymous) {
+                        res.setStatus(401);
+                        res.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                        res.getWriter().write(objectMapper.writeValueAsString(
+                                ErrorResponse.of(401, "Unauthorized", "Authentication required", req.getRequestURI())));
+                    } else {
+                        res.setStatus(403);
+                        res.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                        res.getWriter().write(objectMapper.writeValueAsString(
+                                ErrorResponse.of(403, "Forbidden", e.getMessage(), req.getRequestURI())));
+                    }
                 })
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
