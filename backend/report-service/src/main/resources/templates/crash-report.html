@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <title th:text="'MMUCC Crash Report – ' + ${crash['CRS_CRASH_IDENTIFIER'] ?: crash['CRS_CRASH_ID']}">MMUCC Crash Report</title>
+  <title th:text="'MMUCC Crash Report - ' + ${crash['CRS_CRASH_IDENTIFIER'] ?: crash['CRS_CRASH_ID']}">MMUCC Crash Report</title>
   <style>
     /* ── Reset & base ───────────────────────────────────────────── */
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -207,7 +207,7 @@
     </div>
     <div class="cover__meta-item">
       <div class="cover__meta-label">Date</div>
-      <div class="cover__meta-value" th:text="${crash['CRS_CRASH_DATE'] ?: '—'}">—</div>
+      <div class="cover__meta-value" th:text="${crash['CRS_CRASH_DATE'] ?: '-'}">—</div>
     </div>
     <div class="cover__meta-item">
       <div class="cover__meta-label">Severity</div>
@@ -227,7 +227,7 @@
     </div>
     <div class="cover__meta-item">
       <div class="cover__meta-label">Time</div>
-      <div class="cover__meta-value" th:text="${crash['CRS_CRASH_TIME'] ?: '—'}">—</div>
+      <div class="cover__meta-value" th:text="${crash['CRS_CRASH_TIME'] ?: '-'}">—</div>
     </div>
     <div class="cover__meta-item">
       <div class="cover__meta-label">Day of Week</div>
@@ -267,11 +267,11 @@
       <tr><td class="lbl">Crash ID</td>
           <td class="val" th:text="${crash['CRS_CRASH_ID']}">—</td></tr>
       <tr><td class="lbl">Case Identifier</td>
-          <td class="val" th:text="${crash['CRS_CRASH_IDENTIFIER'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${crash['CRS_CRASH_IDENTIFIER'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Crash Date</td>
-          <td class="val" th:text="${crash['CRS_CRASH_DATE'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${crash['CRS_CRASH_DATE'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Crash Time</td>
-          <td class="val" th:text="${crash['CRS_CRASH_TIME'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${crash['CRS_CRASH_TIME'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Day of Week</td>
           <td class="val" th:text="${dayOfWeekLabel}">—</td></tr>
       <tr><td class="lbl">Crash Type (C1)</td>
@@ -297,11 +297,11 @@
       <tr><td class="lbl">Drug Involvement (C15)</td>
           <td class="val" th:text="${drugInvLabel}">—</td></tr>
       <tr><td class="lbl">Junction / Interchange (C6)</td>
-          <td class="val" th:text="${crash['CRS_JUNCTION_INTERCHANGE_FLG'] != null ? (crash['CRS_JUNCTION_INTERCHANGE_FLG'] == 1 ? 'Yes' : 'No') : '—'}">—</td></tr>
+          <td class="val" th:text="${crash['CRS_JUNCTION_INTERCHANGE_FLG'] != null ? (crash['CRS_JUNCTION_INTERCHANGE_FLG'] == 1 ? 'Yes' : 'No') : '-'}">—</td></tr>
       <tr><td class="lbl">Junction Location (C7)</td>
           <td class="val" th:text="${junctionLocationLabel}">—</td></tr>
       <tr><td class="lbl">Intersection Approaches (C8)</td>
-          <td class="val" th:text="${crash['CRS_INTERSECTION_APPROACHES'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${crash['CRS_INTERSECTION_APPROACHES'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Intersection Geometry (C9)</td>
           <td class="val" th:text="${intersectionGeoLabel}">—</td></tr>
       <tr><td class="lbl">Intersection Traffic Control (C10)</td>
@@ -323,47 +323,47 @@
           <td class="lbl">Law Enforcement Present (C21)</td>
           <td class="val" th:text="${workZoneLawEnfLabel}">—</td></tr>
       <tr><td class="lbl">Motor Vehicles Involved (C22)</td>
-          <td class="val" th:text="${crash['CRS_NUM_MOTOR_VEHICLES'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${crash['CRS_NUM_MOTOR_VEHICLES'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Motorists (C23)</td>
-          <td class="val" th:text="${crash['CRS_NUM_MOTORISTS'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${crash['CRS_NUM_MOTORISTS'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Non-Motorists (C24)</td>
-          <td class="val" th:text="${crash['CRS_NUM_NON_MOTORISTS'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${crash['CRS_NUM_NON_MOTORISTS'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Non-Fatally Injured (C25)</td>
-          <td class="val" th:text="${crash['CRS_NUM_NON_FATALLY_INJURED'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${crash['CRS_NUM_NON_FATALLY_INJURED'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Fatalities (C26)</td>
-          <td class="val" th:text="${crash['CRS_NUM_FATALITIES'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${crash['CRS_NUM_FATALITIES'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Route ID</td>
-          <td class="val" th:text="${crash['CRS_ROUTE_ID'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${crash['CRS_ROUTE_ID'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Route Type</td>
           <td class="val" th:text="${routeTypeLabel}">—</td></tr>
       <tr><td class="lbl">Route Direction</td>
           <td class="val" th:text="${routeDirLabel}">—</td></tr>
       <tr><td class="lbl">Distance from Ref. Point (mi)</td>
-          <td class="val" th:text="${crash['CRS_DISTANCE_FROM_REF_MILES'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${crash['CRS_DISTANCE_FROM_REF_MILES'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Ref. Point Direction</td>
           <td class="val" th:text="${refPointDirLabel}">—</td></tr>
       <tr><td class="lbl">Latitude</td>
-          <td class="val" th:text="${crash['CRS_LATITUDE'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${crash['CRS_LATITUDE'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Longitude</td>
-          <td class="val" th:text="${crash['CRS_LONGITUDE'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${crash['CRS_LONGITUDE'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Location of First Harmful Event</td>
           <td class="val" th:text="${locFirstHarmLabel}">—</td></tr>
       <tr><td class="lbl">County FIPS</td>
-          <td class="val" th:text="${crash['CRS_COUNTY_FIPS_CODE'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${crash['CRS_COUNTY_FIPS_CODE'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">County</td>
-          <td class="val" th:text="${crash['CRS_COUNTY_NAME'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${crash['CRS_COUNTY_NAME'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">City / Place Code</td>
-          <td class="val" th:text="${crash['CRS_CITY_PLACE_CODE'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${crash['CRS_CITY_PLACE_CODE'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">City / Place Name</td>
-          <td class="val" th:text="${crash['CRS_CITY_PLACE_NAME'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${crash['CRS_CITY_PLACE_NAME'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Created By</td>
-          <td class="val" th:text="${crash['CRS_CREATED_BY'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${crash['CRS_CREATED_BY'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Created</td>
-          <td class="val" th:text="${crash['CRS_CREATED_DT'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${crash['CRS_CREATED_DT'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Modified By</td>
-          <td class="val" th:text="${crash['CRS_MODIFIED_BY'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${crash['CRS_MODIFIED_BY'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Last Modified</td>
-          <td class="val" th:text="${crash['CRS_MODIFIED_DT'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${crash['CRS_MODIFIED_DT'] ?: '-'}">—</td></tr>
     </table>
   </div>
 </div>
@@ -380,21 +380,21 @@
       <tr><td class="lbl">Access Control (R3)</td>
           <td class="val" th:text="${accessControlLabel}">—</td></tr>
       <tr><td class="lbl">AADT Year</td>
-          <td class="val" th:text="${roadway['RWY_AADT_YEAR'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${roadway['RWY_AADT_YEAR'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">AADT Value (R4)</td>
-          <td class="val" th:text="${roadway['RWY_AADT_VALUE'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${roadway['RWY_AADT_VALUE'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">AADT Truck Measure (R5)</td>
-          <td class="val" th:text="${roadway['RWY_AADT_TRUCK_MEASURE'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${roadway['RWY_AADT_TRUCK_MEASURE'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">AADT Motorcycle Measure (R6)</td>
-          <td class="val" th:text="${roadway['RWY_AADT_MOTORCYCLE_MEASURE'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${roadway['RWY_AADT_MOTORCYCLE_MEASURE'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Lane Width ft (R7)</td>
-          <td class="val" th:text="${roadway['RWY_LANE_WIDTH_FT'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${roadway['RWY_LANE_WIDTH_FT'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Left Shoulder Width ft (R8)</td>
-          <td class="val" th:text="${roadway['RWY_LEFT_SHOULDER_WIDTH_FT'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${roadway['RWY_LEFT_SHOULDER_WIDTH_FT'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Right Shoulder Width ft (R8)</td>
-          <td class="val" th:text="${roadway['RWY_RIGHT_SHOULDER_WIDTH_FT'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${roadway['RWY_RIGHT_SHOULDER_WIDTH_FT'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Median Width ft (R9)</td>
-          <td class="val" th:text="${roadway['RWY_MEDIAN_WIDTH_FT'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${roadway['RWY_MEDIAN_WIDTH_FT'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Roadway Lighting (R10)</td>
           <td class="val" th:text="${roadwayLightingLabel}">—</td></tr>
       <tr><td class="lbl">Pavement Edgeline (R11)</td>
@@ -408,27 +408,27 @@
       <tr><td class="lbl">Bicycle Signed Route (R13)</td>
           <td class="val" th:text="${bicycleRouteLabel}">—</td></tr>
       <tr><td class="lbl">Mainline Lanes (R14)</td>
-          <td class="val" th:text="${roadway['RWY_MAINLINE_LANES_COUNT'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${roadway['RWY_MAINLINE_LANES_COUNT'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Cross-Street Lanes</td>
-          <td class="val" th:text="${roadway['RWY_CROSS_STREET_LANES_COUNT'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${roadway['RWY_CROSS_STREET_LANES_COUNT'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Entering Vehicles Year (R15)</td>
-          <td class="val" th:text="${roadway['RWY_ENTERING_VEHICLES_YEAR'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${roadway['RWY_ENTERING_VEHICLES_YEAR'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Entering Vehicles AADT (R15)</td>
-          <td class="val" th:text="${roadway['RWY_ENTERING_VEHICLES_AADT'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${roadway['RWY_ENTERING_VEHICLES_AADT'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Bridge / Structure ID (R16)</td>
-          <td class="val" th:text="${roadway['RWY_BRIDGE_STRUCTURE_ID'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${roadway['RWY_BRIDGE_STRUCTURE_ID'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Curve Radius ft</td>
-          <td class="val" th:text="${roadway['RWY_CURVE_RADIUS_FT'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${roadway['RWY_CURVE_RADIUS_FT'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Curve Length ft</td>
-          <td class="val" th:text="${roadway['RWY_CURVE_LENGTH_FT'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${roadway['RWY_CURVE_LENGTH_FT'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Curve Superelevation %</td>
-          <td class="val" th:text="${roadway['RWY_CURVE_SUPERELEVATION_PCT'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${roadway['RWY_CURVE_SUPERELEVATION_PCT'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Grade Direction</td>
-          <td class="val" th:text="${roadway['RWY_GRADE_DIRECTION'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${roadway['RWY_GRADE_DIRECTION'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Grade %</td>
-          <td class="val" th:text="${roadway['RWY_GRADE_PERCENT'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${roadway['RWY_GRADE_PERCENT'] ?: '-'}">—</td></tr>
       <tr><td class="lbl">Railway Crossing ID</td>
-          <td class="val" th:text="${roadway['RWY_RAILWAY_CROSSING_ID'] ?: '—'}">—</td></tr>
+          <td class="val" th:text="${roadway['RWY_RAILWAY_CROSSING_ID'] ?: '-'}">—</td></tr>
     </table>
   </div>
 </div>
@@ -439,45 +439,45 @@
 
   <div class="section section--break">
     <div class="section__header section__header--vehicle"
-         th:text="'Vehicle ' + (veh['VEH_UNIT_NUMBER'] ?: (vStat.index + 1)) + ' — ' + (veh['VEH_MAKE'] ?: '') + ' ' + (veh['VEH_MODEL'] ?: '') + ' (' + (veh['VEH_MODEL_YEAR'] ?: '?') + ')'">
+         th:text="'Vehicle ' + (veh['VEH_UNIT_NUMBER'] ?: (vStat.index + 1)) + ' - ' + (veh['VEH_MAKE'] ?: '') + ' ' + (veh['VEH_MODEL'] ?: '') + ' (' + (veh['VEH_MODEL_YEAR'] ?: '?') + ')'">
       Vehicle N
     </div>
     <div class="section__body">
       <table class="field-table">
         <tr><td class="lbl">Unit Number</td>
-            <td class="val" th:text="${veh['VEH_UNIT_NUMBER'] ?: '—'}">—</td></tr>
+            <td class="val" th:text="${veh['VEH_UNIT_NUMBER'] ?: '-'}">—</td></tr>
         <tr><td class="lbl">Unit Type (V1)</td>
             <td class="val" th:text="${vl['unitTypeLabel']}">—</td></tr>
         <tr><td class="lbl">VIN (V2)</td>
-            <td class="val" th:text="${veh['VEH_VIN'] ?: '—'}">—</td></tr>
+            <td class="val" th:text="${veh['VEH_VIN'] ?: '-'}">—</td></tr>
         <tr><td class="lbl">Registration State (V3)</td>
-            <td class="val" th:text="${veh['VEH_REGISTRATION_STATE'] ?: '—'}">—</td></tr>
+            <td class="val" th:text="${veh['VEH_REGISTRATION_STATE'] ?: '-'}">—</td></tr>
         <tr><td class="lbl">Registration Year (V3)</td>
-            <td class="val" th:text="${veh['VEH_REGISTRATION_YEAR'] ?: '—'}">—</td></tr>
+            <td class="val" th:text="${veh['VEH_REGISTRATION_YEAR'] ?: '-'}">—</td></tr>
         <tr><td class="lbl">License Plate (V3)</td>
-            <td class="val" th:text="${veh['VEH_LICENSE_PLATE'] ?: '—'}">—</td></tr>
+            <td class="val" th:text="${veh['VEH_LICENSE_PLATE'] ?: '-'}">—</td></tr>
         <tr><td class="lbl">Make (V4)</td>
-            <td class="val" th:text="${veh['VEH_MAKE'] ?: '—'}">—</td></tr>
+            <td class="val" th:text="${veh['VEH_MAKE'] ?: '-'}">—</td></tr>
         <tr><td class="lbl">Model Year (V4)</td>
-            <td class="val" th:text="${veh['VEH_MODEL_YEAR'] ?: '—'}">—</td></tr>
+            <td class="val" th:text="${veh['VEH_MODEL_YEAR'] ?: '-'}">—</td></tr>
         <tr><td class="lbl">Model (V4)</td>
-            <td class="val" th:text="${veh['VEH_MODEL'] ?: '—'}">—</td></tr>
+            <td class="val" th:text="${veh['VEH_MODEL'] ?: '-'}">—</td></tr>
         <tr><td class="lbl">Body Type (V5)</td>
             <td class="val" th:text="${vl['bodyTypeLabel']}">—</td></tr>
         <tr><td class="lbl">Trailing Units (V6)</td>
-            <td class="val" th:text="${veh['VEH_TRAILING_UNITS_COUNT'] ?: '—'}">—</td></tr>
+            <td class="val" th:text="${veh['VEH_TRAILING_UNITS_COUNT'] ?: '-'}">—</td></tr>
         <tr><td class="lbl">Vehicle Size (V7)</td>
             <td class="val" th:text="${vl['vehicleSizeLabel']}">—</td></tr>
         <tr><td class="lbl">HazMat Placard (V8)</td>
             <td class="val" th:text="${vl['hmPlacardLabel']}">—</td></tr>
         <tr><td class="lbl">Total Occupants (V9)</td>
-            <td class="val" th:text="${veh['VEH_TOTAL_OCCUPANTS'] ?: '—'}">—</td></tr>
+            <td class="val" th:text="${veh['VEH_TOTAL_OCCUPANTS'] ?: '-'}">—</td></tr>
         <tr><td class="lbl">Special Function (V10)</td>
             <td class="val" th:text="${vl['specialFuncLabel']}">—</td></tr>
         <tr><td class="lbl">Emergency Use (V11)</td>
             <td class="val" th:text="${vl['emergencyUseLabel']}">—</td></tr>
         <tr><td class="lbl">Speed Limit (mph) (V12)</td>
-            <td class="val" th:text="${veh['VEH_SPEED_LIMIT_MPH'] ?: '—'}">—</td></tr>
+            <td class="val" th:text="${veh['VEH_SPEED_LIMIT_MPH'] ?: '-'}">—</td></tr>
         <tr><td class="lbl">Direction of Travel (V13)</td>
             <td class="val" th:text="${vl['dirTravelLabel']}">—</td></tr>
         <tr><td class="lbl">Trafficway Travel Dir (V14)</td>
@@ -491,9 +491,9 @@
         <tr><td class="lbl">HOV Crash (V14)</td>
             <td class="val" th:text="${vl['hovCrashLabel']}">—</td></tr>
         <tr><td class="lbl">Through Lanes (V15)</td>
-            <td class="val" th:text="${veh['VEH_TOTAL_THROUGH_LANES'] ?: '—'}">—</td></tr>
+            <td class="val" th:text="${veh['VEH_TOTAL_THROUGH_LANES'] ?: '-'}">—</td></tr>
         <tr><td class="lbl">Auxiliary Lanes (V15)</td>
-            <td class="val" th:text="${veh['VEH_TOTAL_AUXILIARY_LANES'] ?: '—'}">—</td></tr>
+            <td class="val" th:text="${veh['VEH_TOTAL_AUXILIARY_LANES'] ?: '-'}">—</td></tr>
         <tr><td class="lbl">Roadway Alignment (V16)</td>
             <td class="val" th:text="${vl['alignmentLabel']}">—</td></tr>
         <tr><td class="lbl">Roadway Grade (V17)</td>
@@ -503,7 +503,7 @@
         <tr><td class="lbl">Pre-Crash Maneuver (V19)</td>
             <td class="val" th:text="${vl['maneuverLabel']}">—</td></tr>
         <tr><td class="lbl">Initial Contact Point (V20)</td>
-            <td class="val" th:text="${veh['VEH_DAMAGE_INITIAL_CONTACT'] ?: '—'}">—</td></tr>
+            <td class="val" th:text="${veh['VEH_DAMAGE_INITIAL_CONTACT'] ?: '-'}">—</td></tr>
         <tr><td class="lbl">Damage Areas (V20)</td>
             <td class="val" th:text="${vl['damageAreaLabels']}">—</td></tr>
         <tr><td class="lbl">Damage Extent (V21)</td>
@@ -526,7 +526,7 @@
   <div class="section" th:if="${veh['_largeVehicle'] != null}"
        th:with="lv=${veh['_largeVehicle']}, lvl=${vl['lvLabels']}">
     <div class="section__header section__header--lv"
-         th:text="'Large Vehicle / HazMat — Unit ' + (veh['VEH_UNIT_NUMBER'] ?: (vStat.index + 1))">Large Vehicle</div>
+         th:text="'Large Vehicle / HazMat - Unit ' + (veh['VEH_UNIT_NUMBER'] ?: (vStat.index + 1))">Large Vehicle</div>
     <div class="section__body">
       <table class="field-table">
         <tr><td class="lbl">CMV License Status (LV1)</td>
@@ -536,11 +536,11 @@
         <tr><td class="lbl">Carrier ID Type (LV3)</td>
             <td class="val" th:text="${lvl['carrierIdTypeLabel']}">—</td></tr>
         <tr><td class="lbl">Carrier ID Number (LV3)</td>
-            <td class="val" th:text="${lv['LVH_CARRIER_ID_NUMBER'] ?: '—'}">—</td></tr>
+            <td class="val" th:text="${lv['LVH_CARRIER_ID_NUMBER'] ?: '-'}">—</td></tr>
         <tr><td class="lbl">Carrier Country/State (LV3)</td>
-            <td class="val" th:text="${lv['LVH_CARRIER_COUNTRY_STATE'] ?: '—'}">—</td></tr>
+            <td class="val" th:text="${lv['LVH_CARRIER_COUNTRY_STATE'] ?: '-'}">—</td></tr>
         <tr><td class="lbl">Carrier Name (LV4)</td>
-            <td class="val" th:text="${lv['LVH_CARRIER_NAME'] ?: '—'}">—</td></tr>
+            <td class="val" th:text="${lv['LVH_CARRIER_NAME'] ?: '-'}">—</td></tr>
         <tr><td class="lbl">Carrier Address</td>
             <td class="val"
                 th:text="${(lv['LVH_CARRIER_STREET_1'] ?: '') + (lv['LVH_CARRIER_STREET_2'] != null ? ' ' + lv['LVH_CARRIER_STREET_2'] : '') + (lv['LVH_CARRIER_CITY'] != null ? ', ' + lv['LVH_CARRIER_CITY'] : '') + (lv['LVH_CARRIER_STATE'] != null ? ' ' + lv['LVH_CARRIER_STATE'] : '') + (lv['LVH_CARRIER_ZIP'] != null ? ' ' + lv['LVH_CARRIER_ZIP'] : '') + (lv['LVH_CARRIER_COUNTRY'] != null ? ', ' + lv['LVH_CARRIER_COUNTRY'] : '')}">—</td></tr>
@@ -553,32 +553,32 @@
         <tr><td class="lbl">Cargo Body Type (LV8)</td>
             <td class="val" th:text="${lvl['cargoBodyLabel']}">—</td></tr>
         <tr><td class="lbl">HazMat ID (LV9)</td>
-            <td class="val" th:text="${lv['LVH_HM_ID'] ?: '—'}">—</td></tr>
+            <td class="val" th:text="${lv['LVH_HM_ID'] ?: '-'}">—</td></tr>
         <tr><td class="lbl">HazMat Class (LV9)</td>
-            <td class="val" th:text="${lv['LVH_HM_CLASS'] ?: '—'}">—</td></tr>
+            <td class="val" th:text="${lv['LVH_HM_CLASS'] ?: '-'}">—</td></tr>
         <tr><td class="lbl">HazMat Released (LV10)</td>
             <td class="val" th:text="${lvl['hmReleasedLabel']}">—</td></tr>
         <tr><td class="lbl">Special Sizing (LV11)</td>
             <td class="val" th:text="${lvl['specialSizingLabels']}">—</td></tr>
         <tr><td class="lbl">Axles – Tractor</td>
-            <td class="val" th:text="${lv['LVH_AXLES_TRACTOR'] ?: '—'}">—</td></tr>
+            <td class="val" th:text="${lv['LVH_AXLES_TRACTOR'] ?: '-'}">—</td></tr>
         <tr><td class="lbl">Axles – Trailer 1</td>
-            <td class="val" th:text="${lv['LVH_AXLES_TRAILER_1'] ?: '—'}">—</td></tr>
+            <td class="val" th:text="${lv['LVH_AXLES_TRAILER_1'] ?: '-'}">—</td></tr>
         <tr><td class="lbl">Axles – Trailer 2</td>
-            <td class="val" th:text="${lv['LVH_AXLES_TRAILER_2'] ?: '—'}">—</td></tr>
+            <td class="val" th:text="${lv['LVH_AXLES_TRAILER_2'] ?: '-'}">—</td></tr>
         <tr><td class="lbl">Axles – Trailer 3</td>
-            <td class="val" th:text="${lv['LVH_AXLES_TRAILER_3'] ?: '—'}">—</td></tr>
+            <td class="val" th:text="${lv['LVH_AXLES_TRAILER_3'] ?: '-'}">—</td></tr>
         <tr><td class="lbl">Trailer 1 (Plate/VIN/Make/Model/Year)</td>
             <td class="val"
-                th:text="${(lv['LVH_TRAILER1_PLATE'] ?: '—') + ' / ' + (lv['LVH_TRAILER1_VIN'] ?: '—') + ' / ' + (lv['LVH_TRAILER1_MAKE'] ?: '—') + ' ' + (lv['LVH_TRAILER1_MODEL'] ?: '—') + ' ' + (lv['LVH_TRAILER1_YEAR'] ?: '')}">—</td></tr>
+                th:text="${(lv['LVH_TRAILER1_PLATE'] ?: '-') + ' / ' + (lv['LVH_TRAILER1_VIN'] ?: '-') + ' / ' + (lv['LVH_TRAILER1_MAKE'] ?: '-') + ' ' + (lv['LVH_TRAILER1_MODEL'] ?: '-') + ' ' + (lv['LVH_TRAILER1_YEAR'] ?: '')}">—</td></tr>
         <tr th:if="${lv['LVH_TRAILER2_PLATE'] != null or lv['LVH_TRAILER2_VIN'] != null}">
             <td class="lbl">Trailer 2 (Plate/VIN/Make/Model/Year)</td>
             <td class="val"
-                th:text="${(lv['LVH_TRAILER2_PLATE'] ?: '—') + ' / ' + (lv['LVH_TRAILER2_VIN'] ?: '—') + ' / ' + (lv['LVH_TRAILER2_MAKE'] ?: '—') + ' ' + (lv['LVH_TRAILER2_MODEL'] ?: '—') + ' ' + (lv['LVH_TRAILER2_YEAR'] ?: '')}">—</td></tr>
+                th:text="${(lv['LVH_TRAILER2_PLATE'] ?: '-') + ' / ' + (lv['LVH_TRAILER2_VIN'] ?: '-') + ' / ' + (lv['LVH_TRAILER2_MAKE'] ?: '-') + ' ' + (lv['LVH_TRAILER2_MODEL'] ?: '-') + ' ' + (lv['LVH_TRAILER2_YEAR'] ?: '')}">—</td></tr>
         <tr th:if="${lv['LVH_TRAILER3_PLATE'] != null or lv['LVH_TRAILER3_VIN'] != null}">
             <td class="lbl">Trailer 3 (Plate/VIN/Make/Model/Year)</td>
             <td class="val"
-                th:text="${(lv['LVH_TRAILER3_PLATE'] ?: '—') + ' / ' + (lv['LVH_TRAILER3_VIN'] ?: '—') + ' / ' + (lv['LVH_TRAILER3_MAKE'] ?: '—') + ' ' + (lv['LVH_TRAILER3_MODEL'] ?: '—') + ' ' + (lv['LVH_TRAILER3_YEAR'] ?: '')}">—</td></tr>
+                th:text="${(lv['LVH_TRAILER3_PLATE'] ?: '-') + ' / ' + (lv['LVH_TRAILER3_VIN'] ?: '-') + ' / ' + (lv['LVH_TRAILER3_MAKE'] ?: '-') + ' ' + (lv['LVH_TRAILER3_MODEL'] ?: '-') + ' ' + (lv['LVH_TRAILER3_YEAR'] ?: '')}">—</td></tr>
       </table>
     </div>
   </div>
@@ -587,7 +587,7 @@
   <div class="section" th:if="${veh['_automation'] != null}"
        th:with="aut=${veh['_automation']}, autl=${vl['autLabels']}">
     <div class="section__header section__header--auto"
-         th:text="'Vehicle Automation (DV1) — Unit ' + (veh['VEH_UNIT_NUMBER'] ?: (vStat.index + 1))">
+         th:text="'Vehicle Automation (DV1) - Unit ' + (veh['VEH_UNIT_NUMBER'] ?: (vStat.index + 1))">
       Automation
     </div>
     <div class="section__body">
@@ -608,18 +608,18 @@
 
     <div class="section">
       <div class="section__header section__header--person"
-           th:text="'Person ' + (pStat.index + 1) + ' (Unit ' + (veh['VEH_UNIT_NUMBER'] ?: (vStat.index + 1)) + ') — ' + (per['PER_PERSON_NAME'] ?: 'Unknown')">
+           th:text="'Person ' + (pStat.index + 1) + ' (Unit ' + (veh['VEH_UNIT_NUMBER'] ?: (vStat.index + 1)) + ') - ' + (per['PRS_PERSON_NAME'] ?: 'Unknown')">
         Person N
       </div>
       <div class="section__body">
         <table class="field-table">
           <tr><td class="lbl">Person Name (P1)</td>
-              <td class="val" th:text="${per['PER_PERSON_NAME'] ?: '—'}">—</td></tr>
+              <td class="val" th:text="${per['PRS_PERSON_NAME'] ?: '-'}">—</td></tr>
           <tr><td class="lbl">Date of Birth (P2)</td>
               <td class="val"
-                  th:text="${(per['PER_DOB_MONTH'] != null ? per['PER_DOB_MONTH'] + '/' : '') + (per['PER_DOB_DAY'] != null ? per['PER_DOB_DAY'] + '/' : '') + (per['PER_DOB_YEAR'] ?: '—')}">—</td></tr>
+                  th:text="${(per['PRS_DOB_MONTH'] != null ? per['PRS_DOB_MONTH'] + '/' : '') + (per['PRS_DOB_DAY'] != null ? per['PRS_DOB_DAY'] + '/' : '') + (per['PRS_DOB_YEAR'] ?: '-')}">—</td></tr>
           <tr><td class="lbl">Age (P3)</td>
-              <td class="val" th:text="${per['PER_AGE_YEARS'] != null ? per['PER_AGE_YEARS'] + ' yrs' : '—'}">—</td></tr>
+              <td class="val" th:text="${per['PRS_AGE_YEARS'] != null ? per['PRS_AGE_YEARS'] + ' yrs' : '-'}">—</td></tr>
           <tr><td class="lbl">Sex (P4)</td>
               <td class="val" th:text="${pl['sexLabel']}">—</td></tr>
           <tr><td class="lbl">Person Type (P5)</td>
@@ -629,7 +629,7 @@
           <tr><td class="lbl">Injury Status (P7)</td>
               <td class="val" th:text="${pl['injuryStatusLabel']}">—</td></tr>
           <tr><td class="lbl">Vehicle Unit # (P8)</td>
-              <td class="val" th:text="${per['PER_VEHICLE_UNIT_NUMBER'] ?: '—'}">—</td></tr>
+              <td class="val" th:text="${per['PRS_VEHICLE_UNIT_NUMBER'] ?: '-'}">—</td></tr>
           <tr><td class="lbl">Seating Row (P9)</td>
               <td class="val" th:text="${pl['seatingRowLabel']}">—</td></tr>
           <tr><td class="lbl">Seating Seat (P9)</td>
@@ -645,9 +645,9 @@
           <tr><td class="lbl">DL Jurisdiction Type (P13)</td>
               <td class="val" th:text="${pl['dlJurisdLabel']}">—</td></tr>
           <tr><td class="lbl">DL Jurisdiction Code (P13)</td>
-              <td class="val" th:text="${per['PER_DL_JURISDICTION_CODE'] ?: '—'}">—</td></tr>
+              <td class="val" th:text="${per['PRS_DL_JURISDICTION_CODE'] ?: '-'}">—</td></tr>
           <tr><td class="lbl">DL Number (P13)</td>
-              <td class="val" th:text="${per['PER_DL_NUMBER'] ?: '—'}">—</td></tr>
+              <td class="val" th:text="${per['PRS_DL_NUMBER'] ?: '-'}">—</td></tr>
           <tr><td class="lbl">DL Class (P13)</td>
               <td class="val" th:text="${pl['dlClassLabel']}">—</td></tr>
           <tr><td class="lbl">CDL (P13)</td>
@@ -667,9 +667,9 @@
           <tr><td class="lbl">Driver Actions (P16)</td>
               <td class="val" th:text="${pl['driverActionLabels']}">—</td></tr>
           <tr><td class="lbl">Violation Code 1 (P17)</td>
-              <td class="val" th:text="${per['PER_VIOLATION_CODE_1'] ?: '—'}">—</td></tr>
+              <td class="val" th:text="${per['PRS_VIOLATION_CODE_1'] ?: '-'}">—</td></tr>
           <tr><td class="lbl">Violation Code 2 (P17)</td>
-              <td class="val" th:text="${per['PER_VIOLATION_CODE_2'] ?: '—'}">—</td></tr>
+              <td class="val" th:text="${per['PRS_VIOLATION_CODE_2'] ?: '-'}">—</td></tr>
           <tr><td class="lbl">Distracted Action (P18)</td>
               <td class="val" th:text="${pl['distractedActionLabel']}">—</td></tr>
           <tr><td class="lbl">Distracted Source (P18)</td>
@@ -685,7 +685,7 @@
           <tr><td class="lbl">Alcohol Test Type (P20)</td>
               <td class="val" th:text="${pl['alcTestTypeLabel']}">—</td></tr>
           <tr><td class="lbl">BAC Result (P20)</td>
-              <td class="val" th:text="${per['PER_ALCOHOL_BAC_RESULT'] ?: '—'}">—</td></tr>
+              <td class="val" th:text="${per['PRS_ALCOHOL_BAC_RESULT'] ?: '-'}">—</td></tr>
           <tr><td class="lbl">LE Suspects Drug (P21)</td>
               <td class="val" th:text="${pl['leSuspectsDrugLabel']}">—</td></tr>
           <tr><td class="lbl">Drug Test Status (P21)</td>
@@ -697,15 +697,15 @@
           <tr><td class="lbl">Transport Source (P22)</td>
               <td class="val" th:text="${pl['transportLabel']}">—</td></tr>
           <tr><td class="lbl">EMS Agency ID (P22)</td>
-              <td class="val" th:text="${per['PER_EMS_AGENCY_ID'] ?: '—'}">—</td></tr>
+              <td class="val" th:text="${per['PRS_EMS_AGENCY_ID'] ?: '-'}">—</td></tr>
           <tr><td class="lbl">EMS Run # (P22)</td>
-              <td class="val" th:text="${per['PER_EMS_RUN_NUMBER'] ?: '—'}">—</td></tr>
+              <td class="val" th:text="${per['PRS_EMS_RUN_NUMBER'] ?: '-'}">—</td></tr>
           <tr><td class="lbl">Medical Facility (P22)</td>
-              <td class="val" th:text="${per['PER_MEDICAL_FACILITY'] ?: '—'}">—</td></tr>
+              <td class="val" th:text="${per['PRS_MEDICAL_FACILITY'] ?: '-'}">—</td></tr>
           <tr><td class="lbl">Injury Area (P23)</td>
               <td class="val" th:text="${pl['injuryAreaLabel']}">—</td></tr>
           <tr><td class="lbl">Injury Diagnosis (P24)</td>
-              <td class="val" th:text="${per['PER_INJURY_DIAGNOSIS'] ?: '—'}">—</td></tr>
+              <td class="val" th:text="${per['PRS_INJURY_DIAGNOSIS'] ?: '-'}">—</td></tr>
           <tr><td class="lbl">Injury Severity (P25)</td>
               <td class="val" th:text="${pl['injurySeverityLabel']}">—</td></tr>
         </table>
@@ -716,7 +716,7 @@
     <div class="section" th:if="${per['_fatalSection'] != null}"
          th:with="fat=${per['_fatalSection']}, fatl=${pl['fatLabels']}">
       <div class="section__header section__header--fatal"
-           th:text="'Fatal Section (F1–F3) — ' + (per['PER_PERSON_NAME'] ?: 'Person ' + (pStat.index + 1))">Fatal</div>
+           th:text="'Fatal Section (F1-F3) - ' + (per['PRS_PERSON_NAME'] ?: 'Person ' + (pStat.index + 1))">Fatal</div>
       <div class="section__body">
         <table class="field-table">
           <tr><td class="lbl">Avoidance Maneuver (F1)</td>
@@ -724,11 +724,11 @@
           <tr><td class="lbl">Alcohol Test Type (F2)</td>
               <td class="val" th:text="${fatl['alcTestTypeLabel']}">—</td></tr>
           <tr><td class="lbl">Alcohol Test Result (F2)</td>
-              <td class="val" th:text="${fat['FAT_ALCOHOL_TEST_RESULT'] ?: '—'}">—</td></tr>
+              <td class="val" th:text="${fat['FSC_ALCOHOL_TEST_RESULT'] ?: '-'}">—</td></tr>
           <tr><td class="lbl">Drug Test Type (F3)</td>
               <td class="val" th:text="${fatl['drugTestTypeLabel']}">—</td></tr>
           <tr><td class="lbl">Drug Test Result (F3)</td>
-              <td class="val" th:text="${fat['FAT_DRUG_TEST_RESULT'] ?: '—'}">—</td></tr>
+              <td class="val" th:text="${fat['FSC_DRUG_TEST_RESULT'] ?: '-'}">—</td></tr>
         </table>
       </div>
     </div>
@@ -737,11 +737,11 @@
     <div class="section" th:if="${per['_nonMotorist'] != null}"
          th:with="nm=${per['_nonMotorist']}, nml=${pl['nmLabels']}">
       <div class="section__header section__header--nm"
-           th:text="'Non-Motorist (NM1–NM6) — ' + (per['PER_PERSON_NAME'] ?: 'Person ' + (pStat.index + 1))">Non-Motorist</div>
+           th:text="'Non-Motorist (NM1-NM6) - ' + (per['PRS_PERSON_NAME'] ?: 'Person ' + (pStat.index + 1))">Non-Motorist</div>
       <div class="section__body">
         <table class="field-table">
           <tr><td class="lbl">Striking Vehicle Unit (NM1)</td>
-              <td class="val" th:text="${nm['NMT_STRIKING_VEHICLE_UNIT'] ?: '—'}">—</td></tr>
+              <td class="val" th:text="${nm['NMT_STRIKING_VEHICLE_UNIT'] ?: '-'}">—</td></tr>
           <tr><td class="lbl">Action / Circumstance (NM2)</td>
               <td class="val" th:text="${nml['actionCircLabel']}">—</td></tr>
           <tr><td class="lbl">Origin / Destination (NM3)</td>
