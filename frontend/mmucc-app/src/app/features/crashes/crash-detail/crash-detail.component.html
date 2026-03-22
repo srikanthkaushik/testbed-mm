@@ -21,6 +21,9 @@
   @if (errorMessage()) {
     <app-alert [message]="errorMessage()" type="error" />
   }
+  @if (pdfError()) {
+    <app-alert [message]="pdfError()" type="error" />
+  }
 
   <!-- ── Loaded content ────────────────────────────────────────────────── -->
   @if (!loading() && crash()) {
@@ -33,6 +36,16 @@
           <span class="badge" [class]="severityBadgeClass(crash()!.crashSeverityCode)">
             {{ severityLabel(crash()!.crashSeverityCode) }}
           </span>
+          <button type="button" class="btn btn--sm btn--outline"
+                  [disabled]="downloading()"
+                  (click)="downloadPdf()">
+            @if (downloading()) {
+              <span class="spinner spinner--sm" aria-hidden="true"></span>
+              Generating…
+            } @else {
+              Download PDF
+            }
+          </button>
           @if (canWrite()) {
             <a [routerLink]="['/crashes', crash()!.crashId, 'edit']" class="btn btn--sm btn--outline">
               Edit Crash

@@ -16,6 +16,16 @@ export class ReportService {
   private readonly baseUrl = environment.reportServiceUrl;
 
   /**
+   * Downloads a single crash as a formatted PDF.
+   * Returns a Blob (application/pdf) that can be saved to disk.
+   */
+  downloadCrashPdf(crashId: number): Observable<Blob> {
+    return this.http.get(`${this.baseUrl}/crashes/${crashId}/pdf`, {
+      responseType: 'blob',
+    });
+  }
+
+  /**
    * Requests a CSV export from the report-service.
    * Returns a Blob (text/csv) that can be saved to disk.
    */

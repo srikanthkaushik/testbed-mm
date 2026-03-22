@@ -13,6 +13,7 @@ import { switchMap, tap, catchError } from 'rxjs/operators';
 import { EMPTY, of } from 'rxjs';
 import { CrashService } from '../../../core/services/crash.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ReportService } from '../../../core/services/report.service';
 import { AlertComponent } from '../../../shared/components/alert/alert.component';
 import { AuditLogEntry, CrashDetail, FatalSection, LargeVehicle, NonMotorist, VehicleAutomation, VehicleDetail, PersonDetail, TrafficControl } from '../../../core/models/crash.models';
 import { ReferenceService } from '../../../core/services/reference.service';
@@ -120,9 +121,10 @@ export type DetailTab = 'overview' | 'vehicles' | 'persons' | 'roadway' | 'audit
   styleUrl: './crash-detail.component.scss',
 })
 export class CrashDetailComponent implements OnInit {
-  private readonly crashService = inject(CrashService);
-  private readonly authService  = inject(AuthService);
-  private readonly refSvc       = inject(ReferenceService);
+  private readonly crashService  = inject(CrashService);
+  private readonly authService   = inject(AuthService);
+  private readonly reportService = inject(ReportService);
+  private readonly refSvc        = inject(ReferenceService);
   private readonly route        = inject(ActivatedRoute);
   private readonly router       = inject(Router);
   private readonly destroyRef   = inject(DestroyRef);
@@ -141,6 +143,10 @@ export class CrashDetailComponent implements OnInit {
   readonly activeTab    = signal<DetailTab>('overview');
   readonly auditLog     = signal<AuditLogEntry[]>([]);
   readonly auditLoading = signal<boolean>(false);
+
+  // ── PDF download state ─────────────────────────────────────────────────────
+  readonly downloading = signal(false);
+  readonly pdfError    = signal('');
 
   // ── Delete state ───────────────────────────────────────────────────────────
   readonly deletingCrash     = signal<boolean>(false);
@@ -336,6 +342,31 @@ export class CrashDetailComponent implements OnInit {
       .subscribe(entries => {
         this.auditLog.set(entries);
         this.auditLoading.set(false);
+      });
+  }
+
+  // ── PDF download ───────────────────────────────────────────────────────────
+
+  downloadPdf(): void {
+    this.pdfError.set('');
+    this.downloading.set(true);
+    this.reportService.downloadCrashPdf(this.crashId())
+      .pipe(
+        catchError((err: unknown) => {
+          this.pdfError.set(err instanceof Error ? err.message : 'Failed to generate PDF.');
+          this.downloading.set(false);
+          return EMPTY;
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `crash-${this.crashId()}.pdf`;
+        a.click();
+        URL.revokeObjectURL(url);
+        this.downloading.set(false);
       });
   }
 
