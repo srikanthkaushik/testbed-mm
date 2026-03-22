@@ -37,6 +37,7 @@ export interface CrashFilter {
   dateFrom: string | null;
   dateTo: string | null;
   countyCode: number | null;
+  severityCode: number | null;
   minFatalities: number | null;
   page: number;
   size: number;

@@ -53,6 +53,21 @@
           />
         </div>
 
+        <div class="filter-bar__field">
+          <label for="filter-severity" class="filter-bar__label">Severity</label>
+          <select
+            id="filter-severity"
+            class="filter-bar__input"
+            formControlName="severity"
+            aria-label="Filter by crash severity"
+          >
+            <option value="">— All —</option>
+            @for (opt of severityOptions; track opt.code) {
+              <option [value]="opt.code">{{ opt.code }} — {{ opt.label }}</option>
+            }
+          </select>
+        </div>
+
       </div>
 
       <div class="filter-bar__actions">

@@ -131,6 +131,10 @@
                   <dt>Location of First Harmful Event</dt>
                   <dd>{{ label(crash()!.locFirstHarmfulEvent, LOC_FIRST_HARMFUL_EVENT) }}</dd>
                 </div>
+                <div class="field-list__row">
+                  <dt>Source of Information</dt>
+                  <dd>{{ label(crash()!.sourceOfInfoCode, SOURCE_OF_INFO) }}</dd>
+                </div>
               </dl>
             </div>
 
@@ -364,6 +368,11 @@
                       <div class="field-list__row"><dt>State</dt><dd>{{ nullOr(v.registrationState) }}</dd></div>
                       <div class="field-list__row"><dt>Reg. Year</dt><dd>{{ nullOr(v.registrationYear) }}</dd></div>
                       <div class="field-list__row"><dt>Body Type</dt><dd>{{ label(v.bodyTypeCode, BODY_TYPE()) }}</dd></div>
+                      <div class="field-list__row"><dt>Vehicle Size</dt><dd>{{ label(v.vehicleSizeCode, VEHICLE_SIZE) }}</dd></div>
+                      <div class="field-list__row"><dt>HazMat Placard</dt><dd>{{ label(v.hmPlacardFlg, HM_PLACARD) }}</dd></div>
+                      <div class="field-list__row"><dt>Trailing Units</dt><dd>{{ nullOr(v.trailingUnitsCount) }}</dd></div>
+                      <div class="field-list__row"><dt>Special Function</dt><dd>{{ label(v.specialFunctionCode, SPECIAL_FUNCTION) }}</dd></div>
+                      <div class="field-list__row"><dt>Emergency Use</dt><dd>{{ label(v.emergencyUseCode, EMERGENCY_USE) }}</dd></div>
                     </dl>
                   </div>
 
@@ -388,6 +397,9 @@
                     <dl class="field-list">
                       <div class="field-list__row"><dt>Travel Direction</dt><dd>{{ label(v.trafficwayTravelDirCode, TRAFFICWAY_TRAVEL_DIR) }}</dd></div>
                       <div class="field-list__row"><dt>Divided Highway</dt><dd>{{ label(v.trafficwayDividedCode, TRAFFICWAY_DIVIDED) }}</dd></div>
+                      <div class="field-list__row"><dt>Median Barrier</dt><dd>{{ label(v.trafficwayBarrierCode, TRAFFICWAY_BARRIER) }}</dd></div>
+                      <div class="field-list__row"><dt>HOV/HOT Lane</dt><dd>{{ nullOr(v.trafficwayHovHotCode) }}</dd></div>
+                      <div class="field-list__row"><dt>HOV Crash</dt><dd>{{ label(v.trafficwayHovCrashFlg, YES_NO) }}</dd></div>
                       <div class="field-list__row"><dt>Through Lanes</dt><dd>{{ nullOr(v.totalThroughLanes) }}</dd></div>
                       <div class="field-list__row"><dt>Auxiliary Lanes</dt><dd>{{ nullOr(v.totalAuxiliaryLanes) }}</dd></div>
                       <div class="field-list__row"><dt>Roadway Alignment</dt><dd>{{ label(v.roadwayAlignmentCode, ROADWAY_ALIGNMENT) }}</dd></div>

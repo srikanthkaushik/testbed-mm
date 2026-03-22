@@ -35,13 +35,20 @@
         <div class="form-grid">
 
           <div class="form-field">
-            <label for="unitTypeCode" class="form-field__label">Unit Type (V1)</label>
-            <select id="unitTypeCode" class="form-field__select" formControlName="unitTypeCode">
+            <label for="unitTypeCode" class="form-field__label">
+              Unit Type (V1) <span class="form-field__required" aria-hidden="true">*</span>
+            </label>
+            <select id="unitTypeCode" aria-required="true"
+              [class.form-field__select--invalid]="form.controls.unitTypeCode.invalid && form.controls.unitTypeCode.touched"
+              class="form-field__select" formControlName="unitTypeCode">
               <option [ngValue]="null">— Select —</option>
               @for (entry of UNIT_TYPE_ENTRIES; track entry[0]) {
                 <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
               }
             </select>
+            @if (form.controls.unitTypeCode.invalid && form.controls.unitTypeCode.touched) {
+              <span class="form-field__error" role="alert">Unit type is required.</span>
+            }
           </div>
 
           <div class="form-field">
@@ -123,7 +130,7 @@
             <select id="vehicleSizeCode" class="form-field__select" formControlName="vehicleSizeCode">
               <option [ngValue]="null">— Select —</option>
               @for (entry of VEHICLE_SIZE_ENTRIES; track entry[0]) {
-                <option [ngValue]="entry[0]">{{ entry[1] }}</option>
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
               }
             </select>
           </div>

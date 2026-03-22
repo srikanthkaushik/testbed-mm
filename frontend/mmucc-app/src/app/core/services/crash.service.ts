@@ -18,6 +18,7 @@ export class CrashService {
     if (filter.dateFrom !== null) params = params.set('dateFrom', filter.dateFrom);
     if (filter.dateTo !== null) params = params.set('dateTo', filter.dateTo);
     if (filter.countyCode !== null) params = params.set('countyCode', filter.countyCode.toString());
+    if (filter.severityCode !== null) params = params.set('severityCode', filter.severityCode.toString());
     if (filter.minFatalities !== null) params = params.set('minFatalities', filter.minFatalities.toString());
 
     return this.http.get<Page<CrashSummary>>(this.baseUrl, { params });

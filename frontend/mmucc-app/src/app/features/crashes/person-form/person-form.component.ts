@@ -8,7 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { EMPTY, Observable, forkJoin, of } from 'rxjs';
@@ -186,9 +186,9 @@ export class PersonFormComponent implements OnInit {
     ageYears:              [null as number | null],
     sexCode:               [null as number | null],
     // Person type & status (P4–P6)
-    personTypeCode:        [null as number | null],
+    personTypeCode:        [null as number | null, Validators.required],
     incidentResponderCode: [null as number | null],
-    injuryStatusCode:      [null as number | null],
+    injuryStatusCode:      [null as number | null, Validators.required],
     vehicleUnitNumber:     [null as number | null],
     // Seating & safety (P7–P10)
     seatingRowCode:        [null as number | null],

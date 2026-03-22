@@ -83,9 +83,19 @@ export class CrashListComponent implements OnInit {
   // ── Filter form ───────────────────────────────────────────────────────
   readonly filterForm = this.fb.nonNullable.group({
     dateFrom: [''],
-    dateTo: [''],
-    county: [''],
+    dateTo:   [''],
+    county:   [''],    // county name — client-side hint only (UI display)
+    severity: [''],    // crash severity code 1–5
   });
+
+  /** Severity options for the filter dropdown. */
+  readonly severityOptions: { code: number; label: string }[] = [
+    { code: 1, label: 'Fatal (K)' },
+    { code: 2, label: 'Serious Injury (A)' },
+    { code: 3, label: 'Minor Injury (B)' },
+    { code: 4, label: 'Possible Injury (C)' },
+    { code: 5, label: 'PDO / No Injury (O)' },
+  ];
 
   // ── Fetch trigger ─────────────────────────────────────────────────────
   private readonly fetch$ = new Subject<void>();
@@ -96,10 +106,11 @@ export class CrashListComponent implements OnInit {
     // Restore filter state from URL query params (supports back-button / bookmarks)
     const qp = this.route.snapshot.queryParams;
     if (qp['dateFrom']) this.filterForm.controls.dateFrom.setValue(qp['dateFrom']);
-    if (qp['dateTo']) this.filterForm.controls.dateTo.setValue(qp['dateTo']);
-    if (qp['county']) this.filterForm.controls.county.setValue(qp['county']);
-    if (qp['page']) this.currentPage.set(parseInt(qp['page'], 10) || 0);
-    if (qp['size']) this.pageSize.set(parseInt(qp['size'], 10) || DEFAULT_PAGE_SIZE);
+    if (qp['dateTo'])   this.filterForm.controls.dateTo.setValue(qp['dateTo']);
+    if (qp['county'])   this.filterForm.controls.county.setValue(qp['county']);
+    if (qp['severity']) this.filterForm.controls.severity.setValue(qp['severity']);
+    if (qp['page'])  this.currentPage.set(parseInt(qp['page'], 10) || 0);
+    if (qp['size'])  this.pageSize.set(parseInt(qp['size'], 10) || DEFAULT_PAGE_SIZE);
     if (qp['sort'] === 'crashDate,asc') this.sortAsc.set(true);
 
     // Wire the fetch subject to the service call
@@ -240,10 +251,12 @@ export class CrashListComponent implements OnInit {
 
   private buildFilter(): CrashFilter {
     const raw = this.filterForm.getRawValue();
+    const severityNum = raw.severity ? parseInt(raw.severity, 10) : null;
     return {
-      dateFrom: raw.dateFrom || null,
-      dateTo: raw.dateTo || null,
-      countyCode: null,  // county text search not yet supported server-side
+      dateFrom:     raw.dateFrom || null,
+      dateTo:       raw.dateTo || null,
+      countyCode:   null,   // county name filter is client-side only; FIPS not collected in this field
+      severityCode: severityNum !== null && !isNaN(severityNum) ? severityNum : null,
       minFatalities: null,
       page: this.currentPage(),
       size: this.pageSize(),
@@ -259,8 +272,9 @@ export class CrashListComponent implements OnInit {
       sort: this.sortAsc() ? 'crashDate,asc' : DEFAULT_SORT,
     };
     if (raw.dateFrom) queryParams['dateFrom'] = raw.dateFrom;
-    if (raw.dateTo) queryParams['dateTo'] = raw.dateTo;
-    if (raw.county) queryParams['county'] = raw.county;
+    if (raw.dateTo)   queryParams['dateTo']   = raw.dateTo;
+    if (raw.county)   queryParams['county']   = raw.county;
+    if (raw.severity) queryParams['severity'] = raw.severity;
 
     this.router.navigate([], {
       relativeTo: this.route,

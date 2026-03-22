@@ -179,7 +179,7 @@
             <select id="refPointDirectionCode" class="form-field__select" formControlName="refPointDirectionCode">
               <option [ngValue]="null">— Select —</option>
               @for (entry of REF_POINT_DIRECTION_ENTRIES; track entry[0]) {
-                <option [ngValue]="entry[0]">{{ entry[1] }}</option>
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
               }
             </select>
           </div>
@@ -318,7 +318,7 @@
             <select id="intersectionApproaches" class="form-field__select" formControlName="intersectionApproaches">
               <option [ngValue]="null">— Select —</option>
               @for (entry of INTERSECTION_APPROACHES_ENTRIES; track entry[0]) {
-                <option [ngValue]="entry[0]">{{ entry[1] }}</option>
+                <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
               }
             </select>
           </div>

@@ -83,13 +83,20 @@
         <div class="form-grid">
 
           <div class="form-field">
-            <label for="personTypeCode" class="form-field__label">Person Type (P4)</label>
-            <select id="personTypeCode" class="form-field__select" formControlName="personTypeCode">
+            <label for="personTypeCode" class="form-field__label">
+              Person Type (P4) <span class="form-field__required" aria-hidden="true">*</span>
+            </label>
+            <select id="personTypeCode" aria-required="true"
+              [class.form-field__select--invalid]="form.controls.personTypeCode.invalid && form.controls.personTypeCode.touched"
+              class="form-field__select" formControlName="personTypeCode">
               <option [ngValue]="null">— Select —</option>
               @for (entry of PERSON_TYPE_ENTRIES(); track entry[0]) {
                 <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
               }
             </select>
+            @if (form.controls.personTypeCode.invalid && form.controls.personTypeCode.touched) {
+              <span class="form-field__error" role="alert">Person type is required.</span>
+            }
           </div>
 
           <div class="form-field">
@@ -103,13 +110,20 @@
           </div>
 
           <div class="form-field">
-            <label for="injuryStatusCode" class="form-field__label">Injury Status (P5)</label>
-            <select id="injuryStatusCode" class="form-field__select" formControlName="injuryStatusCode">
+            <label for="injuryStatusCode" class="form-field__label">
+              Injury Status (P5) <span class="form-field__required" aria-hidden="true">*</span>
+            </label>
+            <select id="injuryStatusCode" aria-required="true"
+              [class.form-field__select--invalid]="form.controls.injuryStatusCode.invalid && form.controls.injuryStatusCode.touched"
+              class="form-field__select" formControlName="injuryStatusCode">
               <option [ngValue]="null">— Select —</option>
               @for (entry of INJURY_STATUS_ENTRIES(); track entry[0]) {
                 <option [ngValue]="entry[0]">{{ entry[0] }} — {{ entry[1] }}</option>
               }
             </select>
+            @if (form.controls.injuryStatusCode.invalid && form.controls.injuryStatusCode.touched) {
+              <span class="form-field__error" role="alert">Injury status is required.</span>
+            }
           </div>
 
           <div class="form-field">

@@ -54,7 +54,7 @@ export class DashboardComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    const base = { dateTo: null, countyCode: null, sort: 'crashDate,desc' };
+    const base = { dateTo: null, countyCode: null, severityCode: null, sort: 'crashDate,desc' };
 
     forkJoin({
       recent:   this.crashService.getCrashes({ ...base, page: 0, size: 5, dateFrom: null, minFatalities: null }),

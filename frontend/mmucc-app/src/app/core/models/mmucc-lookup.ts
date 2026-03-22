@@ -219,6 +219,37 @@ export const LOC_FIRST_HARMFUL_EVENT: Record<number, string> = {
   99: 'Unknown',
 };
 
+// C3 – Crash Severity
+export const CRASH_SEVERITY: Record<number, string> = {
+  1: 'Fatal (K)',
+  2: 'Serious Injury (A)',
+  3: 'Minor Injury (B)',
+  4: 'Possible Injury (C)',
+  5: 'No Apparent Injury / PDO (O)',
+};
+
+// C10 – Source of Information
+export const SOURCE_OF_INFO: Record<number, string> = {
+  1:  'Law Enforcement Report',
+  2:  'Self Report / Citizen',
+  3:  'EMS/Fire Report',
+  4:  'Hospital/Medical Report',
+  5:  'Other',
+  9:  'Unknown',
+};
+
+// C5 alt / Location ref-point direction
+export const REF_POINT_DIRECTION: Record<number, string> = {
+  1: 'North',
+  2: 'South',
+  3: 'East',
+  4: 'West',
+  5: 'Northeast',
+  6: 'Northwest',
+  7: 'Southeast',
+  8: 'Southwest',
+};
+
 // V1 – Unit Type
 export const UNIT_TYPE: Record<number, string> = {
   1: 'Motor Vehicle in Transport',
@@ -226,6 +257,40 @@ export const UNIT_TYPE: Record<number, string> = {
   3: 'Working Motor Vehicle',
   4: 'Non-Motor Vehicle Transport Device',
   5: 'Person on Personal Conveyance',
+  9: 'Unknown',
+};
+
+// V11 – Special Function of Motor Vehicle in Transport
+export const SPECIAL_FUNCTION: Record<number, string> = {
+  1: 'Not a Special Function Vehicle',
+  2: 'Police/Law Enforcement',
+  3: 'Fire',
+  4: 'Ambulance/EMS',
+  5: 'School Bus',
+  6: 'Military',
+  7: 'Taxi / Rideshare / TNC',
+  8: 'Other Special Function',
+  9: 'Unknown',
+};
+
+// V12 – Emergency Use
+export const EMERGENCY_USE: Record<number, string> = {
+  1: 'Yes – Responding to Emergency',
+  2: 'No',
+  9: 'Unknown',
+};
+
+// V9 – Vehicle Size (CMV)
+export const VEHICLE_SIZE: Record<number, string> = {
+  1: 'Light (GVWR ≤ 10,000 lbs)',
+  2: 'Medium/Heavy (GVWR > 10,000 lbs)',
+  9: 'Unknown',
+};
+
+// V9 – HazMat Placard
+export const HM_PLACARD: Record<number, string> = {
+  1: 'Yes',
+  2: 'No',
   9: 'Unknown',
 };
 
@@ -311,6 +376,13 @@ export const TRAFFICWAY_DIVIDED: Record<number, string> = {
   1: 'Not Divided',
   2: 'Divided, With Non-Mountable Median (Barrier)',
   3: 'Divided, With Mountable Median (Curbing)',
+  9: 'Unknown',
+};
+
+// V16 – Trafficway Barrier (Median Barrier)
+export const TRAFFICWAY_BARRIER: Record<number, string> = {
+  1: 'No Barrier',
+  2: 'Barrier Present',
   9: 'Unknown',
 };
 

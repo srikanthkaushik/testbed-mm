@@ -99,6 +99,14 @@ import {
   LV_SPECIAL_SIZING,
   AUTOMATION_PRESENT,
   AUTOMATION_LEVEL,
+  SPECIAL_FUNCTION,
+  EMERGENCY_USE,
+  VEHICLE_SIZE,
+  HM_PLACARD,
+  TRAFFICWAY_BARRIER,
+  SOURCE_OF_INFO,
+  CRASH_SEVERITY,
+  REF_POINT_DIRECTION,
 } from '../../../core/models/mmucc-lookup';
 
 export type DetailTab = 'overview' | 'vehicles' | 'persons' | 'roadway' | 'audit';
@@ -254,6 +262,14 @@ export class CrashDetailComponent implements OnInit {
   readonly LV_SPECIAL_SIZING      = LV_SPECIAL_SIZING;
   readonly AUTOMATION_PRESENT     = AUTOMATION_PRESENT;
   readonly AUTOMATION_LEVEL       = AUTOMATION_LEVEL;
+  readonly SPECIAL_FUNCTION       = SPECIAL_FUNCTION;
+  readonly EMERGENCY_USE          = EMERGENCY_USE;
+  readonly VEHICLE_SIZE           = VEHICLE_SIZE;
+  readonly HM_PLACARD             = HM_PLACARD;
+  readonly TRAFFICWAY_BARRIER     = TRAFFICWAY_BARRIER;
+  readonly SOURCE_OF_INFO         = SOURCE_OF_INFO;
+  readonly CRASH_SEVERITY         = CRASH_SEVERITY;
+  readonly REF_POINT_DIRECTION    = REF_POINT_DIRECTION;
 
   readonly tabs: { id: DetailTab; label: string }[] = [
     { id: 'overview', label: 'Overview' },
@@ -439,7 +455,7 @@ export class CrashDetailComponent implements OnInit {
   label(code: number | null | undefined, map: Record<number, string>): string {
     if (code == null) return '—';
     const desc = map[code];
-    return desc ? `${code} — ${desc}` : `${code}`;
+    return desc ? `${code} — ${desc}` : `Code ${code}`;
   }
 
   /** Returns comma-joined "N — Description" list for multi-value child rows. */
@@ -447,7 +463,7 @@ export class CrashDetailComponent implements OnInit {
     if (!items.length) return '—';
     return items.map(i => {
       const desc = map[i.code];
-      return desc ? `${i.code} — ${desc}` : `${i.code}`;
+      return desc ? `${i.code} — ${desc}` : `Code ${i.code}`;
     }).join('; ');
   }
 

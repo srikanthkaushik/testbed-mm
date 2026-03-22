@@ -161,7 +161,7 @@ export class VehicleFormComponent implements OnInit {
   // ── Form ──────────────────────────────────────────────────────────────────
   readonly form = this.fb.nonNullable.group({
     // Identification
-    unitTypeCode:      [null as number | null],
+    unitTypeCode:      [null as number | null, Validators.required],
     unitNumber:        [null as number | null],
     vin:               [''],
     registrationState: [''],
