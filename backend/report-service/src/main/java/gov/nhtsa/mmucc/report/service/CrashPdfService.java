@@ -68,15 +68,15 @@ public class CrashPdfService {
         // 2. Crash child tables
         List<Map<String, Object>> weatherRows =
             jdbc.queryForList(
-                "SELECT CWC_WEATHER_CONDITION_CODE FROM CRASH_WEATHER_CONDITION_TBL WHERE CWC_CRASH_ID = ?",
+                "SELECT CWC_WEATHER_CODE FROM CRASH_WEATHER_CONDITION_TBL WHERE CWC_CRASH_ID = ?",
                 crashId);
         List<Map<String, Object>> surfaceRows =
             jdbc.queryForList(
-                "SELECT CSC_SURFACE_CONDITION_CODE FROM CRASH_SURFACE_CONDITION_TBL WHERE CSC_CRASH_ID = ?",
+                "SELECT CSC_SURFACE_CODE FROM CRASH_SURFACE_CONDITION_TBL WHERE CSC_CRASH_ID = ?",
                 crashId);
         List<Map<String, Object>> contribRows =
             jdbc.queryForList(
-                "SELECT CCR_CONTRIBUTING_CIRC_CODE FROM CRASH_CONTRIBUTING_ROADWAY_TBL WHERE CCR_CRASH_ID = ?",
+                "SELECT CCR_CIRCUMSTANCE_CODE FROM CRASH_CONTRIBUTING_ROADWAY_TBL WHERE CCR_CRASH_ID = ?",
                 crashId);
 
         // 3. Roadway
@@ -98,11 +98,11 @@ public class CrashPdfService {
 
             List<Map<String, Object>> trafficControls =
                 jdbc.queryForList(
-                    "SELECT VTC_SEQUENCE_NUM, VTC_TRAFFIC_CONTROL_CODE FROM VEHICLE_TRAFFIC_CONTROL_TBL WHERE VTC_VEHICLE_ID = ? ORDER BY VTC_SEQUENCE_NUM",
+                    "SELECT VTC_SEQUENCE_NUM, VTC_TCD_TYPE_CODE FROM VEHICLE_TRAFFIC_CONTROL_TBL WHERE VTC_VEHICLE_ID = ? ORDER BY VTC_SEQUENCE_NUM",
                     vehicleId);
             List<Map<String, Object>> damageAreas =
                 jdbc.queryForList(
-                    "SELECT VDA_DAMAGE_AREA_CODE FROM VEHICLE_DAMAGE_AREA_TBL WHERE VDA_VEHICLE_ID = ? ORDER BY VDA_SEQUENCE_NUM",
+                    "SELECT VDA_AREA_CODE FROM VEHICLE_DAMAGE_AREA_TBL WHERE VDA_VEHICLE_ID = ? ORDER BY VDA_SEQUENCE_NUM",
                     vehicleId);
             List<Map<String, Object>> seqEvents =
                 jdbc.queryForList(
@@ -148,7 +148,7 @@ public class CrashPdfService {
             // Persons for this vehicle
             List<Map<String, Object>> personRows =
                 jdbc.queryForList(
-                    "SELECT * FROM PERSON_TBL WHERE PER_VEHICLE_ID = ? ORDER BY PER_PERSON_ID",
+                    "SELECT * FROM PERSON_TBL WHERE PRS_VEHICLE_ID = ? ORDER BY PRS_PERSON_ID",
                     vehicleId);
             vehModel.put("_persons", buildPersons(personRows));
 
@@ -158,9 +158,9 @@ public class CrashPdfService {
         // 5. Build lookup labels for display
         Map<String, Object> model = new HashMap<>();
         model.put("crash", crash);
-        model.put("weatherLabels",  codeListLabels(weatherRows,  "CWC_WEATHER_CONDITION_CODE", MmuccLookup.WEATHER));
-        model.put("surfaceLabels",  codeListLabels(surfaceRows,  "CSC_SURFACE_CONDITION_CODE", MmuccLookup.SURFACE_CONDITION));
-        model.put("contribLabels",  codeListLabels(contribRows,  "CCR_CONTRIBUTING_CIRC_CODE", MmuccLookup.CONTRIBUTING_CIRC));
+        model.put("weatherLabels",  codeListLabels(weatherRows,  "CWC_WEATHER_CODE",      MmuccLookup.WEATHER));
+        model.put("surfaceLabels",  codeListLabels(surfaceRows,  "CSC_SURFACE_CODE",       MmuccLookup.SURFACE_CONDITION));
+        model.put("contribLabels",  codeListLabels(contribRows,  "CCR_CIRCUMSTANCE_CODE",  MmuccLookup.CONTRIBUTING_CIRC));
         model.put("roadway", roadway);
         model.put("vehicles", vehicles);
         model.put("L", MmuccLookup.class); // expose static helper for inline calls via Thymeleaf
@@ -232,14 +232,14 @@ public class CrashPdfService {
             List<Map<String, Object>> tcList = (List<Map<String, Object>>) veh.get("_trafficControls");
             vl.put("trafficControlLabels", tcList == null ? "—" :
                 tcList.stream()
-                    .map(r -> MmuccLookup.labelOnly(toInt(r.get("VTC_TRAFFIC_CONTROL_CODE")), MmuccLookup.TRAFFIC_CONTROL))
+                    .map(r -> MmuccLookup.labelOnly(toInt(r.get("VTC_TCD_TYPE_CODE")), MmuccLookup.TRAFFIC_CONTROL))
                     .collect(Collectors.joining(", ")));
 
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> daList = (List<Map<String, Object>>) veh.get("_damageAreas");
             vl.put("damageAreaLabels", daList == null ? "—" :
                 daList.stream()
-                    .map(r -> MmuccLookup.labelOnly(toInt(r.get("VDA_DAMAGE_AREA_CODE")), MmuccLookup.DAMAGE_AREA))
+                    .map(r -> MmuccLookup.labelOnly(toInt(r.get("VDA_AREA_CODE")), MmuccLookup.DAMAGE_AREA))
                     .collect(Collectors.joining(", ")));
 
             @SuppressWarnings("unchecked")
@@ -315,35 +315,36 @@ public class CrashPdfService {
     private List<Map<String, Object>> buildPersons(List<Map<String, Object>> personRows) {
         List<Map<String, Object>> result = new ArrayList<>();
         for (Map<String, Object> per : personRows) {
-            Long personId = toLong(per.get("PER_PERSON_ID"));
+            Long personId = toLong(per.get("PRS_PERSON_ID"));
 
             List<Map<String, Object>> airbags =
                 jdbc.queryForList(
                     "SELECT PAB_AIRBAG_CODE FROM PERSON_AIRBAG_TBL WHERE PAB_PERSON_ID = ?", personId);
             List<Map<String, Object>> driverActions =
                 jdbc.queryForList(
-                    "SELECT PDA_DRIVER_ACTION_CODE FROM PERSON_DRIVER_ACTION_TBL WHERE PDA_PERSON_ID = ?", personId);
+                    "SELECT PDA_ACTION_CODE FROM PERSON_DRIVER_ACTION_TBL WHERE PDA_PERSON_ID = ?", personId);
             List<Map<String, Object>> dlRestrictions =
                 jdbc.queryForList(
-                    "SELECT PDR_DL_RESTRICTION_CODE FROM PERSON_DL_RESTRICTION_TBL WHERE PDR_PERSON_ID = ?", personId);
+                    "SELECT PDR_RESTRICTION_CODE FROM PERSON_DL_RESTRICTION_TBL WHERE PDR_PERSON_ID = ?", personId);
             List<Map<String, Object>> drugTests =
                 jdbc.queryForList(
-                    "SELECT PDT_DRUG_TEST_RESULT_CODE FROM PERSON_DRUG_TEST_RESULT_TBL WHERE PDT_PERSON_ID = ?", personId);
+                    "SELECT DTR_RESULT_CODE FROM PERSON_DRUG_TEST_RESULT_TBL WHERE DTR_PERSON_ID = ?", personId);
 
             Map<String, Object> fatalSection = null;
             try {
                 fatalSection = jdbc.queryForMap(
-                    "SELECT * FROM FATAL_SECTION_TBL WHERE FAT_PERSON_ID = ?", personId);
+                    "SELECT * FROM FATAL_SECTION_TBL WHERE FSC_PERSON_ID = ?", personId);
             } catch (EmptyResultDataAccessException ignored) {}
 
             Map<String, Object> nonMotorist = null;
             try {
                 nonMotorist = jdbc.queryForMap(
                     "SELECT * FROM NON_MOTORIST_TBL WHERE NMT_PERSON_ID = ?", personId);
+                Long nmtId = toLong(nonMotorist.get("NMT_ID"));
                 List<Map<String, Object>> safetyEq =
                     jdbc.queryForList(
-                        "SELECT NSE_SAFETY_EQUIPMENT_CODE FROM NON_MOTORIST_SAFETY_EQUIPMENT_TBL WHERE NSE_PERSON_ID = ?",
-                        personId);
+                        "SELECT NMS_EQUIPMENT_CODE FROM NON_MOTORIST_SAFETY_EQUIPMENT_TBL WHERE NMS_NMT_ID = ?",
+                        nmtId);
                 nonMotorist.put("_safetyEquipment", safetyEq);
             } catch (EmptyResultDataAccessException ignored) {}
 
@@ -364,36 +365,36 @@ public class CrashPdfService {
         if (persons == null) return result;
         for (Map<String, Object> per : persons) {
             Map<String, Object> pl = new HashMap<>();
-            pl.put("sexLabel",             label(per, "PER_SEX_CODE",              MmuccLookup.SEX_CODE));
-            pl.put("personTypeLabel",      label(per, "PER_PERSON_TYPE_CODE",      MmuccLookup.PERSON_TYPE));
-            pl.put("responderLabel",       label(per, "PER_INCIDENT_RESPONDER_CODE",MmuccLookup.INCIDENT_RESPONDER));
-            pl.put("injuryStatusLabel",    label(per, "PER_INJURY_STATUS_CODE",    MmuccLookup.INJURY_STATUS));
-            pl.put("seatingRowLabel",      label(per, "PER_SEATING_ROW_CODE",      MmuccLookup.SEATING_ROW));
-            pl.put("seatingSeatLabel",     label(per, "PER_SEATING_SEAT_CODE",     MmuccLookup.SEATING_SEAT));
-            pl.put("restraintLabel",       label(per, "PER_RESTRAINT_CODE",        MmuccLookup.RESTRAINT));
-            pl.put("restraintImproperLabel",label(per, "PER_RESTRAINT_IMPROPER_FLG",MmuccLookup.YES_NO));
-            pl.put("ejectionLabel",        label(per, "PER_EJECTION_CODE",         MmuccLookup.EJECTION));
-            pl.put("dlJurisdLabel",        label(per, "PER_DL_JURISDICTION_TYPE",  MmuccLookup.DL_JURISDICTION_TYPE));
-            pl.put("dlClassLabel",         label(per, "PER_DL_CLASS_CODE",         MmuccLookup.DL_CLASS));
-            pl.put("dlIsCdlLabel",         label(per, "PER_DL_IS_CDL_FLG",         MmuccLookup.YES_NO));
-            pl.put("dlEndorsementLabel",   label(per, "PER_DL_ENDORSEMENT_CODE",   MmuccLookup.DL_ENDORSEMENT));
-            pl.put("speedingLabel",        label(per, "PER_SPEEDING_CODE",          MmuccLookup.SPEEDING));
-            pl.put("dlAlcoholLabel",       label(per, "PER_DL_ALCOHOL_INTERLOCK_FLG",MmuccLookup.YES_NO));
-            pl.put("dlStatusTypeLabel",    label(per, "PER_DL_STATUS_TYPE_CODE",   MmuccLookup.DL_STATUS_TYPE));
-            pl.put("dlStatusLabel",        label(per, "PER_DL_STATUS_CODE",         MmuccLookup.DL_STATUS));
-            pl.put("distractedActionLabel",label(per, "PER_DISTRACTED_ACTION_CODE", MmuccLookup.DISTRACTED_ACTION));
-            pl.put("distractedSourceLabel",label(per, "PER_DISTRACTED_SOURCE_CODE", MmuccLookup.DISTRACTED_SOURCE));
-            pl.put("condition1Label",      label(per, "PER_CONDITION_CODE_1",       MmuccLookup.DRIVER_CONDITION));
-            pl.put("condition2Label",      label(per, "PER_CONDITION_CODE_2",       MmuccLookup.DRIVER_CONDITION));
-            pl.put("leSuspectsAlcLabel",   label(per, "PER_LE_SUSPECTS_ALCOHOL",   MmuccLookup.YES_NO));
-            pl.put("alcTestStatusLabel",   label(per, "PER_ALCOHOL_TEST_STATUS_CODE",MmuccLookup.ALCOHOL_TEST_STATUS));
-            pl.put("alcTestTypeLabel",     label(per, "PER_ALCOHOL_TEST_TYPE_CODE", MmuccLookup.ALCOHOL_TEST_TYPE));
-            pl.put("leSuspectsDrugLabel",  label(per, "PER_LE_SUSPECTS_DRUG",      MmuccLookup.YES_NO));
-            pl.put("drugTestStatusLabel",  label(per, "PER_DRUG_TEST_STATUS_CODE",  MmuccLookup.DRUG_TEST_STATUS));
-            pl.put("drugTestTypeLabel",    label(per, "PER_DRUG_TEST_TYPE_CODE",    MmuccLookup.DRUG_TEST_TYPE));
-            pl.put("transportLabel",       label(per, "PER_TRANSPORT_SOURCE_CODE",  MmuccLookup.TRANSPORT_SOURCE));
-            pl.put("injuryAreaLabel",      label(per, "PER_INJURY_AREA_CODE",       MmuccLookup.INJURY_AREA));
-            pl.put("injurySeverityLabel",  label(per, "PER_INJURY_SEVERITY_CODE",   MmuccLookup.INJURY_SEVERITY));
+            pl.put("sexLabel",             label(per, "PRS_SEX_CODE",              MmuccLookup.SEX_CODE));
+            pl.put("personTypeLabel",      label(per, "PRS_PERSON_TYPE_CODE",      MmuccLookup.PERSON_TYPE));
+            pl.put("responderLabel",       label(per, "PRS_INCIDENT_RESPONDER_CODE",MmuccLookup.INCIDENT_RESPONDER));
+            pl.put("injuryStatusLabel",    label(per, "PRS_INJURY_STATUS_CODE",    MmuccLookup.INJURY_STATUS));
+            pl.put("seatingRowLabel",      label(per, "PRS_SEATING_ROW_CODE",      MmuccLookup.SEATING_ROW));
+            pl.put("seatingSeatLabel",     label(per, "PRS_SEATING_SEAT_CODE",     MmuccLookup.SEATING_SEAT));
+            pl.put("restraintLabel",       label(per, "PRS_RESTRAINT_CODE",        MmuccLookup.RESTRAINT));
+            pl.put("restraintImproperLabel",label(per, "PRS_RESTRAINT_IMPROPER_FLG",MmuccLookup.YES_NO));
+            pl.put("ejectionLabel",        label(per, "PRS_EJECTION_CODE",         MmuccLookup.EJECTION));
+            pl.put("dlJurisdLabel",        label(per, "PRS_DL_JURISDICTION_TYPE",  MmuccLookup.DL_JURISDICTION_TYPE));
+            pl.put("dlClassLabel",         label(per, "PRS_DL_CLASS_CODE",         MmuccLookup.DL_CLASS));
+            pl.put("dlIsCdlLabel",         label(per, "PRS_DL_IS_CDL_FLG",         MmuccLookup.YES_NO));
+            pl.put("dlEndorsementLabel",   label(per, "PRS_DL_ENDORSEMENT_CODE",   MmuccLookup.DL_ENDORSEMENT));
+            pl.put("speedingLabel",        label(per, "PRS_SPEEDING_CODE",          MmuccLookup.SPEEDING));
+            pl.put("dlAlcoholLabel",       label(per, "PRS_DL_ALCOHOL_INTERLOCK_FLG",MmuccLookup.YES_NO));
+            pl.put("dlStatusTypeLabel",    label(per, "PRS_DL_STATUS_TYPE_CODE",   MmuccLookup.DL_STATUS_TYPE));
+            pl.put("dlStatusLabel",        label(per, "PRS_DL_STATUS_CODE",         MmuccLookup.DL_STATUS));
+            pl.put("distractedActionLabel",label(per, "PRS_DISTRACTED_ACTION_CODE", MmuccLookup.DISTRACTED_ACTION));
+            pl.put("distractedSourceLabel",label(per, "PRS_DISTRACTED_SOURCE_CODE", MmuccLookup.DISTRACTED_SOURCE));
+            pl.put("condition1Label",      label(per, "PRS_CONDITION_CODE_1",       MmuccLookup.DRIVER_CONDITION));
+            pl.put("condition2Label",      label(per, "PRS_CONDITION_CODE_2",       MmuccLookup.DRIVER_CONDITION));
+            pl.put("leSuspectsAlcLabel",   label(per, "PRS_LE_SUSPECTS_ALCOHOL",   MmuccLookup.YES_NO));
+            pl.put("alcTestStatusLabel",   label(per, "PRS_ALCOHOL_TEST_STATUS_CODE",MmuccLookup.ALCOHOL_TEST_STATUS));
+            pl.put("alcTestTypeLabel",     label(per, "PRS_ALCOHOL_TEST_TYPE_CODE", MmuccLookup.ALCOHOL_TEST_TYPE));
+            pl.put("leSuspectsDrugLabel",  label(per, "PRS_LE_SUSPECTS_DRUG",      MmuccLookup.YES_NO));
+            pl.put("drugTestStatusLabel",  label(per, "PRS_DRUG_TEST_STATUS_CODE",  MmuccLookup.DRUG_TEST_STATUS));
+            pl.put("drugTestTypeLabel",    label(per, "PRS_DRUG_TEST_TYPE_CODE",    MmuccLookup.DRUG_TEST_TYPE));
+            pl.put("transportLabel",       label(per, "PRS_TRANSPORT_SOURCE_CODE",  MmuccLookup.TRANSPORT_SOURCE));
+            pl.put("injuryAreaLabel",      label(per, "PRS_INJURY_AREA_CODE",       MmuccLookup.INJURY_AREA));
+            pl.put("injurySeverityLabel",  label(per, "PRS_INJURY_SEVERITY_CODE",   MmuccLookup.INJURY_SEVERITY));
 
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> airbagList = (List<Map<String, Object>>) per.get("_airbags");
@@ -406,21 +407,21 @@ public class CrashPdfService {
             List<Map<String, Object>> daList = (List<Map<String, Object>>) per.get("_driverActions");
             pl.put("driverActionLabels", daList == null ? "—" :
                 daList.stream()
-                    .map(r -> MmuccLookup.labelOnly(toInt(r.get("PDA_DRIVER_ACTION_CODE")), MmuccLookup.DRIVER_ACTION))
+                    .map(r -> MmuccLookup.labelOnly(toInt(r.get("PDA_ACTION_CODE")), MmuccLookup.DRIVER_ACTION))
                     .collect(Collectors.joining(", ")));
 
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> drList = (List<Map<String, Object>>) per.get("_dlRestrictions");
             pl.put("dlRestrictionLabels", drList == null ? "—" :
                 drList.stream()
-                    .map(r -> MmuccLookup.labelOnly(toInt(r.get("PDR_DL_RESTRICTION_CODE")), MmuccLookup.DL_RESTRICTION))
+                    .map(r -> MmuccLookup.labelOnly(toInt(r.get("PDR_RESTRICTION_CODE")), MmuccLookup.DL_RESTRICTION))
                     .collect(Collectors.joining(", ")));
 
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> dtList = (List<Map<String, Object>>) per.get("_drugTests");
             pl.put("drugTestResultLabels", dtList == null ? "—" :
                 dtList.stream()
-                    .map(r -> MmuccLookup.labelOnly(toInt(r.get("PDT_DRUG_TEST_RESULT_CODE")), MmuccLookup.DRUG_TEST_RESULT))
+                    .map(r -> MmuccLookup.labelOnly(toInt(r.get("DTR_RESULT_CODE")), MmuccLookup.DRUG_TEST_RESULT))
                     .collect(Collectors.joining(", ")));
 
             // Fatal section labels
@@ -428,9 +429,9 @@ public class CrashPdfService {
             Map<String, Object> fat = (Map<String, Object>) per.get("_fatalSection");
             if (fat != null) {
                 Map<String, Object> fatl = new HashMap<>();
-                fatl.put("avoidanceLabel",    label(fat, "FAT_AVOIDANCE_MANEUVER_CODE",  MmuccLookup.AVOIDANCE_MANEUVER));
-                fatl.put("alcTestTypeLabel",  label(fat, "FAT_ALCOHOL_TEST_TYPE_CODE",   MmuccLookup.ALCOHOL_TEST_TYPE));
-                fatl.put("drugTestTypeLabel", label(fat, "FAT_DRUG_TEST_TYPE_CODE",      MmuccLookup.DRUG_TEST_TYPE));
+                fatl.put("avoidanceLabel",    label(fat, "FSC_AVOIDANCE_MANEUVER_CODE",  MmuccLookup.AVOIDANCE_MANEUVER));
+                fatl.put("alcTestTypeLabel",  label(fat, "FSC_ALCOHOL_TEST_TYPE_CODE",   MmuccLookup.ALCOHOL_TEST_TYPE));
+                fatl.put("drugTestTypeLabel", label(fat, "FSC_DRUG_TEST_TYPE_CODE",      MmuccLookup.DRUG_TEST_TYPE));
                 pl.put("fatLabels", fatl);
             }
 
@@ -450,7 +451,7 @@ public class CrashPdfService {
                 List<Map<String, Object>> seList = (List<Map<String, Object>>) nm.get("_safetyEquipment");
                 nml.put("safetyEqLabels", seList == null ? "—" :
                     seList.stream()
-                        .map(r -> MmuccLookup.labelOnly(toInt(r.get("NSE_SAFETY_EQUIPMENT_CODE")), MmuccLookup.NM_SAFETY_EQUIPMENT))
+                        .map(r -> MmuccLookup.labelOnly(toInt(r.get("NMS_EQUIPMENT_CODE")), MmuccLookup.NM_SAFETY_EQUIPMENT))
                         .collect(Collectors.joining(", ")));
 
                 pl.put("nmLabels", nml);
