@@ -24,6 +24,7 @@
         <module>auth-service</module>
         <module>crash-service</module>
         <module>reference-service</module>
+        <module>report-service</module>
     </modules>
 
     <properties>

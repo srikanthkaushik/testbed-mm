@@ -23,5 +23,12 @@
     "secure": false,
     "changeOrigin": true,
     "logLevel": "info"
+  },
+  "/rpt": {
+    "target": "http://localhost:8084",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": { "^/rpt": "" },
+    "logLevel": "info"
   }
 }

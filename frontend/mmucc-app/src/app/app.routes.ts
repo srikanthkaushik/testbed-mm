@@ -1,25 +1,5 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
-
-/**
- * Inline stub component used as a placeholder for routes that are not yet
- * implemented. Defined here to avoid creating separate files for stubs.
- */
-@Component({
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <div class="coming-soon">
-      <h2>Coming Soon</h2>
-      <p>This section is under construction.</p>
-    </div>
-  `,
-  styles: [
-    `.coming-soon { padding: var(--space-8); color: var(--color-text-muted); }`,
-  ],
-})
-class ComingSoonComponent {}
 
 export const routes: Routes = [
   // ── Authenticated shell ──────────────────────────────────────────────────
@@ -150,11 +130,13 @@ export const routes: Routes = [
         title: 'Crash Detail — MMUCC Crash Reporting',
       },
 
-      // Reports (placeholder)
+      // Reports
       {
         path: 'reports',
-        component: ComingSoonComponent,
+        loadComponent: () =>
+          import('./features/reports/reports.component').then(m => m.ReportsComponent),
         title: 'Reports — MMUCC Crash Reporting',
+        canActivate: [authGuard],
       },
 
       // Admin users

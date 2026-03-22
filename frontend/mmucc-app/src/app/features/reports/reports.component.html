@@ -1,0 +1,143 @@
+<div class="reports-page">
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <div class="reports-page__header">
+    <div>
+      <h1 class="reports-page__title">Reports &amp; Export</h1>
+      <p class="reports-page__subtitle">
+        Filter crash records and download as CSV for analysis or archiving.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── Export card ────────────────────────────────────────────────────── -->
+  <section class="export-card" aria-label="CSV Export">
+    <div class="export-card__header">
+      <svg aria-hidden="true" focusable="false" width="20" height="20"
+           viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      <h2 class="export-card__title">Crash List — CSV Export</h2>
+    </div>
+
+    <p class="export-card__desc">
+      Select filters below, then click <strong>Download CSV</strong>.
+      All matching crash records will be included (no page limit).
+      Leave filters empty to export all crashes.
+    </p>
+
+    <!-- ── Alerts ─────────────────────────────────────────────────────────── -->
+    @if (errorMsg()) {
+      <app-alert [message]="errorMsg()" type="error" />
+    }
+    @if (successMsg()) {
+      <app-alert [message]="successMsg()" type="success" />
+    }
+
+    <!-- ── Filter form ────────────────────────────────────────────────────── -->
+    <form
+      [formGroup]="filterForm"
+      (ngSubmit)="downloadCsv()"
+      novalidate
+      class="export-form"
+    >
+      <div class="export-form__fields">
+
+        <div class="filter-field">
+          <label for="rpt-date-from" class="filter-field__label">Date From</label>
+          <input
+            id="rpt-date-from"
+            type="date"
+            class="filter-field__input"
+            formControlName="dateFrom"
+            aria-label="Export from date"
+          />
+        </div>
+
+        <div class="filter-field">
+          <label for="rpt-date-to" class="filter-field__label">Date To</label>
+          <input
+            id="rpt-date-to"
+            type="date"
+            class="filter-field__input"
+            formControlName="dateTo"
+            aria-label="Export to date"
+          />
+        </div>
+
+        <div class="filter-field">
+          <label for="rpt-severity" class="filter-field__label">Severity</label>
+          <select
+            id="rpt-severity"
+            class="filter-field__input"
+            formControlName="severity"
+            aria-label="Filter by crash severity"
+          >
+            <option value="">— All —</option>
+            @for (opt of severityOptions; track opt.code) {
+              <option [value]="opt.code">{{ opt.code }} — {{ opt.label }}</option>
+            }
+          </select>
+        </div>
+
+      </div>
+
+      <div class="export-form__actions">
+        <button
+          type="submit"
+          class="btn btn--primary"
+          [disabled]="downloading()"
+          [attr.aria-busy]="downloading()"
+        >
+          @if (downloading()) {
+            <span class="spinner spinner--sm" aria-hidden="true"></span>
+            Downloading…
+          } @else {
+            <svg aria-hidden="true" focusable="false" width="16" height="16"
+                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download CSV
+          }
+        </button>
+        <button
+          type="button"
+          class="btn btn--ghost"
+          (click)="clearFilters()"
+          [disabled]="downloading()"
+        >
+          Clear
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ── Column reference ───────────────────────────────────────────────── -->
+  <section class="col-reference" aria-label="CSV column reference">
+    <h3 class="col-reference__title">CSV Columns</h3>
+    <p class="col-reference__desc">
+      Each row in the exported file represents one crash and includes the following columns:
+    </p>
+    <ul class="col-reference__list">
+      <li>Crash ID, Case Number, Date, Time, Day of Week</li>
+      <li>County FIPS, County, City/Place, Route ID, Route Type Code</li>
+      <li>Severity Code, Crash Type Code, Manner of Collision Code</li>
+      <li>Light Condition Code, First Harmful Event Code, Location of First Harmful Event</li>
+      <li>Junction Related, School Bus Related, Work Zone Related</li>
+      <li>Alcohol Involvement, Drug Involvement</li>
+      <li>Motor Vehicles, Motorists, Non-Motorists, Non-Fatal Injured, Fatalities</li>
+      <li>Source of Info Code, Latitude, Longitude, Created, Modified</li>
+    </ul>
+    <p class="col-reference__note">
+      Coded values (e.g., Severity Code) use MMUCC numeric codes.
+      Refer to the MMUCC 5th Edition specification for code definitions.
+    </p>
+  </section>
+
+</div>

@@ -5,6 +5,7 @@ export const environment = {
   authServiceUrl: '/auth',
   crashServiceUrl: '/api/crashes',
   referenceServiceUrl: '/lookups',
+  reportServiceUrl:    '/rpt/reports',
 
   // Firebase project configuration
   // Replace these values with your actual Firebase project settings.

@@ -6,6 +6,7 @@ export const environment = {
   authServiceUrl: '/auth',
   crashServiceUrl: '/crashes',
   referenceServiceUrl: '/lookups',
+  reportServiceUrl:    '/reports',
 
   firebase: {
     apiKey:            'PROD_API_KEY',
