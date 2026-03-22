@@ -126,14 +126,15 @@ public class CrashPdfService {
             try {
                 automation = jdbc.queryForMap(
                     "SELECT * FROM VEHICLE_AUTOMATION_TBL WHERE VAT_VEHICLE_ID = ?", vehicleId);
+                Long vatId = toLong(automation.get("VAT_ID"));
                 List<Map<String, Object>> levelsInVehicle =
                     jdbc.queryForList(
-                        "SELECT VAI_AUTOMATION_LEVEL_CODE FROM VEHICLE_AUTOMATION_LEVEL_IN_VEHICLE_TBL WHERE VAI_VEHICLE_ID = ?",
-                        vehicleId);
+                        "SELECT VAI_AUTOMATION_LEVEL_CODE FROM VEHICLE_AUTOMATION_LEVEL_IN_VEHICLE_TBL WHERE VAI_VAT_ID = ?",
+                        vatId);
                 List<Map<String, Object>> levelsEngaged =
                     jdbc.queryForList(
-                        "SELECT VAE_AUTOMATION_LEVEL_CODE FROM VEHICLE_AUTOMATION_LEVEL_ENGAGED_TBL WHERE VAE_VEHICLE_ID = ?",
-                        vehicleId);
+                        "SELECT VAE_AUTOMATION_LEVEL_CODE FROM VEHICLE_AUTOMATION_LEVEL_ENGAGED_TBL WHERE VAE_VAT_ID = ?",
+                        vatId);
                 automation.put("_levelsInVehicle", levelsInVehicle);
                 automation.put("_levelsEngaged", levelsEngaged);
             } catch (EmptyResultDataAccessException ignored) {}
