@@ -1,0 +1,91 @@
+# MMUCC v5 — Production Docker Compose
+# Copy to /opt/mmucc/app/docker-compose.yml on the EC2 instance.
+# All secrets are injected via the .env file (never committed to git).
+
+services:
+
+  auth-service:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/mmucc/auth-service:${IMAGE_TAG:-latest}
+    container_name: mmucc-auth
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:mysql://${DB_HOST}:3306/${DB_NAME}?useSSL=true&requireSSL=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      MMUCC_JWT_SECRET: ${JWT_SECRET}
+      MMUCC_JWT_ISSUER: ${JWT_ISSUER}
+      FIREBASE_SERVICE_ACCOUNT_PATH: /config/firebase-service-account.json
+      SERVER_PORT: 8081
+    volumes:
+      - /opt/mmucc/config:/config:ro
+      - /opt/mmucc/logs/auth:/logs
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  crash-service:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/mmucc/crash-service:${IMAGE_TAG:-latest}
+    container_name: mmucc-crash
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:mysql://${DB_HOST}:3306/${DB_NAME}?useSSL=true&requireSSL=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      MMUCC_JWT_SECRET: ${JWT_SECRET}
+      MMUCC_JWT_ISSUER: ${JWT_ISSUER}
+      SERVER_PORT: 8082
+    volumes:
+      - /opt/mmucc/logs/crash:/logs
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  reference-service:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/mmucc/reference-service:${IMAGE_TAG:-latest}
+    container_name: mmucc-reference
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:mysql://${DB_HOST}:3306/${DB_NAME}?useSSL=true&requireSSL=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      MMUCC_JWT_SECRET: ${JWT_SECRET}
+      MMUCC_JWT_ISSUER: ${JWT_ISSUER}
+      SERVER_PORT: 8083
+    volumes:
+      - /opt/mmucc/logs/reference:/logs
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  report-service:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/mmucc/report-service:${IMAGE_TAG:-latest}
+    container_name: mmucc-report
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:mysql://${DB_HOST}:3306/${DB_NAME}?useSSL=true&requireSSL=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      MMUCC_JWT_SECRET: ${JWT_SECRET}
+      MMUCC_JWT_ISSUER: ${JWT_ISSUER}
+      SERVER_PORT: 8084
+    volumes:
+      - /opt/mmucc/logs/report:/logs
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
