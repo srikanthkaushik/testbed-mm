@@ -182,13 +182,25 @@ Login via the Firebase-backed login page. New accounts are auto-provisioned as `
 
 ## Further Reading
 
+**Backend**
 - [`backend/README.md`](backend/README.md) — service decomposition, sprint history, key decisions
 - [`backend/AUTH.md`](backend/AUTH.md) — auth-service API, token design, roles, security notes
 - [`backend/CRASH.md`](backend/CRASH.md) — crash-service API reference, multi-value child pattern, Flyway history
 - [`backend/REFERENCE.md`](backend/REFERENCE.md) — reference-service API, lookup types, DTO fields, frontend integration
+
+**Database**
 - [`database/mysql/README.md`](database/mysql/README.md) — MySQL schema setup, table acronyms, seed data
 - [`database/oracle/README.md`](database/oracle/README.md) — Oracle schema, consolidated lookup design
+
+**Frontend**
 - [`frontend/mmucc-app/README.md`](frontend/mmucc-app/README.md) — Angular architecture, route map, component inventory
+
+**Production Deployment**
+- [`production/DEPLOYMENT.md`](production/DEPLOYMENT.md) — full AWS deployment roadmap (9 phases: VPC, EC2, RDS, SSL, Docker, verify)
+- [`production/nginx/nginx.conf`](production/nginx/nginx.conf) — Nginx reverse proxy + SSL config template
+- [`production/docker/docker-compose.yml`](production/docker/docker-compose.yml) — Docker Compose for all 4 services
+- [`production/docker/.env.example`](production/docker/.env.example) — environment variable template (DB, JWT, AWS)
+- [`production/aws/resources.md`](production/aws/resources.md) — AWS resource inventory (fill in after provisioning)
 
 ---
 
