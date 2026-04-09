@@ -4,7 +4,7 @@ A full-stack web application for collecting, managing, and reporting motor vehic
 
 ---
 
-## Project Status — March 2026
+## Project Status — April 2026
 
 ### Backend
 
@@ -15,7 +15,7 @@ A full-stack web application for collecting, managing, and reporting motor vehic
 | **Sprint 3** | crash-service — Person (P1–P27), Fatal Section, Non-Motorist, Large Vehicle/HazMat, Vehicle Automation; 28 integration tests | ✅ Complete |
 | **Sprint 4** | Audit log timeline enhancements, MMUCC validation rules (V-01–V-14) | ✅ Complete |
 | **Sprint 5** | reference-service (lookup codes API) — port 8083, in-memory cache, `GET /lookups`, `GET /lookups/{type}`, Angular APP_INITIALIZER integration | ✅ Complete |
-| **Sprint 6** | report-service, CSV/Excel export | 🔲 Not started |
+| **Sprint 6** | report-service (port 8084) — CSV list export + individual crash PDF (OpenHTMLtoPDF + Thymeleaf, all 115 fields) | ✅ Complete |
 
 ### Frontend
 
@@ -32,8 +32,8 @@ A full-stack web application for collecting, managing, and reporting motor vehic
 | **Phase 7b** | Large Vehicle / HazMat form (LV1–LV11) | ✅ Complete |
 | **Phase 7c** | Delete crash / vehicle / person with inline confirmation | ✅ Complete |
 | **Phase 8** | Dashboard (stat cards, recent crashes table) | ✅ Complete |
-| **Phase 8a** | Admin user management (user list, inline role editing) | ✅ Complete |
-| **Phase 9** | Reports / CSV export (report-service not yet built) | 🔲 Not started |
+| **Phase 8a** | Admin user management (user list, inline role editing, activate/deactivate toggle) | ✅ Complete |
+| **Phase 9** | Reports page — CSV list export + "Download PDF" button on crash detail (blob download, spinner, error state) | ✅ Complete |
 
 ### MMUCC Coverage Summary
 
@@ -89,9 +89,11 @@ mmucc-develop/
 │   ├── CRASH.md                  crash-service API reference, data model, migrations
 │   ├── REFERENCE.md              reference-service API, lookup types, frontend integration
 │   ├── pom.xml                   Maven parent aggregator (multi-module)
-│   ├── common/                   Shared library: JwtUtils, AuditFields, exceptions
+│   ├── common/                   Shared library: JwtUtils, AuditFields, GlobalExceptionHandler
 │   ├── auth-service/             Port 8081 — Firebase → JWT, user CRUD, RBAC
-│   └── crash-service/            Port 8082 — All MMUCC CRUD, Flyway, 28 integration tests
+│   ├── crash-service/            Port 8082 — All MMUCC CRUD, Flyway, 28 integration tests
+│   ├── reference-service/        Port 8083 — REF_* lookup codes API, in-memory cache
+│   └── report-service/           Port 8084 — CSV list export + crash PDF (OpenHTMLtoPDF)
 │
 └── frontend/
     └── mmucc-app/
@@ -136,6 +138,12 @@ mvn spring-boot:run -pl auth-service -am -Dspring-boot.run.profiles=local
 
 # crash-service  →  http://localhost:8082  (separate terminal)
 mvn spring-boot:run -pl crash-service -am -Dspring-boot.run.profiles=local
+
+# reference-service  →  http://localhost:8083  (separate terminal)
+mvn spring-boot:run -pl reference-service -am -Dspring-boot.run.profiles=local
+
+# report-service  →  http://localhost:8084  (separate terminal)
+mvn spring-boot:run -pl report-service -am -Dspring-boot.run.profiles=local
 ```
 
 ### 3. Frontend
