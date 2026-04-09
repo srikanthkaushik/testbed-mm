@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <title th:text="'MMUCC Crash Report - ' + ${crash['CRS_CRASH_IDENTIFIER'] ?: crash['CRS_CRASH_ID']}">MMUCC Crash Report</title>
+  <title th:text="${'MMUCC Crash Report - ' + (crash['CRS_CRASH_IDENTIFIER'] ?: crash['CRS_CRASH_ID'])}">MMUCC Crash Report</title>
   <style>
     /* ── Reset & base ───────────────────────────────────────────── */
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -439,7 +439,7 @@
 
   <div class="section section--break">
     <div class="section__header section__header--vehicle"
-         th:text="'Vehicle ' + (veh['VEH_UNIT_NUMBER'] ?: (vStat.index + 1)) + ' - ' + (veh['VEH_MAKE'] ?: '') + ' ' + (veh['VEH_MODEL'] ?: '') + ' (' + (veh['VEH_MODEL_YEAR'] ?: '?') + ')'">
+         th:text="${'Vehicle ' + (veh['VEH_UNIT_NUMBER'] ?: (vStat.index + 1)) + ' - ' + (veh['VEH_MAKE'] ?: '') + ' ' + (veh['VEH_MODEL'] ?: '') + ' (' + (veh['VEH_MODEL_YEAR'] ?: '?') + ')'}">
       Vehicle N
     </div>
     <div class="section__body">
@@ -526,7 +526,7 @@
   <div class="section" th:if="${veh['_largeVehicle'] != null}"
        th:with="lv=${veh['_largeVehicle']}, lvl=${vl['lvLabels']}">
     <div class="section__header section__header--lv"
-         th:text="'Large Vehicle / HazMat - Unit ' + (veh['VEH_UNIT_NUMBER'] ?: (vStat.index + 1))">Large Vehicle</div>
+         th:text="${'Large Vehicle / HazMat - Unit ' + (veh['VEH_UNIT_NUMBER'] ?: (vStat.index + 1))}">Large Vehicle</div>
     <div class="section__body">
       <table class="field-table">
         <tr><td class="lbl">CMV License Status (LV1)</td>
@@ -587,7 +587,7 @@
   <div class="section" th:if="${veh['_automation'] != null}"
        th:with="aut=${veh['_automation']}, autl=${vl['autLabels']}">
     <div class="section__header section__header--auto"
-         th:text="'Vehicle Automation (DV1) - Unit ' + (veh['VEH_UNIT_NUMBER'] ?: (vStat.index + 1))">
+         th:text="${'Vehicle Automation (DV1) - Unit ' + (veh['VEH_UNIT_NUMBER'] ?: (vStat.index + 1))}">
       Automation
     </div>
     <div class="section__body">
@@ -608,7 +608,7 @@
 
     <div class="section">
       <div class="section__header section__header--person"
-           th:text="'Person ' + (pStat.index + 1) + ' (Unit ' + (veh['VEH_UNIT_NUMBER'] ?: (vStat.index + 1)) + ') - ' + (per['PRS_PERSON_NAME'] ?: 'Unknown')">
+           th:text="${'Person ' + (pStat.index + 1) + ' (Unit ' + (veh['VEH_UNIT_NUMBER'] ?: (vStat.index + 1)) + ') - ' + (per['PRS_PERSON_NAME'] ?: 'Unknown')}">
         Person N
       </div>
       <div class="section__body">
@@ -716,7 +716,7 @@
     <div class="section" th:if="${per['_fatalSection'] != null}"
          th:with="fat=${per['_fatalSection']}, fatl=${pl['fatLabels']}">
       <div class="section__header section__header--fatal"
-           th:text="'Fatal Section (F1-F3) - ' + (per['PRS_PERSON_NAME'] ?: 'Person ' + (pStat.index + 1))">Fatal</div>
+           th:text="${'Fatal Section (F1-F3) - ' + (per['PRS_PERSON_NAME'] ?: 'Person ' + (pStat.index + 1))}">Fatal</div>
       <div class="section__body">
         <table class="field-table">
           <tr><td class="lbl">Avoidance Maneuver (F1)</td>
@@ -737,7 +737,7 @@
     <div class="section" th:if="${per['_nonMotorist'] != null}"
          th:with="nm=${per['_nonMotorist']}, nml=${pl['nmLabels']}">
       <div class="section__header section__header--nm"
-           th:text="'Non-Motorist (NM1-NM6) - ' + (per['PRS_PERSON_NAME'] ?: 'Person ' + (pStat.index + 1))">Non-Motorist</div>
+           th:text="${'Non-Motorist (NM1-NM6) - ' + (per['PRS_PERSON_NAME'] ?: 'Person ' + (pStat.index + 1))}">Non-Motorist</div>
       <div class="section__body">
         <table class="field-table">
           <tr><td class="lbl">Striking Vehicle Unit (NM1)</td>
