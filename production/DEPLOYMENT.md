@@ -93,13 +93,13 @@ Create a minimal VPC with a single public subnet. No private subnets are needed 
 | Setting | Value |
 |---|---|
 | AMI | Ubuntu Server 22.04 LTS (64-bit x86) |
-| Instance type | `t3.small` (2 vCPU, 2 GB RAM) |
+| Instance type | `t3.micro` (2 vCPU, 1 GB RAM) — free tier eligible |
 | Key pair | Create new key pair → download `.pem` file |
 | VPC | The VPC created above |
 | Subnet | Public Subnet |
 | Auto-assign public IP | Disable (Elastic IP used instead) |
 | Security group | `mmucc-ec2-sg` |
-| Storage | 30 GB gp3 EBS (OS + MySQL data volume) |
+| Storage | 30 GB **gp2** EBS (OS + MySQL data volume) — free tier eligible |
 
 ### 2.4 Elastic IP
 
@@ -143,7 +143,28 @@ sudo usermod -aG docker ubuntu
 # Log out and back in for docker group to take effect
 ```
 
-### 3.2 Directory Structure
+### 3.2 Swap File
+
+t3.micro has 1 GB RAM. Five containers (4 JVMs + MySQL) will use up to ~1.2 GB at peak. A 1 GB swap file provides headroom for load spikes without OOM-killing containers.
+
+```bash
+sudo fallocate -l 1G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+
+# Make permanent across reboots
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+
+# Reduce swap aggressiveness (only swap when RAM is nearly full)
+echo 'vm.swappiness=10' | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
+
+# Verify
+free -h   # should show 1 GB swap
+```
+
+### 3.3 Directory Structure
 ```bash
 sudo mkdir -p /opt/mmucc/{app,config,logs,mysql-data}
 sudo mkdir -p /var/www/mmucc-app
@@ -151,7 +172,7 @@ sudo chown -R ubuntu:ubuntu /opt/mmucc
 sudo chown -R ubuntu:ubuntu /var/www/mmucc-app
 ```
 
-### 3.3 SSL Certificate (Let's Encrypt via DuckDNS)
+### 3.4 SSL Certificate (Let's Encrypt via DuckDNS)
 
 Create the DuckDNS credentials file:
 ```bash
@@ -182,7 +203,7 @@ sudo cp /path/to/production/nginx/certbot-renew.sh /etc/cron.daily/certbot-renew
 sudo chmod +x /etc/cron.daily/certbot-renew
 ```
 
-### 3.4 Nginx Configuration
+### 3.5 Nginx Configuration
 ```bash
 sudo cp /path/to/production/nginx/nginx.conf /etc/nginx/sites-available/mmucc
 # Replace DOMAIN_PLACEHOLDER with your actual DuckDNS subdomain
@@ -193,20 +214,19 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-### 3.5 Firebase Service Account
+### 3.6 Firebase Service Account
 ```bash
 # Copy the production Firebase service account JSON to the server
 scp -i keypair.pem firebase-prod-service-account.json ubuntu@<ELASTIC_IP>:/opt/mmucc/config/
 chmod 600 /opt/mmucc/config/firebase-prod-service-account.json
 ```
 
-### 3.6 Environment File
+### 3.7 Environment File
 ```bash
 cp /path/to/production/docker/.env.example /opt/mmucc/app/.env
 # Edit /opt/mmucc/app/.env with real values:
-#   - DB_HOST, DB_PASSWORD
+#   - DB_PASSWORD, DB_ROOT_PASSWORD
 #   - JWT_SECRET (generate: openssl rand -base64 64)
-#   - FIREBASE_SERVICE_ACCOUNT_PATH
 nano /opt/mmucc/app/.env
 chmod 600 /opt/mmucc/app/.env
 ```
@@ -487,50 +507,50 @@ Docker log rotation is configured in `docker-compose.yml` (max 50 MB, 5 files pe
 
 > **Assumptions:** us-east-1 region, on-demand pricing, Linux, MySQL runs as a Docker container on the same EC2 instance (no RDS), low traffic (< 5 GB data transfer out/month). Prices reflect AWS published rates as of early 2025. Actual charges will vary.
 
-### Per-Service Breakdown
+### Months 1–12 (AWS Free Tier)
 
-| AWS Service | Configuration | Hrs/month | Unit price | $/month |
-|---|---|---|---|---|
-| **EC2** | t3.small — 2 vCPU, 2 GB RAM | 730 | $0.0208/hr | $15.18 |
-| **EBS** (EC2 root) | 30 GB gp3 (OS + MySQL data) | — | $0.080/GB | $2.40 |
-| **Elastic IP** | 1 public IPv4 address | 730 | $0.005/hr | $3.65 |
-| **ECR** | ~1 GB (4 Spring Boot images) | — | $0.10/GB | $0.10 |
-| **S3** | Daily DB backups < 100 MB/month | — | $0.023/GB | < $0.01 |
-| **Data Transfer Out** | Low traffic — first 100 GB/month free | — | $0 | $0.00 |
-| **VPC / IGW / Subnets** | No per-resource charge | — | — | $0.00 |
-| **DuckDNS** | DNS hosting | — | Free | $0.00 |
-| **Let's Encrypt** | TLS certificate | — | Free | $0.00 |
-| **Firebase Auth** | Spark plan | — | Free | $0.00 |
-| | | | **Total** | **~$21/month** |
+| AWS Service | Configuration | Free allowance | $/month |
+|---|---|---|---|
+| **EC2** | t3.micro — 1 GB RAM, free-tier eligible | 750 hrs/month | $0.00 |
+| **EBS** | 30 GB gp2 | 30 GB/month | $0.00 |
+| **Public IPv4** | Elastic IP (associated with running instance) | 750 hrs/month | $0.00 |
+| **S3** | Daily DB backups < 100 MB/month | 5 GB + 20K GET + 2K PUT | $0.00 |
+| **ECR** | ~1 GB (4 Spring Boot images) | 500 MB/month free | ~$0.05 |
+| **Data Transfer Out** | Low traffic | 100 GB/month free | $0.00 |
+| **VPC / IGW** | No per-resource charge | — | $0.00 |
+| **DuckDNS / Let's Encrypt / Firebase Auth** | — | Free | $0.00 |
+| | | **Total (months 1–12)** | **~$0.05/month** |
 
-**Annualised:** ~$252/year
+### Month 13+ (After Free Tier Expires)
+
+| AWS Service | Configuration | Unit price | $/month |
+|---|---|---|---|
+| **EC2** | t3.micro | $0.0104/hr | $7.59 |
+| **EBS** | 30 GB gp2 | $0.10/GB | $3.00 |
+| **Elastic IP** | 1 public IPv4 | $0.005/hr | $3.65 |
+| **ECR** | ~1 GB images | $0.10/GB | $0.10 |
+| **S3 + transfer + free services** | — | — | ~$0.00 |
+| | | **Total (month 13+)** | **~$14/month** |
 
 ---
 
-### Why t3.small and not t3.micro?
+### Running 5 Containers on 1 GB RAM (t3.micro)
 
-With MySQL also running as a container, the EC2 instance now hosts five processes:
+t3.micro has 1 GB RAM. With JVM heap tuning and a 1 GB swap file (configured in Phase 3.2), all five containers fit comfortably at idle and handle load spikes via swap.
 
-| Process | Typical RSS |
-|---|---|
-| auth-service (JVM) | ~300 MB |
-| crash-service (JVM) | ~350 MB |
-| reference-service (JVM) | ~200 MB |
-| report-service (JVM) | ~250 MB |
-| MySQL 8.0 (tuned) | ~300 MB |
-| Nginx + OS + Docker | ~200 MB |
-| **Total** | **~1.6 GB** |
+| Process | Idle RSS (tuned) | Peak RSS |
+|---|---|---|
+| auth-service (JVM) | ~110 MB | ~200 MB |
+| crash-service (JVM) | ~120 MB | ~230 MB |
+| reference-service (JVM) | ~90 MB | ~160 MB |
+| report-service (JVM) | ~110 MB | ~200 MB |
+| MySQL 8.0 (64 MB buffer pool) | ~100 MB | ~128 MB |
+| Nginx + OS + Docker | ~200 MB | ~250 MB |
+| **Total** | **~730 MB** | **~1,168 MB** |
 
-t3.micro (1 GB) will OOM-kill containers under normal load. **t3.small (2 GB) is the bare minimum**. To keep MySQL within budget on 2 GB, add these flags to the MySQL container in `docker-compose.yml`:
+At idle the instance stays within 1 GB. During load spikes (e.g. PDF generation) it draws on swap briefly. The `JAVA_OPTS` set in `docker-compose.yml` and MySQL flags enforce these limits.
 
-```yaml
-command:
-  - --innodb-buffer-pool-size=128M
-  - --max-connections=50
-  - --performance-schema=OFF
-```
-
-If the instance runs hot (< 200 MB free consistently), upgrade to t3.medium ($30.37/month, 4 GB) — the extra $15/month buys comfortable headroom.
+If the instance hits swap consistently (check with `free -h` and `vmstat 1`), upgrade to t3.small (2 GB, ~$15/month after free tier) — no other changes required.
 
 ---
 

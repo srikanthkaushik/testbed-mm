@@ -15,13 +15,13 @@ Record actual values here after creation. Do not commit secrets.
 | Resource | Value |
 |---|---|
 | Instance ID | |
-| Instance type | t3.small |
+| Instance type | t3.micro (free tier eligible) |
 | AMI | Ubuntu 22.04 LTS |
 | Elastic IP | |
 | Key pair name | |
 | Security group | mmucc-ec2-sg |
 | IAM role | mmucc-ec2-role |
-| Storage | 30 GB gp3 EBS (OS + MySQL data) |
+| Storage | 30 GB gp2 EBS (free tier eligible; OS + MySQL data) |
 
 ## ECR Repositories
 
