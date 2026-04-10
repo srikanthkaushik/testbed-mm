@@ -246,26 +246,102 @@ chmod 600 /opt/mmucc/app/.env
 ## Phase 4 — Database Initialisation
 
 ### 4.1 Connect to RDS and Create Application User
+
+From the EC2 instance (mysql-client was installed in Phase 3.1):
 ```bash
 mysql -h <RDS_ENDPOINT> -u mmucc_admin -p
 ```
 ```sql
-CREATE DATABASE IF NOT EXISTS mmucc_prod CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS mmucc_prod
+    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 CREATE USER 'mmucc_app'@'%' IDENTIFIED BY '<STRONG_APP_PASSWORD>';
 GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, DROP
       ON mmucc_prod.* TO 'mmucc_app'@'%';
 FLUSH PRIVILEGES;
+
+-- Confirm the database exists
+SHOW DATABASES LIKE 'mmucc_prod';
+EXIT;
 ```
 
-### 4.2 Run Schema Scripts
+> Store `<STRONG_APP_PASSWORD>` in your password manager. This value goes into `/opt/mmucc/app/.env` as `DB_PASSWORD`.
+
+### 4.2 Copy Schema Scripts to EC2
+
+The `database/mysql/` directory contains 31 numbered SQL files (DDL + reference data INSERTs). Copy them from your local machine:
+
 ```bash
-# From your local machine (with RDS accessible via EC2 SSH tunnel, or from EC2)
-for f in $(ls database/mysql/*.sql | sort); do
+scp -i keypair.pem -r database/mysql ubuntu@<ELASTIC_IP>:/tmp/mmucc-schema/
+```
+
+### 4.3 Run All Schema Scripts in Order
+
+SSH into EC2, then run all 31 scripts in numbered order:
+
+```bash
+ssh -i keypair.pem ubuntu@<ELASTIC_IP>
+
+# Set session variables before running scripts
+mysql -h <RDS_ENDPOINT> -u mmucc_app -p mmucc_prod \
+  -e "SET FOREIGN_KEY_CHECKS=0; SET sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';"
+
+# Run all scripts in order
+cd /tmp/mmucc-schema/mysql
+for f in $(ls *.sql | sort); do
+    echo "Running $f..."
     mysql -h <RDS_ENDPOINT> -u mmucc_app -p mmucc_prod < "$f"
 done
+
+# Re-enable FK checks
+mysql -h <RDS_ENDPOINT> -u mmucc_app -p mmucc_prod \
+  -e "SET FOREIGN_KEY_CHECKS=1;"
 ```
 
-> Flyway migrations (crash-service) will run automatically on first startup and handle their own schema. Run only the non-Flyway DDL files manually (reference tables, etc.) — see `database/mysql/README.md` for the exact list.
+**What these scripts create:**
+- Scripts 01–07: 7 reference tables (`REF_*`) pre-loaded with all MMUCC coded values
+- Scripts 08–29: All 22 MMUCC data tables (`CRASH_TBL`, `VEHICLE_TBL`, `PERSON_TBL`, and all child tables)
+- Script 30: `APP_USER_TBL` (application users)
+- Script 31: `CRASH_AUDIT_LOG_TBL` (before/after JSON audit log)
+
+> **Flyway note:** crash-service runs Flyway migrations automatically on first startup. V1 uses `CREATE TABLE IF NOT EXISTS` (no-op since tables already exist). V3–V7 apply `ALTER TABLE` patches to align column types (INT UNSIGNED → BIGINT) and fix data types — these run against the tables created above. This is the intended workflow; do not skip the manual scripts.
+
+### 4.4 Verify Schema
+
+```bash
+mysql -h <RDS_ENDPOINT> -u mmucc_app -p mmucc_prod
+```
+```sql
+-- Should return 31 tables
+SELECT COUNT(*) AS table_count
+FROM INFORMATION_SCHEMA.TABLES
+WHERE TABLE_SCHEMA = 'mmucc_prod';
+
+-- Verify reference data was loaded (expected: 7, 51, 12, 9, 10, 5, 29)
+SELECT 'REF_CRASH_TYPE_TBL'       AS tbl, COUNT(*) AS rows FROM REF_CRASH_TYPE_TBL       UNION ALL
+SELECT 'REF_HARMFUL_EVENT_TBL',          COUNT(*)          FROM REF_HARMFUL_EVENT_TBL     UNION ALL
+SELECT 'REF_WEATHER_CONDITION_TBL',      COUNT(*)          FROM REF_WEATHER_CONDITION_TBL UNION ALL
+SELECT 'REF_SURFACE_CONDITION_TBL',      COUNT(*)          FROM REF_SURFACE_CONDITION_TBL UNION ALL
+SELECT 'REF_PERSON_TYPE_TBL',           COUNT(*)           FROM REF_PERSON_TYPE_TBL       UNION ALL
+SELECT 'REF_INJURY_STATUS_TBL',         COUNT(*)           FROM REF_INJURY_STATUS_TBL     UNION ALL
+SELECT 'REF_BODY_TYPE_TBL',             COUNT(*)           FROM REF_BODY_TYPE_TBL;
+
+EXIT;
+```
+
+### 4.5 Create the First Admin User
+
+After the services are running (Phase 6), the first user who logs in via Firebase is auto-provisioned as `VIEWER`. Promote them to `ADMIN` directly in the database:
+
+```sql
+-- Run after Phase 6 (first login must occur first)
+UPDATE APP_USER_TBL
+SET    AUS_ROLE = 'ADMIN',
+       AUS_IS_ACTIVE = 1,
+       AUS_MODIFIED_BY = 'db-admin',
+       AUS_MODIFIED_DT = NOW()
+WHERE  AUS_EMAIL = '<YOUR_ADMIN_EMAIL>';
+```
 
 ---
 
