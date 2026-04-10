@@ -66,19 +66,14 @@ RDS MySQL 8.0 (db.t3.micro, private subnet, no public access)
 
 ### 2.1 VPC and Networking
 
-Create a VPC with public and private subnets:
+Create a minimal VPC with a single public subnet. No private subnets are needed — MySQL runs on the EC2 instance, not on a separate managed service.
 
 | Resource | Value |
 |---|---|
 | VPC CIDR | `10.0.0.0/16` |
-| Public Subnet A | `10.0.1.0/24` (e.g., us-east-1a) |
-| Public Subnet B | `10.0.2.0/24` (e.g., us-east-1b) |
-| Private Subnet A | `10.0.11.0/24` (e.g., us-east-1a) |
-| Private Subnet B | `10.0.12.0/24` (e.g., us-east-1b) |
+| Public Subnet | `10.0.1.0/24` (e.g., us-east-1a) |
 | Internet Gateway | Attach to VPC |
-| Public Route Table | `0.0.0.0/0 → IGW`; associate both public subnets |
-
-> RDS requires subnets in **at least 2 AZs** even for a single-AZ instance — create both private subnets.
+| Public Route Table | `0.0.0.0/0 → IGW`; associate the public subnet |
 
 ### 2.2 Security Groups
 
@@ -91,25 +86,20 @@ Create a VPC with public and private subnets:
 | Inbound | TCP | 443 | 0.0.0.0/0 | HTTPS |
 | Outbound | All | All | 0.0.0.0/0 | Outbound traffic |
 
-**RDS Security Group (`mmucc-rds-sg`)**
-
-| Type | Protocol | Port | Source | Purpose |
-|---|---|---|---|---|
-| Inbound | TCP | 3306 | `mmucc-ec2-sg` | MySQL from EC2 only |
-| Outbound | All | All | 0.0.0.0/0 | |
+> Port 3306 (MySQL) is **not** open inbound — the database is accessible only on the loopback interface (`127.0.0.1`) within the EC2 instance itself.
 
 ### 2.3 EC2 Instance
 
 | Setting | Value |
 |---|---|
 | AMI | Ubuntu Server 22.04 LTS (64-bit x86) |
-| Instance type | `t3.medium` (2 vCPU, 4 GB RAM) |
+| Instance type | `t3.small` (2 vCPU, 2 GB RAM) |
 | Key pair | Create new key pair → download `.pem` file |
 | VPC | The VPC created above |
-| Subnet | Public Subnet A |
+| Subnet | Public Subnet |
 | Auto-assign public IP | Disable (Elastic IP used instead) |
 | Security group | `mmucc-ec2-sg` |
-| Storage | 20 GB gp3 EBS |
+| Storage | 30 GB gp3 EBS (OS + MySQL data volume) |
 
 ### 2.4 Elastic IP
 
@@ -117,27 +107,7 @@ Create a VPC with public and private subnets:
 2. Associate it with the EC2 instance
 3. **Update the DuckDNS A record** with this Elastic IP
 
-### 2.5 RDS MySQL
-
-| Setting | Value |
-|---|---|
-| Engine | MySQL 8.0 |
-| Template | Free tier / Dev-Test |
-| Instance class | `db.t3.micro` |
-| Storage | 20 GB gp2, disable autoscaling |
-| Multi-AZ | No (single AZ for cost) |
-| VPC | The VPC created above |
-| Subnet group | Create new DB subnet group using Private Subnet A + B |
-| Public access | No |
-| Security group | `mmucc-rds-sg` |
-| DB name | `mmucc_prod` |
-| Master username | `mmucc_admin` |
-| Master password | Generate strong password, store in a password manager |
-| Parameter group | Default (MySQL 8.0 defaults are fine) |
-
-After creation, note the **RDS endpoint hostname** (e.g., `mmucc-prod.xyz.us-east-1.rds.amazonaws.com`).
-
-### 2.6 S3 Bucket (Backups)
+### 2.5 S3 Bucket (Backups)
 
 Create a bucket for database backups:
 - Bucket name: `mmucc-prod-backups-<account-id>`
@@ -146,7 +116,7 @@ Create a bucket for database backups:
 - Versioning: Enabled
 - Lifecycle rule: expire objects after 30 days
 
-### 2.7 IAM Role for EC2
+### 2.6 IAM Role for EC2
 
 Create an IAM role (`mmucc-ec2-role`) with these policies:
 - `AmazonS3FullAccess` (scoped to the backup bucket) — for DB backup uploads
@@ -175,7 +145,7 @@ sudo usermod -aG docker ubuntu
 
 ### 3.2 Directory Structure
 ```bash
-sudo mkdir -p /opt/mmucc/{app,config,logs}
+sudo mkdir -p /opt/mmucc/{app,config,logs,mysql-data}
 sudo mkdir -p /var/www/mmucc-app
 sudo chown -R ubuntu:ubuntu /opt/mmucc
 sudo chown -R ubuntu:ubuntu /var/www/mmucc-app
@@ -245,27 +215,21 @@ chmod 600 /opt/mmucc/app/.env
 
 ## Phase 4 — Database Initialisation
 
-### 4.1 Connect to RDS and Create Application User
+MySQL runs as a Docker container on the EC2 instance. The database and application user are created automatically by the container on first start using the credentials in `.env`.
 
-From the EC2 instance (mysql-client was installed in Phase 3.1):
+### 4.1 Start the MySQL Container
+
 ```bash
-mysql -h <RDS_ENDPOINT> -u mmucc_admin -p
-```
-```sql
-CREATE DATABASE IF NOT EXISTS mmucc_prod
-    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+cd /opt/mmucc/app
+docker compose up -d mysql
 
-CREATE USER 'mmucc_app'@'%' IDENTIFIED BY '<STRONG_APP_PASSWORD>';
-GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, DROP
-      ON mmucc_prod.* TO 'mmucc_app'@'%';
-FLUSH PRIVILEGES;
-
--- Confirm the database exists
-SHOW DATABASES LIKE 'mmucc_prod';
-EXIT;
+# Wait for the container to pass its health check (up to ~60 seconds)
+docker compose ps mysql   # STATUS should show "(healthy)"
 ```
 
-> Store `<STRONG_APP_PASSWORD>` in your password manager. This value goes into `/opt/mmucc/app/.env` as `DB_PASSWORD`.
+On first start, Docker initialises `/opt/mmucc/mysql-data` with a fresh MySQL data directory and creates:
+- Database `mmucc_prod` (from `DB_NAME`)
+- User `mmucc_app` with full privileges on `mmucc_prod` (from `DB_USER` / `DB_PASSWORD`)
 
 ### 4.2 Copy Schema Scripts to EC2
 
@@ -283,18 +247,18 @@ SSH into EC2, then run all 31 scripts in numbered order:
 ssh -i keypair.pem ubuntu@<ELASTIC_IP>
 
 # Set session variables before running scripts
-mysql -h <RDS_ENDPOINT> -u mmucc_app -p mmucc_prod \
+mysql -h 127.0.0.1 -u mmucc_app -p mmucc_prod \
   -e "SET FOREIGN_KEY_CHECKS=0; SET sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';"
 
 # Run all scripts in order
 cd /tmp/mmucc-schema/mysql
 for f in $(ls *.sql | sort); do
     echo "Running $f..."
-    mysql -h <RDS_ENDPOINT> -u mmucc_app -p mmucc_prod < "$f"
+    mysql -h 127.0.0.1 -u mmucc_app -p mmucc_prod < "$f"
 done
 
 # Re-enable FK checks
-mysql -h <RDS_ENDPOINT> -u mmucc_app -p mmucc_prod \
+mysql -h 127.0.0.1 -u mmucc_app -p mmucc_prod \
   -e "SET FOREIGN_KEY_CHECKS=1;"
 ```
 
@@ -309,7 +273,7 @@ mysql -h <RDS_ENDPOINT> -u mmucc_app -p mmucc_prod \
 ### 4.4 Verify Schema
 
 ```bash
-mysql -h <RDS_ENDPOINT> -u mmucc_app -p mmucc_prod
+mysql -h 127.0.0.1 -u mmucc_app -p mmucc_prod
 ```
 ```sql
 -- Should return 31 tables
@@ -333,6 +297,9 @@ EXIT;
 
 After the services are running (Phase 6), the first user who logs in via Firebase is auto-provisioned as `VIEWER`. Promote them to `ADMIN` directly in the database:
 
+```bash
+mysql -h 127.0.0.1 -u mmucc_app -p mmucc_prod
+```
 ```sql
 -- Run after Phase 6 (first login must occur first)
 UPDATE APP_USER_TBL
@@ -418,17 +385,21 @@ scp -i keypair.pem -r \
 # On EC2
 cd /opt/mmucc/app
 
-# Authenticate to ECR from EC2
+# Authenticate to ECR (needed for the 4 Spring Boot images; MySQL pulls from Docker Hub)
 aws ecr get-login-password --region us-east-1 | \
   docker login --username AWS --password-stdin <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com
 
-# Pull latest images and start
+# Pull all images (mysql:8.0 from Docker Hub + 4 Spring Boot images from ECR)
 docker compose pull
+
+# Start — MySQL comes up first; Spring Boot services wait for its health check
 docker compose up -d
 
-# Check all 4 containers are running
+# Check all 5 containers are running
 docker compose ps
 ```
+
+> The `depends_on: condition: service_healthy` in `docker-compose.yml` ensures the Spring Boot services only start after MySQL passes its `mysqladmin ping` health check. On first boot this takes 20–60 seconds.
 
 ### 6.4 Reload Nginx
 ```bash
@@ -441,7 +412,10 @@ sudo systemctl reload nginx
 
 ### 7.1 Service Health Checks
 ```bash
-# From EC2 — all should return 200
+# Verify MySQL container is healthy
+docker compose ps mysql
+
+# Verify all 4 Spring Boot services return 200
 curl -s -o /dev/null -w "%{http_code}" http://localhost:8081/actuator/health
 curl -s -o /dev/null -w "%{http_code}" http://localhost:8082/actuator/health
 curl -s -o /dev/null -w "%{http_code}" http://localhost:8083/actuator/health
@@ -484,7 +458,8 @@ sudo tail -f /var/log/nginx/error.log
 ```bash
 sudo cp production/scripts/db-backup.sh /etc/cron.daily/mmucc-db-backup
 sudo chmod +x /etc/cron.daily/mmucc-db-backup
-# Edit the script to fill in RDS endpoint, password, and S3 bucket name
+# Edit the script to fill in DB_PASSWORD and S3_BUCKET name
+# DB_HOST is already set to 127.0.0.1 (MySQL container on same host)
 ```
 
 ### 8.2 DuckDNS IP Auto-Update (if Elastic IP ever changes)
@@ -504,7 +479,7 @@ sudo crontab -e
 ```
 
 ### 8.4 Log Rotation
-Docker log rotation is configured in `docker-compose.yml` (max 50 MB, 5 files per service). Nginx logs rotate automatically via `logrotate`.
+Docker log rotation is configured in `docker-compose.yml` (max 50 MB, 5 files per container, covering mysql + all 4 services). Nginx logs rotate automatically via `logrotate`.
 
 ---
 
@@ -580,9 +555,9 @@ The S3 backup cron (`production/scripts/db-backup.sh`) mitigates the loss of man
 |---|---|
 | **HTTPS for Swagger** | Currently accessible — consider blocking `/*/swagger-ui` in Nginx for prod |
 | **WAF** | AWS WAF on CloudFront or ALB for rate limiting and bot protection |
-| **Secrets Manager** | Replace `.env` file with AWS Secrets Manager; inject via ECS task definition or EC2 parameter store |
-| **Multi-AZ RDS** | Enable for high availability (`db.t3.small` minimum for Multi-AZ) |
+| **Secrets Manager** | Replace `.env` file with AWS Secrets Manager; inject via EC2 Parameter Store |
+| **Migrate to RDS** | Move MySQL off EC2 to RDS db.t3.micro (~+$15/month) for managed patching, automated snapshots, and point-in-time recovery |
 | **ALB + Auto Scaling** | Move from single EC2 to ALB + ASG if traffic grows |
 | **CI/CD Pipeline** | GitHub Actions workflow: test → build → push to ECR → SSH deploy on merge to `main` |
 | **Monitoring** | CloudWatch dashboards for CPU/memory; SNS alarm if any service goes unhealthy |
-| **RDS backups** | Enable automated RDS snapshots (7-day retention) in addition to the cron mysqldump |
+| **EBS Snapshots** | Schedule automated EBS snapshots via AWS Data Lifecycle Manager to protect MySQL data on disk |

@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # Daily database backup to S3.
+# MySQL runs as a Docker container on the same EC2 instance.
 # Place in /etc/cron.daily/mmucc-db-backup and chmod +x.
-# Fill in DB_HOST, DB_PASSWORD, and S3_BUCKET before deploying.
+# Fill in DB_PASSWORD and S3_BUCKET before deploying.
 
 set -euo pipefail
 
-DB_HOST="mmucc-prod.xxxxxxxx.us-east-1.rds.amazonaws.com"
+DB_HOST="127.0.0.1"
 DB_NAME="mmucc_prod"
 DB_USER="mmucc_app"
 DB_PASSWORD="CHANGE_ME"
