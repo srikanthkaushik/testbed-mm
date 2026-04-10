@@ -378,11 +378,21 @@ terraform destroy
 
 ## Next Steps
 
-- [ ] **Complete Phase A:** Run `terraform apply` from `production/terraform/`
-- [ ] **Complete Phase B:** Point DuckDNS A record to the Elastic IP from Terraform output
-- [ ] **Complete Phase C:** Add all 16 GitHub Secrets listed above
-- [ ] **Complete Phase D:** Push to `master` to trigger first deployment; watch the Actions run
-- [ ] **Complete Phase E:** Sign in, then promote your account to ADMIN via SQL
+**Prerequisites**
+- [x] **Step 1 — SSH key pair:** Generated at `~/.ssh/mmucc-prod` and `~/.ssh/mmucc-prod.pub`
+- [x] **Step 2 — GitHub PAT `workflow` scope:** Enabled; automation files pushed to origin
+- [ ] **Step 3 — IAM user `mmucc-cicd`:** Create in AWS Console with ECR inline policy; generate access key
+- [ ] **Step 4 — DuckDNS:** Register subdomain and note token
+- [ ] **Step 5 — Firebase:** Add authorized domain; download and base64-encode service account JSON
+- [ ] **Step 6 — Terraform installed:** `terraform version` >= 1.6
+- [ ] **Step 7 — AWS CLI configured:** `aws sts get-caller-identity` returns your account ID
+
+**Deployment**
+- [ ] **Phase A:** Fill in `terraform.tfvars` and run `terraform apply` from `production/terraform/`
+- [ ] **Phase B:** Point DuckDNS A record to the Elastic IP from Terraform output
+- [ ] **Phase C:** Add all 16 GitHub Secrets listed above
+- [ ] **Phase D:** Push to `master` to trigger first deployment; watch the Actions run
+- [ ] **Phase E:** Sign in, then promote your account to ADMIN via SQL
 - [ ] **Verify:** Open `https://mmucc-app.duckdns.org` — login, create a crash, download a PDF
 - [ ] **Record resource IDs** in `production/aws/resources.md`
 - [ ] **Monitor memory** for the first 24 hours (`free -h`, `docker stats`) — upgrade to t3.small if swap usage is consistently high
