@@ -1,0 +1,257 @@
+name: Build and Deploy
+
+# Triggers on every push to master, or manually via the GitHub Actions UI.
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── Checkout ─────────────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Build — Spring Boot ──────────────────────────────────────────────────
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build Spring Boot JARs
+        run: |
+          cd backend
+          mvn clean package -DskipTests --no-transfer-progress
+
+      # ── Build — Angular ───────────────────────────────────────────────────────
+      - name: Set up Node 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: npm
+          cache-dependency-path: frontend/mmucc-app/package-lock.json
+
+      - name: Build Angular app
+        run: |
+          cd frontend/mmucc-app
+          npm ci
+          npx ng build --configuration production
+        env:
+          NODE_OPTIONS: --max-old-space-size=2048
+
+      # ── Push Docker images to ECR ─────────────────────────────────────────────
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Docker images
+        run: bash production/scripts/build-all.sh ${{ github.sha }}
+        env:
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+
+      # ── Prepare deploy artifacts ──────────────────────────────────────────────
+      - name: Set up SSH key
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" > /tmp/mmucc-key.pem
+          chmod 600 /tmp/mmucc-key.pem
+
+      - name: Write .env for EC2
+        run: |
+          cat > /tmp/mmucc.env << EOF
+          AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
+          AWS_REGION=${{ secrets.AWS_REGION }}
+          IMAGE_TAG=${{ github.sha }}
+          DB_NAME=${{ secrets.DB_NAME }}
+          DB_USER=${{ secrets.DB_USER }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          JWT_ISSUER=${{ secrets.DUCKDNS_DOMAIN }}.duckdns.org
+          EOF
+
+      - name: Decode Firebase service account
+        run: |
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_B64 }}" | base64 -d > /tmp/firebase-sa.json
+
+      # ── Copy files to EC2 ─────────────────────────────────────────────────────
+      - name: Copy deploy files to EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+        run: |
+          SSH_OPTS="-i /tmp/mmucc-key.pem -o StrictHostKeyChecking=no -o ConnectTimeout=30"
+
+          # .env and docker-compose.yml
+          scp $SSH_OPTS /tmp/mmucc.env                      ubuntu@$EC2_HOST:/opt/mmucc/app/.env
+          scp $SSH_OPTS production/docker/docker-compose.yml ubuntu@$EC2_HOST:/opt/mmucc/app/docker-compose.yml
+
+          # Angular static files
+          scp $SSH_OPTS -r frontend/mmucc-app/dist/mmucc-app/browser/. ubuntu@$EC2_HOST:/var/www/mmucc-app/
+
+          # Firebase service account
+          scp $SSH_OPTS /tmp/firebase-sa.json ubuntu@$EC2_HOST:/opt/mmucc/config/firebase-service-account.json
+          ssh $SSH_OPTS ubuntu@$EC2_HOST "chmod 600 /opt/mmucc/config/firebase-service-account.json"
+
+          # Schema scripts (idempotent — safe to copy on every deploy)
+          ssh $SSH_OPTS ubuntu@$EC2_HOST "mkdir -p /tmp/mmucc-schema"
+          scp $SSH_OPTS -r database/mysql ubuntu@$EC2_HOST:/tmp/mmucc-schema/
+
+          # Init and backup scripts
+          scp $SSH_OPTS production/scripts/db-init.sh   ubuntu@$EC2_HOST:/tmp/db-init.sh
+          scp $SSH_OPTS production/scripts/db-backup.sh ubuntu@$EC2_HOST:/tmp/db-backup.sh
+
+      # ── Deploy: pull images and restart containers ────────────────────────────
+      - name: Deploy services
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+        run: |
+          SSH_OPTS="-i /tmp/mmucc-key.pem -o StrictHostKeyChecking=no"
+          ssh $SSH_OPTS ubuntu@$EC2_HOST << 'ENDSSH'
+            set -euo pipefail
+            set -a && source /opt/mmucc/app/.env && set +a
+
+            # Authenticate Docker to ECR using the EC2 IAM role (no stored credentials)
+            aws ecr get-login-password --region "$AWS_REGION" | \
+              docker login --username AWS --password-stdin \
+              "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+
+            cd /opt/mmucc/app
+            docker compose pull
+            docker compose up -d
+
+            echo "Services started: $(docker compose ps --services | tr '\n' ' ')"
+          ENDSSH
+
+      # ── First-deploy: one-time setup ──────────────────────────────────────────
+      - name: First-deploy setup (runs once)
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          DUCKDNS_DOMAIN: ${{ secrets.DUCKDNS_DOMAIN }}
+          DUCKDNS_TOKEN: ${{ secrets.DUCKDNS_TOKEN }}
+          CERTBOT_EMAIL: ${{ secrets.CERTBOT_EMAIL }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          S3_BACKUP_BUCKET: ${{ secrets.S3_BACKUP_BUCKET }}
+        run: |
+          SSH_OPTS="-i /tmp/mmucc-key.pem -o StrictHostKeyChecking=no"
+
+          IS_FIRST=$(ssh $SSH_OPTS ubuntu@$EC2_HOST \
+            "test -f /opt/mmucc/.initialized && echo no || echo yes")
+
+          if [ "$IS_FIRST" = "yes" ]; then
+            echo "First deploy detected — running one-time setup..."
+
+            # Write first-deploy script with secrets substituted
+            cat > /tmp/first-deploy.sh << SCRIPT
+          #!/usr/bin/env bash
+          set -euo pipefail
+
+          echo "=== First-deploy setup starting ==="
+
+          # ── Database schema init ────────────────────────────────────────────
+          echo "Initialising database schema..."
+          chmod +x /tmp/db-init.sh
+          DB_NAME="${DB_NAME}" DB_USER="${DB_USER}" DB_PASSWORD="${DB_PASSWORD}" \
+            bash /tmp/db-init.sh /tmp/mmucc-schema/mysql
+
+          # ── DuckDNS IP auto-update cron ─────────────────────────────────────
+          echo "Configuring DuckDNS cron..."
+          sudo bash -c "cat > /etc/cron.d/duckdns << 'EOF'
+          */5 * * * * ubuntu curl -s 'https://www.duckdns.org/update?domains=${DUCKDNS_DOMAIN}&token=${DUCKDNS_TOKEN}&ip=' > /var/log/duckdns.log 2>&1
+          EOF"
+          sudo chmod 644 /etc/cron.d/duckdns
+          # Run once immediately to register the IP
+          curl -s "https://www.duckdns.org/update?domains=${DUCKDNS_DOMAIN}&token=${DUCKDNS_TOKEN}&ip=" > /var/log/duckdns.log
+
+          # ── SSL certificate (Let's Encrypt via DuckDNS DNS-01) ──────────────
+          echo "Issuing SSL certificate..."
+          sudo mkdir -p /etc/letsencrypt/duckdns
+          echo "dns_duckdns_token=${DUCKDNS_TOKEN}" | sudo tee /etc/letsencrypt/duckdns/credentials.ini > /dev/null
+          sudo chmod 600 /etc/letsencrypt/duckdns/credentials.ini
+
+          sudo certbot certonly \
+            --dns-duckdns \
+            --dns-duckdns-credentials /etc/letsencrypt/duckdns/credentials.ini \
+            --dns-duckdns-propagation-seconds 60 \
+            -d ${DUCKDNS_DOMAIN}.duckdns.org \
+            --email ${CERTBOT_EMAIL} \
+            --agree-tos \
+            --non-interactive
+
+          # ── Nginx configuration ──────────────────────────────────────────────
+          echo "Configuring Nginx..."
+          sudo sed 's/DOMAIN_PLACEHOLDER/${DUCKDNS_DOMAIN}.duckdns.org/g' \
+            /tmp/nginx.conf | sudo tee /etc/nginx/sites-available/mmucc > /dev/null
+          sudo ln -sf /etc/nginx/sites-available/mmucc /etc/nginx/sites-enabled/mmucc
+          sudo rm -f /etc/nginx/sites-enabled/default
+          sudo nginx -t
+          sudo systemctl reload nginx
+
+          # ── DB backup cron ───────────────────────────────────────────────────
+          echo "Configuring database backup cron..."
+          sudo sed \
+            -e 's|mmucc-prod-backups-123456789012|${S3_BACKUP_BUCKET}|g' \
+            -e 's|CHANGE_ME|${DB_PASSWORD}|g' \
+            /tmp/db-backup.sh | sudo tee /etc/cron.daily/mmucc-db-backup > /dev/null
+          sudo chmod +x /etc/cron.daily/mmucc-db-backup
+
+          # ── Mark initialised ─────────────────────────────────────────────────
+          touch /opt/mmucc/.initialized
+          echo "=== First-deploy setup complete ==="
+          SCRIPT
+
+            # Copy Nginx config and first-deploy script to EC2
+            scp $SSH_OPTS production/nginx/nginx.conf ubuntu@$EC2_HOST:/tmp/nginx.conf
+            scp $SSH_OPTS /tmp/first-deploy.sh        ubuntu@$EC2_HOST:/tmp/first-deploy.sh
+
+            # Run it
+            ssh $SSH_OPTS ubuntu@$EC2_HOST "bash /tmp/first-deploy.sh"
+          else
+            echo "Not the first deploy — skipping one-time setup."
+          fi
+
+      # ── Health check ──────────────────────────────────────────────────────────
+      - name: Verify service health
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+        run: |
+          SSH_OPTS="-i /tmp/mmucc-key.pem -o StrictHostKeyChecking=no"
+
+          echo "Waiting 30s for services to start..."
+          sleep 30
+
+          ssh $SSH_OPTS ubuntu@$EC2_HOST << 'ENDSSH'
+            set -e
+            FAILED=0
+            for PORT in 8081 8082 8083 8084; do
+              STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:$PORT/actuator/health || echo "000")
+              if [ "$STATUS" = "200" ]; then
+                echo "  Port $PORT — OK"
+              else
+                echo "  Port $PORT — FAILED (HTTP $STATUS)"
+                FAILED=1
+              fi
+            done
+            [ "$FAILED" -eq 0 ] && echo "All services healthy." || { echo "One or more services failed health check."; exit 1; }
+          ENDSSH
+
+      # ── Cleanup ───────────────────────────────────────────────────────────────
+      - name: Clean up local secrets
+        if: always()
+        run: |
+          rm -f /tmp/mmucc-key.pem /tmp/mmucc.env /tmp/firebase-sa.json \
+                /tmp/first-deploy.sh

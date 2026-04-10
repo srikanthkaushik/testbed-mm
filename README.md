@@ -196,9 +196,11 @@ Login via the Firebase-backed login page. New accounts are auto-provisioned as `
 - [`frontend/mmucc-app/README.md`](frontend/mmucc-app/README.md) — Angular architecture, route map, component inventory
 
 **Production Deployment**
-- [`production/DEPLOYMENT.md`](production/DEPLOYMENT.md) — full AWS deployment roadmap (9 phases: VPC, EC2, RDS, SSL, Docker, verify)
+- [`production/DEPLOYMENT-AUTOMATION.md`](production/DEPLOYMENT-AUTOMATION.md) — **automated deployment guide** (Terraform + GitHub Actions CI/CD — start here)
+- [`production/DEPLOYMENT.md`](production/DEPLOYMENT.md) — manual deployment reference (9 phases: VPC, EC2, SSL, Docker, verify)
+- [`production/terraform/`](production/terraform/) — Terraform: VPC, EC2, EIP, S3, ECR, IAM in one `terraform apply`
 - [`production/nginx/nginx.conf`](production/nginx/nginx.conf) — Nginx reverse proxy + SSL config template
-- [`production/docker/docker-compose.yml`](production/docker/docker-compose.yml) — Docker Compose for all 4 services
+- [`production/docker/docker-compose.yml`](production/docker/docker-compose.yml) — Docker Compose for MySQL + all 4 services
 - [`production/docker/.env.example`](production/docker/.env.example) — environment variable template (DB, JWT, AWS)
 - [`production/aws/resources.md`](production/aws/resources.md) — AWS resource inventory (fill in after provisioning)
 

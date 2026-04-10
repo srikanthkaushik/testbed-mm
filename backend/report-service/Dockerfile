@@ -4,4 +4,4 @@ ARG JAR_FILE=*.jar
 COPY ${JAR_FILE} app.jar
 RUN useradd -r -u 1001 -g root appuser && chown appuser app.jar
 USER appuser
-ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
+ENTRYPOINT ["sh", "-c", "exec java ${JAVA_OPTS} -Djava.security.egd=file:/dev/./urandom -jar app.jar"]

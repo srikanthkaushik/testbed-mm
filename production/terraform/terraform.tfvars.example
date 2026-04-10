@@ -1,0 +1,12 @@
+# Copy this file to terraform.tfvars and fill in your values.
+# terraform.tfvars is gitignored — never commit it.
+
+aws_region       = "us-east-1"
+
+# Your public IP in CIDR notation — find it at https://checkip.amazonaws.com
+ssh_allowed_cidr = "YOUR_IP_HERE/32"
+
+key_pair_name    = "mmucc-prod-key"
+
+# Path to the SSH public key you generated (see DEPLOYMENT-AUTOMATION.md Step 1)
+public_key_path  = "~/.ssh/mmucc-prod.pub"
