@@ -508,6 +508,69 @@ Docker log rotation is configured in `docker-compose.yml` (max 50 MB, 5 files pe
 
 ---
 
+## Estimated Monthly AWS Cost
+
+> **Assumptions:** us-east-1 region, on-demand (no reserved) pricing, Linux, low traffic (< 5 GB data transfer out/month). Prices reflect AWS published rates as of early 2025. Actual charges will vary.
+
+### Per-Service Breakdown
+
+| AWS Service | Configuration | Hrs/month | Unit price | $/month |
+|---|---|---|---|---|
+| **EC2** | t3.small — 2 vCPU, 2 GB RAM | 730 | $0.0208/hr | $15.18 |
+| **RDS MySQL** | db.t3.micro, Single-AZ | 730 | $0.0170/hr | $12.41 |
+| **RDS Storage** | 20 GB gp2 | — | $0.115/GB | $2.30 |
+| **EBS** (EC2 root) | 20 GB gp3 | — | $0.080/GB | $1.60 |
+| **Elastic IP** | 1 public IPv4 address | 730 | $0.005/hr | $3.65 |
+| **ECR** | ~1 GB (4 Docker images) | — | $0.10/GB | $0.10 |
+| **S3** | Daily DB backups < 100 MB/month | — | $0.023/GB | < $0.01 |
+| **Data Transfer Out** | Low traffic — first 100 GB/month free | — | $0 | $0.00 |
+| **VPC / IGW / Subnets** | No per-resource charge | — | — | $0.00 |
+| **DuckDNS** | DNS hosting | — | Free | $0.00 |
+| **Let's Encrypt** | TLS certificate | — | Free | $0.00 |
+| **Firebase Auth** | Spark plan (free tier) | — | Free | $0.00 |
+| | | | **Total** | **~$35/month** |
+
+**Annualised (no reserved pricing):** ~$420/year
+
+---
+
+### Why t3.small and not t3.micro?
+
+t3.micro (1 GB RAM) is technically smaller and free-tier eligible, but **four concurrent JVM processes** (Spring Boot default heap + metaspace) typically consume 1.2–1.6 GB RSS. The instance will OOM-kill containers under normal load. **t3.small (2 GB) is the practical bare minimum** for running all four services reliably.
+
+If you want to test on a free-tier account, start with t3.micro and watch `free -m` — if available memory drops below 200 MB consistently, upgrade.
+
+---
+
+### AWS Free Tier (first 12 months on a new account)
+
+| Service | Free allowance | Effective saving |
+|---|---|---|
+| EC2 t3.micro | 750 hrs/month | saves ~$7.59/month (but may be undersized — see above) |
+| RDS db.t3.micro | 750 hrs/month + 20 GB storage | saves ~$14.71/month |
+| EBS | 30 GB | saves ~$1.60/month |
+| S3 | 5 GB + 20K GET + 2K PUT | saves < $0.01/month |
+| **Elastic IP** | **Not included in free tier** | **still $3.65/month** |
+
+With free tier and t3.micro on EC2: **~$4–5/month** (just the Elastic IP + any overages).  
+With free tier and t3.small on EC2: **~$19/month** (EIP + EC2 t3.small, RDS/EBS/S3 free).
+
+---
+
+### Reducing Cost Further
+
+| Option | Saving | Trade-off |
+|---|---|---|
+| **1-year Reserved Instance (no upfront)** | ~30% on EC2 + RDS | 12-month commitment |
+| **Stop RDS when not in use** | Eliminates RDS cost during idle periods | Manual start/stop; data persists |
+| **Replace RDS with MySQL on EC2** | Saves ~$15/month (no separate RDS) | No managed backups, patching, or failover |
+| **Use one EC2 for app + MySQL** | Eliminate RDS entirely | Production risk; single point of failure |
+| **Spot Instance for EC2** | Up to 70% off on-demand | Instance can be reclaimed; not suitable for always-on |
+
+The cheapest **always-on production setup** that is safe to run is the configuration above (~$35/month). Replacing RDS with a MySQL container on the same EC2 instance brings the estimate to **~$20/month** but removes managed backups, automated patching, and point-in-time recovery.
+
+---
+
 ## Phase 9 — Future Improvements (Post-Launch)
 
 | Item | Notes |
