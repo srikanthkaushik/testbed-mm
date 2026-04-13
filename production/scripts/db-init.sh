@@ -36,15 +36,23 @@ mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" \
     -e "SET FOREIGN_KEY_CHECKS=0; \
         SET sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';"
 
-# ── Run all 31 schema scripts in numbered order ───────────────────────────────
-echo "Running schema scripts from $SCHEMA_DIR..."
-SCRIPT_COUNT=0
-for f in $(ls "$SCHEMA_DIR"/*.sql | sort); do
-    echo "  $(basename "$f")..."
-    mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" < "$f"
-    SCRIPT_COUNT=$((SCRIPT_COUNT + 1))
-done
-echo "Ran $SCRIPT_COUNT script(s)."
+# ── Check if schema already exists ───────────────────────────────────────────
+EXISTING=$(mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" \
+    -sN -e "SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '$DB_NAME';" 2>/dev/null || echo 0)
+
+if [ "$EXISTING" -ge 31 ]; then
+    echo "Schema already initialised ($EXISTING tables found) — skipping script execution."
+else
+    # ── Run all 31 schema scripts in numbered order ───────────────────────────
+    echo "Running schema scripts from $SCHEMA_DIR..."
+    SCRIPT_COUNT=0
+    for f in $(ls "$SCHEMA_DIR"/*.sql | sort); do
+        echo "  $(basename "$f")..."
+        mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" < "$f"
+        SCRIPT_COUNT=$((SCRIPT_COUNT + 1))
+    done
+    echo "Ran $SCRIPT_COUNT script(s)."
+fi
 
 # ── Re-enable FK checks ───────────────────────────────────────────────────────
 mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" \
