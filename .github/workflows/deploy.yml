@@ -187,7 +187,6 @@ jobs:
             --email ${CERTBOT_EMAIL} \
             --agree-tos \
             --non-interactive
-          sudo systemctl start nginx
 
           # ── Nginx configuration ──────────────────────────────────────────────
           echo "Configuring Nginx..."
@@ -196,7 +195,7 @@ jobs:
           sudo ln -sf /etc/nginx/sites-available/mmucc /etc/nginx/sites-enabled/mmucc
           sudo rm -f /etc/nginx/sites-enabled/default
           sudo nginx -t
-          sudo systemctl reload nginx
+          sudo systemctl restart nginx
 
           # ── DB backup cron ───────────────────────────────────────────────────
           echo "Configuring database backup cron..."
