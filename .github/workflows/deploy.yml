@@ -68,18 +68,28 @@ jobs:
           chmod 600 /tmp/mmucc-key.pem
 
       - name: Write .env for EC2
+        env:
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          IMAGE_TAG: ${{ github.sha }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_ISSUER: "${{ secrets.DUCKDNS_DOMAIN }}.duckdns.org"
         run: |
-          cat > /tmp/mmucc.env << EOF
-AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
-AWS_REGION=${{ secrets.AWS_REGION }}
-IMAGE_TAG=${{ github.sha }}
-DB_NAME=${{ secrets.DB_NAME }}
-DB_USER=${{ secrets.DB_USER }}
-DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
-JWT_SECRET=${{ secrets.JWT_SECRET }}
-JWT_ISSUER=${{ secrets.DUCKDNS_DOMAIN }}.duckdns.org
-EOF
+          {
+            echo "AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID"
+            echo "AWS_REGION=$AWS_REGION"
+            echo "IMAGE_TAG=$IMAGE_TAG"
+            echo "DB_NAME=$DB_NAME"
+            echo "DB_USER=$DB_USER"
+            echo "DB_PASSWORD=$DB_PASSWORD"
+            echo "DB_ROOT_PASSWORD=$DB_ROOT_PASSWORD"
+            echo "JWT_SECRET=$JWT_SECRET"
+            echo "JWT_ISSUER=$JWT_ISSUER"
+          } > /tmp/mmucc.env
 
       - name: Decode Firebase service account
         run: |
