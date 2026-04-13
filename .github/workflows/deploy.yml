@@ -171,11 +171,11 @@ jobs:
           # ── DuckDNS IP auto-update cron ─────────────────────────────────────
           echo "Configuring DuckDNS cron..."
           sudo bash -c "cat > /etc/cron.d/duckdns << 'EOF'
-          */5 * * * * ubuntu curl -s 'https://www.duckdns.org/update?domains=${DUCKDNS_DOMAIN}&token=${DUCKDNS_TOKEN}&ip=' > /var/log/duckdns.log 2>&1
+          */5 * * * * ubuntu curl -s 'https://www.duckdns.org/update?domains=${DUCKDNS_DOMAIN}&token=${DUCKDNS_TOKEN}&ip=' > /opt/mmucc/logs/duckdns.log 2>&1
           EOF"
           sudo chmod 644 /etc/cron.d/duckdns
           # Run once immediately to register the IP
-          curl -s "https://www.duckdns.org/update?domains=${DUCKDNS_DOMAIN}&token=${DUCKDNS_TOKEN}&ip=" > /var/log/duckdns.log
+          curl -s "https://www.duckdns.org/update?domains=${DUCKDNS_DOMAIN}&token=${DUCKDNS_TOKEN}&ip=" > /opt/mmucc/logs/duckdns.log
 
           # ── SSL certificate (Let's Encrypt via DuckDNS DNS-01) ──────────────
           echo "Issuing SSL certificate..."
