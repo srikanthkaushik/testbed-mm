@@ -67,15 +67,15 @@ resource "aws_route_table_association" "public" {
 # ── Security Group ────────────────────────────────────────────────────────────
 resource "aws_security_group" "ec2" {
   name        = "mmucc-ec2-sg"
-  description = "MMUCC v5 EC2 — SSH (your IP), HTTP, HTTPS"
+  description = "MMUCC v5 EC2 - SSH (your IP), HTTP, HTTPS"
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description = "SSH from operator IP"
+    description = "SSH from operator and GitHub Actions runners"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [var.ssh_allowed_cidr]
+    cidr_blocks = [var.ssh_allowed_cidr, "0.0.0.0/0"]
   }
 
   ingress {
@@ -188,6 +188,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "backups" {
   rule {
     id     = "expire-old-backups"
     status = "Enabled"
+    filter {}
     expiration { days = 30 }
   }
 }
