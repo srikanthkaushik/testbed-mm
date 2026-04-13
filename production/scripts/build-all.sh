@@ -13,6 +13,11 @@ ECR_BASE="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/mmucc"
 
 SERVICES=(auth-service crash-service reference-service report-service)
 
+echo "Logging in to ECR..."
+aws ecr get-login-password --region "$AWS_REGION" | \
+    docker login --username AWS --password-stdin \
+    "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+
 echo "Building images with tag: $TAG"
 
 for SERVICE in "${SERVICES[@]}"; do
