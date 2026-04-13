@@ -15,7 +15,7 @@ the manual guide for new deployments.
 | Build + image push | **GitHub Actions** | On every push to `master`: builds JARs, builds Angular, pushes 4 Docker images to ECR |
 | Deploy | **GitHub Actions** | SSHes into EC2, pulls new images, restarts containers |
 | DB schema init | **db-init.sh** | Runs all 31 schema scripts on first deploy only; verified idempotent |
-| SSL certificate | **GitHub Actions** | Issues Let's Encrypt cert via DuckDNS DNS-01 on first deploy only |
+| SSL certificate | **GitHub Actions** | Issues Let's Encrypt cert via HTTP-01 standalone on first deploy only |
 | Nginx config | **GitHub Actions** | Applies `nginx.conf` and reloads on first deploy only |
 | DB backup cron | **GitHub Actions** | Installs db-backup.sh to `/etc/cron.daily` on first deploy only |
 
@@ -381,11 +381,11 @@ terraform destroy
 **Prerequisites**
 - [x] **Step 1 — SSH key pair:** Generated at `~/.ssh/mmucc-prod` and `~/.ssh/mmucc-prod.pub`
 - [x] **Step 2 — GitHub PAT `workflow` scope:** Enabled; automation files pushed to origin
-- [ ] **Step 3 — IAM user `mmucc-cicd`:** Create in AWS Console with ECR inline policy; generate access key
-- [ ] **Step 4 — DuckDNS:** Register subdomain and note token
-- [ ] **Step 5 — Firebase:** Add authorized domain; download and base64-encode service account JSON
-- [ ] **Step 6 — Terraform installed:** `terraform version` >= 1.6
-- [ ] **Step 7 — AWS CLI configured:** `aws sts get-caller-identity` returns your account ID
+- [x] **Step 3 — IAM user `mmucc-cicd`:** Created with ECR inline policy; access key generated
+- [x] **Step 4 — DuckDNS:** Subdomain registered and token noted
+- [x] **Step 5 — Firebase:** Authorized domain added; service account JSON downloaded and base64-encoded
+- [x] **Step 6 — Terraform installed:** `terraform version` >= 1.6
+- [x] **Step 7 — AWS CLI configured:** `aws sts get-caller-identity` returns your account ID
 
 **Deployment**
 - [ ] **Phase A:** Fill in `terraform.tfvars` and run `terraform apply` from `production/terraform/`

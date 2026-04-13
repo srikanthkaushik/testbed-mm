@@ -177,16 +177,17 @@ jobs:
           # Run once immediately to register the IP
           curl -s "https://www.duckdns.org/update?domains=${DUCKDNS_DOMAIN}&token=${DUCKDNS_TOKEN}&ip=" > /opt/mmucc/logs/duckdns.log
 
-          # ── SSL certificate (Let's Encrypt via DuckDNS DNS-01) ──────────────
+          # ── SSL certificate (Let's Encrypt via HTTP-01 standalone) ────────────
           echo "Issuing SSL certificate..."
+          # Stop nginx so certbot standalone can bind port 80
+          sudo systemctl stop nginx
           sudo certbot certonly \
-            -a dns-duckdns \
-            --dns-duckdns-token ${DUCKDNS_TOKEN} \
-            --dns-duckdns-propagation-seconds 60 \
+            --standalone \
             -d ${DUCKDNS_DOMAIN}.duckdns.org \
             --email ${CERTBOT_EMAIL} \
             --agree-tos \
             --non-interactive
+          sudo systemctl start nginx
 
           # ── Nginx configuration ──────────────────────────────────────────────
           echo "Configuring Nginx..."
