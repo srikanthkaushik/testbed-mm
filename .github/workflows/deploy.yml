@@ -179,13 +179,9 @@ jobs:
 
           # ── SSL certificate (Let's Encrypt via DuckDNS DNS-01) ──────────────
           echo "Issuing SSL certificate..."
-          sudo mkdir -p /etc/letsencrypt/duckdns
-          echo "dns_duckdns_token=${DUCKDNS_TOKEN}" | sudo tee /etc/letsencrypt/duckdns/credentials.ini > /dev/null
-          sudo chmod 600 /etc/letsencrypt/duckdns/credentials.ini
-
           sudo certbot certonly \
-            --dns-duckdns \
-            --dns-duckdns-credentials /etc/letsencrypt/duckdns/credentials.ini \
+            -a dns-duckdns \
+            --dns-duckdns-token ${DUCKDNS_TOKEN} \
             --dns-duckdns-propagation-seconds 60 \
             -d ${DUCKDNS_DOMAIN}.duckdns.org \
             --email ${CERTBOT_EMAIL} \
