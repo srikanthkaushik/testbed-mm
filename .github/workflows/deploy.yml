@@ -237,14 +237,21 @@ jobs:
         run: |
           SSH_OPTS="-i /tmp/mmucc-key.pem -o StrictHostKeyChecking=no"
 
-          echo "Waiting 30s for services to start..."
-          sleep 30
+          echo "Waiting 90s for services to start..."
+          sleep 90
 
           ssh $SSH_OPTS ubuntu@$EC2_HOST << 'ENDSSH'
             set -e
             FAILED=0
             for PORT in 8081 8082 8083 8084; do
-              STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:$PORT/actuator/health || echo "000")
+              # Retry up to 6 times (30s apart) to allow slow JVM startup
+              STATUS="000"
+              for i in $(seq 1 6); do
+                STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:$PORT/actuator/health || echo "000")
+                [ "$STATUS" = "200" ] && break
+                echo "  Port $PORT — attempt $i/6 returned HTTP $STATUS, retrying in 30s..."
+                sleep 30
+              done
               if [ "$STATUS" = "200" ]; then
                 echo "  Port $PORT — OK"
               else
