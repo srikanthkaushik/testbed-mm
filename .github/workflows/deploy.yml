@@ -93,7 +93,7 @@ jobs:
 
       - name: Decode Firebase service account
         run: |
-          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_B64 }}" | base64 -d > /tmp/firebase-sa.json
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_B64 }}" | tr -d ' \r\n' | base64 -d > /tmp/firebase-sa.json
 
       # ── Copy files to EC2 ─────────────────────────────────────────────────────
       - name: Copy deploy files to EC2
@@ -111,7 +111,7 @@ jobs:
 
           # Firebase service account
           scp $SSH_OPTS /tmp/firebase-sa.json ubuntu@$EC2_HOST:/opt/mmucc/config/firebase-service-account.json
-          ssh $SSH_OPTS ubuntu@$EC2_HOST "chmod 600 /opt/mmucc/config/firebase-service-account.json"
+          ssh $SSH_OPTS ubuntu@$EC2_HOST "chmod 644 /opt/mmucc/config/firebase-service-account.json"
 
           # Schema scripts (idempotent — safe to copy on every deploy)
           ssh $SSH_OPTS ubuntu@$EC2_HOST "mkdir -p /tmp/mmucc-schema"
