@@ -235,32 +235,31 @@ jobs:
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
-          SSH_OPTS="-i /tmp/mmucc-key.pem -o StrictHostKeyChecking=no"
+          SSH_OPTS="-i /tmp/mmucc-key.pem -o StrictHostKeyChecking=no -o ConnectTimeout=10"
 
           echo "Waiting 90s for services to start..."
           sleep 90
 
-          ssh $SSH_OPTS ubuntu@$EC2_HOST << 'ENDSSH'
-            set -e
-            FAILED=0
-            for PORT in 8081 8082 8083 8084; do
-              # Retry up to 6 times (30s apart) to allow slow JVM startup
-              STATUS="000"
-              for i in $(seq 1 6); do
-                STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:$PORT/actuator/health || echo "000")
-                [ "$STATUS" = "200" ] && break
-                echo "  Port $PORT — attempt $i/6 returned HTTP $STATUS, retrying in 30s..."
-                sleep 30
-              done
-              if [ "$STATUS" = "200" ]; then
-                echo "  Port $PORT — OK"
-              else
-                echo "  Port $PORT — FAILED (HTTP $STATUS)"
-                FAILED=1
-              fi
+          # Poll from the runner — each SSH call is independent so no session timeout.
+          FAILED=0
+          for PORT in 8081 8082 8083 8084; do
+            STATUS="000"
+            for i in $(seq 1 8); do
+              STATUS=$(ssh $SSH_OPTS ubuntu@$EC2_HOST \
+                "curl -s -o /dev/null -w '%{http_code}' http://localhost:$PORT/actuator/health" \
+                2>/dev/null || echo "ERR")
+              [ "$STATUS" = "200" ] && break
+              echo "  Port $PORT — attempt $i/8 returned HTTP $STATUS, retrying in 30s..."
+              sleep 30
             done
-            [ "$FAILED" -eq 0 ] && echo "All services healthy." || { echo "One or more services failed health check."; exit 1; }
-          ENDSSH
+            if [ "$STATUS" = "200" ]; then
+              echo "  Port $PORT — OK"
+            else
+              echo "  Port $PORT — FAILED (HTTP $STATUS)"
+              FAILED=1
+            fi
+          done
+          [ "$FAILED" -eq 0 ] && echo "All services healthy." || { echo "One or more services failed health check."; exit 1; }
 
       # ── Cleanup ───────────────────────────────────────────────────────────────
       - name: Clean up local secrets
