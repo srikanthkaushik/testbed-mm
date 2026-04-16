@@ -257,18 +257,19 @@ jobs:
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
-          SSH_OPTS="-i /tmp/mmucc-key.pem -o StrictHostKeyChecking=no -o ConnectTimeout=10"
+          SSH_OPTS="-i /tmp/mmucc-key.pem -o StrictHostKeyChecking=no -o ConnectTimeout=10 -o ServerAliveInterval=15 -o ServerAliveCountMax=4"
 
-          echo "Waiting 90s for services to start..."
-          sleep 90
+          echo "Waiting 150s for services to start..."
+          sleep 150
 
           # Poll from the runner — each SSH call is independent so no session timeout.
+          # curl --max-time 10 prevents the SSH session hanging if a service is slow.
           FAILED=0
           for PORT in 8081 8082 8083 8084; do
             STATUS="000"
             for i in $(seq 1 8); do
               STATUS=$(ssh $SSH_OPTS ubuntu@$EC2_HOST \
-                "curl -s -o /dev/null -w '%{http_code}' http://localhost:$PORT/actuator/health" \
+                "curl -s -o /dev/null -w '%{http_code}' --max-time 10 http://localhost:$PORT/actuator/health" \
                 2>/dev/null || echo "ERR")
               [ "$STATUS" = "200" ] && break
               echo "  Port $PORT — attempt $i/8 returned HTTP $STATUS, retrying in 30s..."
