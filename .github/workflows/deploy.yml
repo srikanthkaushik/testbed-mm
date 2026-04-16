@@ -78,6 +78,7 @@ jobs:
           DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           JWT_ISSUER: "${{ secrets.DUCKDNS_DOMAIN }}.duckdns.org"
+          CORS_ALLOWED_ORIGINS: "https://${{ secrets.DUCKDNS_DOMAIN }}.duckdns.org"
         run: |
           {
             echo "AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID"
@@ -89,6 +90,7 @@ jobs:
             echo "DB_ROOT_PASSWORD=$DB_ROOT_PASSWORD"
             echo "JWT_SECRET=$JWT_SECRET"
             echo "JWT_ISSUER=$JWT_ISSUER"
+            echo "CORS_ALLOWED_ORIGINS=$CORS_ALLOWED_ORIGINS"
           } > /tmp/mmucc.env
 
       - name: Decode Firebase service account
