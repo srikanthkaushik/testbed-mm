@@ -139,7 +139,17 @@ jobs:
               "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
 
             cd /opt/mmucc/app
-            docker compose pull
+
+            # Stop running containers first to free RAM before pulling
+            # (concurrent image decompression on 1GB RAM causes OOM)
+            docker compose stop
+
+            # Pull images one at a time — parallel pulls OOM a t3.micro
+            docker compose pull auth-service
+            docker compose pull crash-service
+            docker compose pull reference-service
+            docker compose pull report-service
+
             docker compose up -d
 
             echo "Services started: $(docker compose ps --services | tr '\n' ' ')"
