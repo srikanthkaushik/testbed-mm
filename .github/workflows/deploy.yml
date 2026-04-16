@@ -146,6 +146,9 @@ jobs:
             # (concurrent image decompression on 1GB RAM causes OOM)
             docker compose stop
 
+            # Remove images not used by any container to free disk space
+            docker image prune -a -f
+
             # Pull images one at a time — parallel pulls OOM a t3.micro
             docker compose pull auth-service
             docker compose pull crash-service
