@@ -128,7 +128,7 @@ jobs:
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
         run: |
-          SSH_OPTS="-i /tmp/mmucc-key.pem -o StrictHostKeyChecking=no"
+          SSH_OPTS="-i /tmp/mmucc-key.pem -o StrictHostKeyChecking=no -o ServerAliveInterval=30 -o ServerAliveCountMax=20"
           ssh $SSH_OPTS ubuntu@$EC2_HOST << 'ENDSSH'
             set -euo pipefail
             set -a && source /opt/mmucc/app/.env && set +a
@@ -157,7 +157,7 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           S3_BACKUP_BUCKET: ${{ secrets.S3_BACKUP_BUCKET }}
         run: |
-          SSH_OPTS="-i /tmp/mmucc-key.pem -o StrictHostKeyChecking=no"
+          SSH_OPTS="-i /tmp/mmucc-key.pem -o StrictHostKeyChecking=no -o ServerAliveInterval=30 -o ServerAliveCountMax=20"
 
           IS_FIRST=$(ssh $SSH_OPTS ubuntu@$EC2_HOST \
             "test -f /opt/mmucc/.initialized && echo no || echo yes")
