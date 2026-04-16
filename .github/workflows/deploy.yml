@@ -123,6 +123,13 @@ jobs:
           scp $SSH_OPTS production/scripts/db-init.sh   ubuntu@$EC2_HOST:/tmp/db-init.sh
           scp $SSH_OPTS production/scripts/db-backup.sh ubuntu@$EC2_HOST:/tmp/db-backup.sh
 
+          # Nginx config — apply on every deploy so location changes are always live
+          scp $SSH_OPTS production/nginx/nginx.conf ubuntu@$EC2_HOST:/tmp/nginx.conf
+          ssh $SSH_OPTS ubuntu@$EC2_HOST \
+            "sudo sed 's/DOMAIN_PLACEHOLDER/${{ secrets.DUCKDNS_DOMAIN }}.duckdns.org/g' \
+              /tmp/nginx.conf | sudo tee /etc/nginx/sites-available/mmucc > /dev/null \
+            && sudo nginx -t && sudo systemctl reload nginx"
+
       # ── Deploy: pull images and restart containers ────────────────────────────
       - name: Deploy services
         env:
