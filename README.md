@@ -65,6 +65,49 @@ A full-stack web application for collecting, managing, and reporting motor vehic
 
 ---
 
+## Lines of Code
+
+Counted across hand-written source files only (excludes `node_modules`, `dist`, `target`, test/spec files, and generated code).
+
+### Frontend — Angular (`frontend/mmucc-app/src`)
+
+| Language | Files | Lines |
+|---|---:|---:|
+| TypeScript | 33 | 6,440 |
+| HTML | 14 | 4,892 |
+| SCSS | 14 | 3,512 |
+| **Total** | **61** | **14,844** |
+
+### Backend — Spring Boot (`backend/`)
+
+| Service | Files | Lines | Notes |
+|---|---:|---:|---|
+| auth-service | 29 | 1,624 | Firebase → JWT, RBAC, refresh-token rotation |
+| crash-service | 101 | 6,040 | All MMUCC CRUD, 28 integration tests |
+| reference-service | 20 | 461 | Lookup codes API, in-memory cache |
+| report-service | 13 | 2,108 | CSV export + PDF generation |
+| common (shared) | 7 | 387 | JwtUtils, AuditFields, GlobalExceptionHandler |
+| **Total** | **170** | **10,620** | Java only |
+
+### Database — MySQL (`database/mysql`)
+
+| Type | Files | Lines |
+|---|---:|---:|
+| DDL + reference data | 31 | 4,739 |
+| Test seed data | 2 | 624 |
+| **Total** | **33** | **5,363** |
+
+### Combined
+
+| Component | Files | Lines |
+|---|---:|---:|
+| Frontend (TS / HTML / SCSS) | 61 | 14,844 |
+| Backend (Java) | 170 | 10,620 |
+| Database (SQL) | 33 | 5,363 |
+| **Grand total** | **264** | **30,827** |
+
+---
+
 ## Repository Structure
 
 ```

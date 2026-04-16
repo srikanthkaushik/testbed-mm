@@ -16,7 +16,7 @@ apt-get upgrade -y
 apt-get install -y \
     nginx \
     certbot \
-    python3-certbot-dns-duckdns \
+    python3-pip \
     docker.io \
     docker-compose-v2 \
     awscli \
@@ -24,6 +24,9 @@ apt-get install -y \
     curl \
     jq \
     unzip
+
+# certbot-dns-duckdns is not in apt — install via pip
+pip3 install certbot-dns-duckdns
 
 systemctl enable nginx docker
 systemctl start docker
